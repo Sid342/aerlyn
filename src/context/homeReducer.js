@@ -9,7 +9,7 @@ export const initialHome = {
 
 export const actions = {
   setHomeType: (homeType) => ({ type: 'SET_HOME_TYPE', homeType }),
-  addRoom: (name, roomType) => ({ type: 'ADD_ROOM', name, roomType }),
+  addRoom: (name, roomType, size) => ({ type: 'ADD_ROOM', name, roomType, size }),
   removeRoom: (roomId) => ({ type: 'REMOVE_ROOM', roomId }),
   renameRoom: (roomId, name) => ({ type: 'RENAME_ROOM', roomId, name }),
   setRoomSize: (roomId, size) => ({ type: 'SET_ROOM_SIZE', roomId, size }),
@@ -34,7 +34,7 @@ export function homeReducer(state, action) {
       return { ...state, homeType: action.homeType, rooms: buildRooms(action.homeType) };
 
     case 'ADD_ROOM':
-      return { ...state, rooms: [...state.rooms, makeRoom(action.name, action.roomType)] };
+      return { ...state, rooms: [...state.rooms, makeRoom(action.name, action.roomType, action.size)] };
 
     case 'REMOVE_ROOM':
       return { ...state, rooms: state.rooms.filter((r) => r.id !== action.roomId) };
@@ -87,19 +87,22 @@ export function homeReducer(state, action) {
     case 'SET_FLOOR_PLAN':
       return { ...state, floorPlanImage: action.image };
 
-    case 'APPLY_SCENE':
+    case 'APPLY_SCENE': {
       // deviceStates: { [deviceId]: boolean } applied to every room
+      // guard: if payload is missing/malformed, degrade to no-op
+      const deviceStates = action.deviceStates || {};
       return {
         ...state,
         rooms: state.rooms.map((r) => ({
           ...r,
           devices: r.devices.map((d) =>
-            action.deviceStates[d.deviceId] === undefined
+            deviceStates[d.deviceId] === undefined
               ? d
-              : { ...d, on: action.deviceStates[d.deviceId] }
+              : { ...d, on: deviceStates[d.deviceId] }
           ),
         })),
       };
+    }
 
     case 'RESET':
       return initialHome;

@@ -80,4 +80,43 @@ describe('homeReducer', () => {
     const s1 = homeReducer(withHome(), actions.reset());
     expect(s1).toEqual(initialHome);
   });
+
+  describe('applyScene', () => {
+    // 2BHK template: every room seeds smart-switch; only bath seeds geyser
+    it('sets on flag for devices present in the deviceStates map', () => {
+      const s0 = withHome('2BHK');
+      // turn smart-switch on everywhere
+      const s1 = homeReducer(s0, actions.applyScene({ 'smart-switch': true }));
+      s1.rooms.forEach((r) => {
+        const sw = r.devices.find((d) => d.deviceId === 'smart-switch');
+        expect(sw).toBeDefined();
+        expect(sw.on).toBe(true);
+      });
+    });
+
+    it('leaves devices not in the map untouched (same object reference)', () => {
+      const s0 = withHome('2BHK');
+      // apply a scene that only touches geyser — smart-switch should be untouched
+      const s1 = homeReducer(s0, actions.applyScene({ 'geyser': true }));
+      s1.rooms.forEach((r) => {
+        const sw0 = s0.rooms.find((rx) => rx.id === r.id).devices.find((d) => d.deviceId === 'smart-switch');
+        const sw1 = r.devices.find((d) => d.deviceId === 'smart-switch');
+        // device entry for smart-switch must be the same reference (reducer returns d unchanged)
+        expect(sw1).toBe(sw0);
+      });
+    });
+
+    it('does not throw and returns rooms with devices unchanged when deviceStates is omitted', () => {
+      const s0 = withHome('2BHK');
+      let s1;
+      expect(() => { s1 = homeReducer(s0, actions.applyScene()); }).not.toThrow();
+      // every device entry must be the same reference (pure no-op)
+      s1.rooms.forEach((r) => {
+        const r0 = s0.rooms.find((rx) => rx.id === r.id);
+        r.devices.forEach((d, i) => {
+          expect(d).toBe(r0.devices[i]);
+        });
+      });
+    });
+  });
 });
