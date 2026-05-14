@@ -14,3 +14,4 @@
   box-shadow: inset 0 0 0 1px var(--teal);
   color: var(--teal);
 }
+.htp-hint { color: var(--text-dim); margin: 4px 0 14px; }

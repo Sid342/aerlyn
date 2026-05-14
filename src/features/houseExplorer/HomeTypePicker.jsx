@@ -19,14 +19,16 @@ export default function HomeTypePicker() {
   return (
     <div className="card">
       <h3>1. Pick the home</h3>
-      <p style={{ color: 'var(--text-dim)', margin: '4px 0 14px' }}>
+      <p className="htp-hint">
         Start from the closest match — you can reshape every room next.
       </p>
       <div className="htp">
         {HOME_TYPES.map((t) => (
           <button
             key={t}
+            type="button"
             className={`htp-btn${home.homeType === t ? ' active' : ''}`}
+            aria-pressed={home.homeType === t}
             onClick={() => pick(t)}
           >
             {t}
