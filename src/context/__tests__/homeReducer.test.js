@@ -315,3 +315,18 @@ describe('SET_PLATE_CONFIG', () => {
     expect(s.rooms[0].plateConfig).toEqual(cfg);
   });
 });
+
+import { isRoomComplete } from '../../features/studioShell/RoomSidebar.jsx';
+
+describe('isRoomComplete', () => {
+  it('false when no devices', () => {
+    expect(isRoomComplete({ devices: [], switchOverrides: {} })).toBe(false);
+  });
+  it('true when devices present and switch points > 0', () => {
+    const room = {
+      devices: [{ deviceId: 'cct-light', qty: 2, on: true }],
+      switchOverrides: {},
+    };
+    expect(isRoomComplete(room)).toBe(true);
+  });
+});
