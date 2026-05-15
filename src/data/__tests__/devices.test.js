@@ -6,8 +6,8 @@ describe('device catalog', () => {
     const ids = DEVICES.map((d) => d.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
-  it('has 22 devices', () => {
-    expect(DEVICES.length).toBe(22);
+  it('has 23 devices', () => {
+    expect(DEVICES.length).toBe(23);
   });
   it('every device has required fields', () => {
     for (const d of DEVICES) {
@@ -59,6 +59,12 @@ describe('device catalog', () => {
   it('bldc-fan has fan control, curtain has curtain control', () => {
     expect(getDevice('bldc-fan').control).toEqual({ type: 'fan', count: 1 });
     expect(getDevice('curtain').control).toEqual({ type: 'curtain', count: 1 });
+  });
+  it('includes smart-speaker device', () => {
+    const d = getDevice('smart-speaker');
+    expect(d).toBeDefined();
+    expect(d.category).toBe('Audio');
+    expect(d.defaultRooms).toContain('living');
   });
   it('no-module devices have no control field', () => {
     const noControlIds = ['geyser', 'ac-ir', 'camera', 'motion-sensor', 'gas-sensor',

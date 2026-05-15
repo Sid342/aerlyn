@@ -99,6 +99,9 @@ export const DEVICES = [
     defaultRooms: ['living', 'bedroom', 'kitchen', 'bath', 'balcony', 'entrance', 'other'],
     sizeRule: { S: 2, M: 3, L: 4 },
     control: { type: 'socket', count: 1 } },
+  { id: 'smart-speaker', name: 'Smart Speaker', category: 'Audio', icon: '🔊',
+    blurb: 'Plays music, responds to voice, and triggers scenes — room by room.',
+    defaultRooms: ['living', 'bedroom'] },
 ];
 
 const BY_ID = Object.fromEntries(DEVICES.map((d) => [d.id, d]));
