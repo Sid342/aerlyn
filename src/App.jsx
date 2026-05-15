@@ -1,5 +1,6 @@
 import { HomeProvider } from './context/HomeContext.jsx';
 import HomeTypePicker from './features/houseExplorer/HomeTypePicker.jsx';
+import RoomList from './features/houseExplorer/RoomList.jsx';
 
 export default function App() {
   return (
@@ -10,6 +11,7 @@ export default function App() {
           <p>Interactive House Explorer</p>
         </header>
         <HomeTypePicker />
+        <RoomList />
       </div>
     </HomeProvider>
   );
