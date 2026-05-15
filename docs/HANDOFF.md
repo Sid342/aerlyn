@@ -1,121 +1,124 @@
 # Handoff — Aerlyn Studio
 
 **Updated:** 2026-05-16
-**Repo:** `https://github.com/Sid342/aerlyn.git`
-**Main branch:** `main` — tagged `feature-a-complete`
+**Repo:** https://github.com/Sid342/aerlyn
+**Live branch:** `main` — 84/84 tests, build clean
 
 ---
 
-## 1. Project state at a glance
+## 1. What shipped
 
-Aerlyn Studio — React + Vite smart-home configurator + marketing landing page, replacing the legacy `aerlyn_website.html`.
+| Feature | Status | Tests | Notes |
+|---------|--------|-------|-------|
+| A: Interactive House Explorer | ✅ merged to main | — | phases 1–4 complete |
+| Live Home Control (feature-b) | ✅ merged to main | — | smart-speaker, RoomDrawer, scene-to-room |
+| C: Scene Builder | ✅ merged to main | +11 | customScenes CRUD, exportScenesPdf |
+| D: Marketing Shell | ✅ merged to main | — | SiteNav, Hero, WhyAutomate, DayInLife, HowItWorks, ContactCTA, LeadModal |
+| **B (PRD): Touch Plate Designer** | 🔲 NOT STARTED | — | plan written, unblocked |
 
-| Feature | Status | Branch / Tag | Tests | Plan |
-|---------|--------|-------------|-------|------|
-| **A: Interactive House Explorer** | ✅ COMPLETE | `main`, `feature-a-complete` | 69/69 | `plans/2026-05-14-feature-a-house-explorer.md` |
-| **"Live Home Control"** (unplanned extra) | ✅ COMPLETE | `feature-b`, PR #1 open | 72/72 | `plans/2026-05-15-feature-b-live-control.md` |
-| **C: Scene Builder** | ✅ COMPLETE | `feature-c`, `feature-c-complete` | 80/80 | `plans/2026-05-15-feature-c-scene-builder.md` |
-| **D: Marketing Shell** | ✅ COMPLETE | `feature-d`, `feature-d-marketing-complete` | 69/69 | `plans/2026-05-15-feature-d-marketing-shell.md` |
-| **B (PRD): Touch Plate Designer** | 🔲 NOT STARTED | — | — | `plans/2026-05-15-feature-b-touch-plate.md` |
-
-**Merge order before launch:**
-1. PR #1: `feature-b` → `main` (https://github.com/Sid342/aerlyn/pull/1)
-2. `feature-c` → `main`
-3. `feature-d` → `main`
-4. Implement Touch Plate Designer (feature-b PRD)
-5. Launch prep: swap Formspree endpoint → `npm run build` → deploy `dist/`
-
-All plan files: `docs/superpowers/plans/`
-PRD: `docs/superpowers/specs/2026-05-14-aerlyn-studio-prd.md`
-Reference assets (legacy site, feturtles src): `assets/reference/` — do not modify or stage.
+**Main: 84/84 tests. Build clean.**
 
 ---
 
-## 2. Full architecture (post feature-c + feature-d)
+## 2. Full page structure (App.jsx on main)
+
+```
+<HomeProvider>
+  <SiteNav />                          fixed top nav, anchor links, mobile hamburger
+  <Hero />                             headline + proof stats
+  <WhyAutomate />                      6 pain cards + shift block
+  <DayInLife />                        3-card accordion timeline
+  <section id="planner">
+    <AppInner />                       ← the full planning tool
+      HomeTypePicker
+      HouseSvg (onRoomClick → RoomDrawer)
+      FloorPlanUpload
+      ModeToggle
+      ScenePresets
+      RoomList
+      ExportPanel
+      SceneBuilder
+      RoomDrawer (conditional)
+  </section>
+  <HowItWorks />                       4-step process grid
+  <ContactCTA />                       phone input → LeadModal (Formspree)
+</HomeProvider>
+```
+
+---
+
+## 3. Full source map
 
 ```
 src/
   main.jsx
-  App.jsx                          SiteNav > Hero > WhyAutomate > DayInLife >
-                                   section#planner (HomeProvider > HomeTypePicker >
-                                   HouseSvg > FloorPlanUpload > ModeToggle > ScenePresets >
-                                   RoomList > ExportPanel > SceneBuilder) >
-                                   HowItWorks > ContactCTA (+ LeadModal)
-  styles/global.css                --teal #00C8B4, --bg #080810, brand tokens, .card, .app
-                                   --fg/--muted/--card aliased to --text/--text-dim/--surface
-                                   scroll-padding-top: 72px; body padding-top: 56px
-                                   responsive @600px / @420px
+  App.jsx
+
+  styles/
+    global.css               brand tokens: --teal #00C8B4, --bg #080810
+                             --fg/--muted/--card aliased to --text/--text-dim/--surface
+                             scroll-padding-top: 72px; body padding-top: 56px (nav offset)
 
   data/
-    devices.js                     22 devices — DEVICES[] + getDevice(id)
-    templates.js                   HOME_TYPES, TEMPLATES, seedDevices(), buildRooms(),
-                                   makeRoom(), cloneRoom()
-                                   All rooms include switchOverrides: {gang,fan,curtain,socket}
-    scenes.js                      SCENES[] — 3 presets (Good Morning, Movie Night, Good Night)
+    devices.js               22 devices incl. smart-speaker — DEVICES[] + getDevice(id)
+    templates.js             HOME_TYPES, TEMPLATES, seedDevices(), buildRooms(),
+                             makeRoom(), cloneRoom()
+                             All rooms include switchOverrides: {gang,fan,curtain,socket}
+    scenes.js                SCENES[] — 3 presets: Good Morning, Movie Night, Good Night
 
   context/
-    homeReducer.js                 initialHome, homeReducer (pure)
-                                   Actions: SET_HOME_TYPE, SET_FLOOR_PLAN_IMAGE, SET_MODE,
-                                   ADD_ROOM, REMOVE_ROOM, UPDATE_ROOM, SET_ROOM_SIZE,
-                                   ADD_DEVICE, REMOVE_DEVICE, TOGGLE_DEVICE, SET_SWITCH_OVERRIDE,
-                                   ADD_CUSTOM_SCENE, REMOVE_CUSTOM_SCENE, RENAME_CUSTOM_SCENE,
-                                   SET_SCENE_DEVICE_STATE
-    HomeContext.jsx                HomeProvider + useHome() → { home, dispatch, actions }
-                                   action creators include: addCustomScene, removeCustomScene,
-                                   renameCustomScene, setSceneDeviceState
+    homeReducer.js           initialHome + homeReducer (pure)
+    HomeContext.jsx          HomeProvider + useHome() → { home, dispatch, actions }
 
   features/
     houseExplorer/
       HomeTypePicker.jsx / .css
-      HouseSvg.jsx / .css          Dollhouse SVG: clickable zones, ambient pulse dots,
-                                   play-mode lit zones (teal fill + "N on" label)
-      FloorPlanUpload.jsx / .css   Optional floor-plan image; stored as data-URL
-      ModeToggle.jsx / .css        Build/Play switcher with aria-pressed + mode hint
-      ScenePresets.jsx / .css      3 preset scene buttons, visible in play mode only
+      HouseSvg.jsx / .css          dollhouse SVG: clickable zones, ambient pulse,
+                                   play-mode lit zones
+      FloorPlanUpload.jsx / .css   optional floor-plan image (base64 data-URL)
+      ModeToggle.jsx / .css        Build/Play switcher
+      ScenePresets.jsx / .css      3 preset scene buttons (play mode only)
       RoomList.jsx
-      RoomCard.jsx / .css          Build: name, S/M/L size, Duplicate, Remove, SwitchPlanCard,
-                                   device list
-                                   Play: collapsible (default collapsed), "N on" badge
-      DeviceRow.jsx                Build: icon + name + DeviceInfo tooltip + qty stepper + delete
-                                   Play: icon + name×qty + DeviceInfo tooltip + on/off toggle
-      DeviceInfo.jsx / .css        "i" button popover showing device blurb (hover+click)
-      AddDeviceMenu.jsx            <select> filtered to devices not already in room
-      SwitchPlanCard.jsx / .css    Build: editable number inputs per type
-                                   Play: read-only tally + plate recommendation
+      RoomCard.jsx / .css          build: name/size/duplicate/remove/SwitchPlanCard/devices
+                                   play: collapsible, "N on" badge
+      RoomDrawer.jsx               slide-in room detail panel (opened by HouseSvg click)
+      DeviceRow.jsx                build: qty stepper + DeviceInfo; play: toggle
+      DeviceInfo.jsx / .css        "i" popover with device blurb
+      AddDeviceMenu.jsx            filtered device select
+      SwitchPlanCard.jsx / .css    build: editable overrides; play: read-only + plate rec
 
     sceneBuilder/
-      SceneBuilder.jsx             Preset scene cards (read-only) + Custom scene cards
-                                   (add, rename inline, per-device toggles, remove with confirm)
-                                   + "Download Scenes PDF" button
+      SceneBuilder.jsx             preset cards (read-only) + custom scene cards
+                                   (add / rename inline / per-device toggles / remove)
+                                   + Download Scenes PDF button
       SceneBuilder.css
 
     marketing/
-      SiteNav.jsx / .css           Fixed top nav (56px), anchor links, mobile hamburger
-      Hero.jsx / .css              Eyebrow + serif h1 + sub + dual CTAs + 4 proof stats
-      WhyAutomate.jsx / .css       6 pain cards (auto-fill grid) + shift CTA block
-      DayInLife.jsx / .css         Vertical timeline, 3 accordion cards (before/after + devices)
-      HowItWorks.jsx / .css        4-step grid (Understand → Visit → Install → Live)
-      ContactCTA.jsx / .css        Phone input → opens LeadModal; site footer
-      LeadModal.jsx / .css         Formspree form (name+phone required, 4 selects, textarea)
-                                   Success state. Endpoint: mykokrdw (swap before launch)
+      SiteNav.jsx / .css           fixed 56px nav
+      Hero.jsx / .css              eyebrow + serif h1 + CTAs + proof stats
+      WhyAutomate.jsx / .css       6 pain cards + shift CTA
+      DayInLife.jsx / .css         vertical accordion timeline (3 cards)
+      HowItWorks.jsx / .css        4-step grid
+      ContactCTA.jsx / .css        phone → LeadModal + site footer
+      LeadModal.jsx / .css         Formspree form, name+phone required, success state
 
   lib/
-    switchPlanner.js               computeRoomPoints(), applyOverrides(), recommendPlates(),
-                                   planRoom()
-    exportJson.js                  buildExportPayload(), downloadJson()
-    exportPdf.js                   downloadPdf() via jsPDF
-    exportScenesPdf.js             buildScenesPdfPayload(customScenes), downloadScenesPdf()
-    sendFormspree.js               sendToAerlyn() with try/catch
+    switchPlanner.js         computeRoomPoints(), applyOverrides(), recommendPlates(),
+                             planRoom()
+    exportJson.js            buildExportPayload(), downloadJson()
+    exportPdf.js             downloadPdf() — jsPDF room-by-room
+    exportScenesPdf.js       buildScenesPdfPayload(customScenes), downloadScenesPdf()
+    sendFormspree.js         sendToAerlyn()
 ```
 
 ---
 
-## 3. State shape
+## 4. State shape
 
 ```js
 home = {
   homeType: '1BHK' | '2BHK' | '3BHK' | 'Villa' | null,
-  floorPlanImage: string | null,        // base64 data-URL from FileReader
+  floorPlanImage: string | null,        // base64 data-URL
   mode: 'build' | 'play',
   rooms: [
     {
@@ -140,80 +143,91 @@ home = {
 
 ---
 
-## 4. Test suite
+## 5. Reducer actions
 
-| File | Tests | What it covers |
-|------|-------|---------------|
-| `homeReducer.test.js` | 42 | All reducer actions incl. customScenes CRUD |
-| `exportScenesPdf.test.js` | 3 | buildScenesPdfPayload preset/custom labelling |
-| `exportJson.test.js` | ~10 | JSON export payload |
-| `switchPlanner.test.js` | ~10 | Switch point computation + applyOverrides |
-| `devices.test.js` | ~10 | Device data integrity |
-| `scenes.test.js` | ~5 | Scene preset structure |
-
-Run all: `npm test -- --run` (Vitest, not Jest — `--watchAll` unsupported)
+| Action | Payload | Effect |
+|--------|---------|--------|
+| SET_HOME_TYPE | homeType | set type + seed rooms from template |
+| ADD_ROOM | name, roomType, size | append room |
+| REMOVE_ROOM | roomId | filter out |
+| DUPLICATE_ROOM | roomId | clone + insert after original |
+| RENAME_ROOM | roomId, name | update name |
+| SET_ROOM_SIZE | roomId, size | update size + re-derive device qtys via sizeRule |
+| ADD_DEVICE | roomId, deviceId | append or increment qty |
+| REMOVE_DEVICE | roomId, deviceId | filter out |
+| SET_DEVICE_QTY | roomId, deviceId, qty | clamp to ≥1 |
+| TOGGLE_DEVICE | roomId, deviceId | flip on boolean |
+| SET_SWITCH_OVERRIDE | roomId, overrideType, value | per-field nullable override |
+| SET_MODE | mode | 'build' \| 'play' |
+| APPLY_SCENE | deviceStates | apply {deviceId: bool} to every room |
+| APPLY_SCENE_TO_ROOM | roomId, deviceStates | apply to single room |
+| ADD_CUSTOM_SCENE | payload.name | append scene with id + empty deviceStates |
+| REMOVE_CUSTOM_SCENE | payload.id | filter out |
+| RENAME_CUSTOM_SCENE | payload.id, payload.name | update name |
+| SET_SCENE_DEVICE_STATE | payload.sceneId, payload.deviceId, payload.on | toggle device in custom scene |
+| RESET | — | return initialHome |
 
 ---
 
-## 5. What's left
+## 6. Test suite (84 total)
 
-### Touch Plate Designer (Feature B — PRD)
+Run: `npm test -- --run` (Vitest — `--watchAll` not supported)
+
+| File | Tests |
+|------|-------|
+| homeReducer.test.js | 42 — all reducer actions |
+| exportScenesPdf.test.js | 3 — preset/custom labelling |
+| exportJson.test.js | ~10 |
+| switchPlanner.test.js | ~10 |
+| devices.test.js | ~10 |
+| scenes.test.js | ~5 |
+| + feature-b tests | ~4 |
+
+---
+
+## 7. What's left before launch
+
+### Touch Plate Designer (only remaining feature)
 
 Plan: `docs/superpowers/plans/2026-05-15-feature-b-touch-plate.md`
 Source to port: `assets/reference/feturtles_src/StepperComponent.js` (4299 lines, 8-step wizard)
 
-Key decisions already made in plan:
-- MUI → Aerlyn CSS (no new dependencies)
-- react-dnd → click-to-place slots (no new dependencies)
+Decisions already locked in the plan:
+- MUI → Aerlyn CSS (no new deps)
+- react-dnd → click-to-place slots (no new deps)
 - New lib: `exportPlatePdf.js`
-- Renders as new tab/section below SceneBuilder in App.jsx
+- Renders in App.jsx below SceneBuilder (inside `#planner` section)
 
-### Launch prep (after all features merged)
+### Launch checklist
 
-1. Swap Formspree endpoint in `src/features/marketing/LeadModal.jsx` line ~5: replace `mykokrdw` with production endpoint
-2. `npm run build` → confirm clean
-3. Deploy `dist/` to static host
-4. Smoke-test lead modal on production
+- [ ] Swap Formspree endpoint in `src/features/marketing/LeadModal.jsx` line ~5
+      replace `mykokrdw` with production endpoint
+- [ ] `npm run build` → confirm clean
+- [ ] Deploy `dist/` to static host
+- [ ] Smoke-test lead modal on production (verify submission hits Formspree dashboard)
 
 ---
 
-## 6. Workflow conventions
+## 8. Conventions
 
-**Development:**
-- New feature → new branch from `main` (or latest merged state)
-- TDD: write failing test → implement → pass → commit
-- Commit per task (not per file)
-- Push only on explicit user instruction
-
-**UI rules (every component):**
-- Every `<button>` has `type="button"`
-- Toggle/selected-state buttons have `aria-pressed` bound to state
-- `window.confirm` for destructive actions — deliberate
+**Every component:**
+- `<button type="button">` always
+- `aria-pressed` on toggles bound to state
+- `window.confirm` for destructive actions (deliberate)
 - No TypeScript, no Redux
 
-**Subagent workflow:**
-- `superpowers:executing-plans` or `superpowers:subagent-driven-development`
-- Provide full task text to subagent — don't make it read the plan file itself
-- `superpowers:verification-before-completion` before any PR
+**Git:**
+- New feature → new branch from `main`
+- TDD per task: red → green → commit
+- Push only on explicit user instruction
+- `superpowers:executing-plans` or `superpowers:subagent-driven-development` for implementation
 
 ---
 
-## 7. Environment
+## 9. Environment
 
 - Node v26, npm 11.12 (`/opt/homebrew/bin`)
 - `npm run dev` → localhost:5173
 - `npm run preview` → localhost:4173
-- `git config http.postBuffer 524288000` already set (large reference asset)
-- Worktrees at `.worktrees/feature-b`, `.worktrees/feature-c`, `.worktrees/feature-d`
-
----
-
-## 8. TL;DR for next agent
-
-1. Features A + Live Control + C (Scene Builder) + D (Marketing Shell) are complete.
-2. PR #1 (`feature-b` live control) is open — merge it first.
-3. Then merge `feature-c` and `feature-d`.
-4. Remaining feature: Touch Plate Designer — plan is written, ready to execute.
-5. Read `docs/superpowers/plans/2026-05-15-feature-b-touch-plate.md`.
-6. Create `feature-touch-plate` branch, invoke `superpowers:executing-plans`.
-7. After Touch Plate ships: launch prep (Formspree swap → build → deploy).
+- `git config http.postBuffer 524288000` already set
+- Reference assets: `assets/reference/` — do not modify or stage
