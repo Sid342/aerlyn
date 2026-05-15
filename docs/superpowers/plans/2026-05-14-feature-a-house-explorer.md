@@ -1551,6 +1551,49 @@ git commit -m "feat: export panel with JSON, PDF and email"
 
 ---
 
+### Task 11.5: Catalog expansion + size-aware seeding
+
+Approved scope amendment to Phase 1, implemented before T12 boundary.
+
+**New lighting SKUs (7 added):**
+
+| id | name | defaultRooms |
+|---|---|---|
+| cob-downlight | COB Downlight | living, bedroom, kitchen, bath, entrance |
+| track-light | Track Light | living, kitchen, other |
+| surface-panel | Surface Panel | kitchen, bath, balcony, entrance, other |
+| pendant-light | Pendant Light | living, kitchen |
+| wall-sconce | Wall Sconce | living, bedroom, balcony |
+| profile-light | Profile / Cove LED | living, bedroom |
+| outdoor-light | Outdoor Facade Light | balcony, entrance |
+
+**sizeRule table (qty by room size):**
+
+| id | S | M | L |
+|---|---|---|---|
+| smart-switch | 1 | 2 | 3 |
+| cob-downlight | 2 | 4 | 6 |
+| cct-light | 1 | 1 | 2 |
+| rgbw-strip | 1 | 1 | 2 |
+| profile-light | 1 | 1 | 2 |
+| bldc-fan | 1 | 1 | 2 |
+| curtain | 1 | 1 | 2 |
+
+**sizeWhitelist table (only seeds when room.size matches):**
+
+| id | sizeWhitelist |
+|---|---|
+| track-light | M, L |
+| pendant-light | M, L |
+
+**Note:** `SET_ROOM_SIZE` deliberately does not re-seed — preserves user customisation. homeReducer.js unchanged.
+
+**Files:** `devices.js`, `templates.js`, `devices.test.js`, `templates.test.js`
+
+**Status:** implemented mid-Phase-1, before T12 boundary.
+
+---
+
 ### Task 12: Phase 1 boundary — merge + push
 
 - [ ] **Step 1: Run the full test suite**

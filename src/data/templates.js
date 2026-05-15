@@ -43,13 +43,16 @@ export const TEMPLATES = {
   ],
 };
 
-// devices whose defaultRooms include this roomType, each at qty 1, off
-export function seedDevices(roomType) {
-  return DEVICES.filter((d) => d.defaultRooms.includes(roomType)).map((d) => ({
-    deviceId: d.id,
-    qty: 1,
-    on: false,
-  }));
+// devices whose defaultRooms include this roomType, filtered and qty'd by size
+export function seedDevices(roomType, size) {
+  return DEVICES
+    .filter((d) => d.defaultRooms.includes(roomType))
+    .filter((d) => !d.sizeWhitelist || d.sizeWhitelist.includes(size))
+    .map((d) => ({
+      deviceId: d.id,
+      qty: (d.sizeRule && d.sizeRule[size]) || 1,
+      on: false,
+    }));
 }
 
 let roomCounter = 0;
@@ -64,11 +67,11 @@ export function buildRooms(homeType) {
     name,
     roomType,
     size,
-    devices: seedDevices(roomType),
+    devices: seedDevices(roomType, size),
   }));
 }
 
 // exported for use by the reducer when the user adds a blank room
 export function makeRoom(name, roomType, size = 'M') {
-  return { id: nextId(), name, roomType, size, devices: seedDevices(roomType) };
+  return { id: nextId(), name, roomType, size, devices: seedDevices(roomType, size) };
 }

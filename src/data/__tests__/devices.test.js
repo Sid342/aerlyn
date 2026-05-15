@@ -6,6 +6,9 @@ describe('device catalog', () => {
     const ids = DEVICES.map((d) => d.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
+  it('has 21 devices', () => {
+    expect(DEVICES.length).toBe(21);
+  });
   it('every device has required fields', () => {
     for (const d of DEVICES) {
       expect(d.id && d.name && d.category && d.icon && d.blurb).toBeTruthy();
@@ -17,5 +20,14 @@ describe('device catalog', () => {
   });
   it('getDevice returns undefined for unknown id', () => {
     expect(getDevice('nope')).toBeUndefined();
+  });
+  it('all new T11.5 ids resolve via getDevice', () => {
+    const newIds = [
+      'cob-downlight', 'track-light', 'surface-panel', 'pendant-light',
+      'wall-sconce', 'profile-light', 'outdoor-light',
+    ];
+    for (const id of newIds) {
+      expect(getDevice(id), `getDevice('${id}') should resolve`).toBeDefined();
+    }
   });
 });
