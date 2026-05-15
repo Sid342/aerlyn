@@ -10,6 +10,7 @@ export const SCENES = [
       'geyser': true,
       'bldc-fan': false,
       'rgbw-strip': false,
+      'smart-speaker': false,
     },
   },
   {
@@ -23,6 +24,7 @@ export const SCENES = [
       'curtain': false,
       'bldc-fan': true,
       'ac-ir': true,
+      'smart-speaker': true,
     },
   },
   {
@@ -38,6 +40,7 @@ export const SCENES = [
       'door-lock': true,
       'camera': true,
       'gas-sensor': true,
+      'smart-speaker': false,
     },
   },
 ];

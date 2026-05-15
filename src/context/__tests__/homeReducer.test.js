@@ -72,10 +72,6 @@ describe('homeReducer', () => {
     const s1 = homeReducer(withHome(), actions.setMode('play'));
     expect(s1.mode).toBe('play');
   });
-  it('setFloorPlan stores the image data url', () => {
-    const s1 = homeReducer(withHome(), actions.setFloorPlan('data:image/png;base64,xxx'));
-    expect(s1.floorPlanImage).toBe('data:image/png;base64,xxx');
-  });
   it('reset returns to initialHome', () => {
     const s1 = homeReducer(withHome(), actions.reset());
     expect(s1).toEqual(initialHome);
@@ -176,6 +172,31 @@ describe('homeReducer', () => {
           expect(d).toBe(r0.devices[i]);
         });
       });
+    });
+  });
+
+  describe('APPLY_SCENE_TO_ROOM', () => {
+    it('applies scene only to specified room', () => {
+      const state = {
+        ...initialHome,
+        rooms: [
+          { id: 'r1', name: 'Living', roomType: 'living', size: 'M',
+            devices: [{ deviceId: 'cct-light', qty: 1, on: false }],
+            switchOverrides: { gang: null, fan: null, curtain: null, socket: null } },
+          { id: 'r2', name: 'Bedroom', roomType: 'bedroom', size: 'M',
+            devices: [{ deviceId: 'cct-light', qty: 1, on: false }],
+            switchOverrides: { gang: null, fan: null, curtain: null, socket: null } },
+        ],
+      };
+      const next = homeReducer(state, actions.applySceneToRoom('r1', { 'cct-light': true }));
+      expect(next.rooms[0].devices[0].on).toBe(true);
+      expect(next.rooms[1].devices[0].on).toBe(false);
+    });
+  });
+
+  describe('SET_FLOOR_PLAN removed', () => {
+    it('setFloorPlan action does not exist', () => {
+      expect(actions.setFloorPlan).toBeUndefined();
     });
   });
 });

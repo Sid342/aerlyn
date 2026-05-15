@@ -19,4 +19,12 @@ describe('scene presets', () => {
       }
     }
   });
+  it('movie-night enables smart-speaker', () => {
+    const scene = SCENES.find(s => s.id === 'movie-night');
+    expect(scene.deviceStates['smart-speaker']).toBe(true);
+  });
+  it('good-night disables smart-speaker', () => {
+    const scene = SCENES.find(s => s.id === 'good-night');
+    expect(scene.deviceStates['smart-speaker']).toBe(false);
+  });
 });
