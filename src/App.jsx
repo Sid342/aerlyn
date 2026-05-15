@@ -1,6 +1,7 @@
 import { HomeProvider } from './context/HomeContext.jsx';
 import SiteNav from './features/marketing/SiteNav.jsx';
 import Hero from './features/marketing/Hero.jsx';
+import WhyAutomate from './features/marketing/WhyAutomate.jsx';
 import HomeTypePicker from './features/houseExplorer/HomeTypePicker.jsx';
 import HouseSvg from './features/houseExplorer/HouseSvg.jsx';
 import FloorPlanUpload from './features/houseExplorer/FloorPlanUpload.jsx';
@@ -14,6 +15,7 @@ export default function App() {
     <HomeProvider>
       <SiteNav />
       <Hero />
+      <WhyAutomate />
       <div className="app">
         <header className="app-header">
           <h1>Aerlyn Studio</h1>
