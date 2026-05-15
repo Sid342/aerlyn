@@ -1,4 +1,5 @@
 import RoomCard from '../houseExplorer/RoomCard.jsx';
+import RoomTouchPlate from './RoomTouchPlate.jsx';
 
 export default function RoomDetail({ room }) {
   if (!room) {
@@ -7,6 +8,7 @@ export default function RoomDetail({ room }) {
   return (
     <div className="room-detail">
       <RoomCard room={room} />
+      <RoomTouchPlate room={room} />
     </div>
   );
 }
