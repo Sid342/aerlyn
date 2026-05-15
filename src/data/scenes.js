@@ -1,0 +1,43 @@
+export const SCENES = [
+  {
+    id: 'good-morning',
+    name: 'Good Morning',
+    icon: '\u{1F305}',
+    deviceStates: {
+      'cct-light': true,
+      'usb-charger': true,
+      'curtain': true,
+      'geyser': true,
+      'bldc-fan': false,
+      'rgbw-strip': false,
+    },
+  },
+  {
+    id: 'movie-night',
+    name: 'Movie Night',
+    icon: '\u{1F37F}',
+    deviceStates: {
+      'cct-light': false,
+      'power-socket': false,
+      'rgbw-strip': true,
+      'curtain': false,
+      'bldc-fan': true,
+      'ac-ir': true,
+    },
+  },
+  {
+    id: 'good-night',
+    name: 'Good Night',
+    icon: '\u{1F634}',
+    deviceStates: {
+      'cct-light': false,
+      'usb-charger': false,
+      'rgbw-strip': false,
+      'curtain': false,
+      'bldc-fan': true,
+      'door-lock': true,
+      'camera': true,
+      'gas-sensor': true,
+    },
+  },
+];

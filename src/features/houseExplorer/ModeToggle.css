@@ -1,0 +1,7 @@
+.mode-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.mode-toggle button {
+  background: var(--surface-2); color: var(--text-dim); border: none;
+  padding: 8px 18px; font-size: 0.9rem;
+}
+.mode-toggle button.active { background: var(--teal); color: #04201d; font-weight: 600; }
+.mode-hint { color: var(--text-dim); font-size: 0.85rem; margin-top: 6px; }

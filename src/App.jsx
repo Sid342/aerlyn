@@ -1,6 +1,8 @@
 import { HomeProvider } from './context/HomeContext.jsx';
 import HomeTypePicker from './features/houseExplorer/HomeTypePicker.jsx';
 import HouseSvg from './features/houseExplorer/HouseSvg.jsx';
+import ModeToggle from './features/houseExplorer/ModeToggle.jsx';
+import ScenePresets from './features/houseExplorer/ScenePresets.jsx';
 import RoomList from './features/houseExplorer/RoomList.jsx';
 import ExportPanel from './features/houseExplorer/ExportPanel.jsx';
 
@@ -14,6 +16,8 @@ export default function App() {
         </header>
         <HomeTypePicker />
         <HouseSvg />
+        <ModeToggle />
+        <ScenePresets />
         <RoomList />
         <ExportPanel />
       </div>
