@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import './SiteNav.css';
+import logo from '../../assets/logo.png';
 
 export default function SiteNav() {
   const [open, setOpen] = useState(false);
   return (
     <>
       <nav className="site-nav">
-        <a className="site-nav-logo" href="#hero">Aerlyn</a>
+        <a className="site-nav-logo" href="#hero"><img src={logo} alt="Aerlyn" /></a>
         <ul className="site-nav-links">
           <li><a href="#why" onClick={() => setOpen(false)}>Why Automate</a></li>
           <li><a href="#planner" onClick={() => setOpen(false)}>Planner</a></li>

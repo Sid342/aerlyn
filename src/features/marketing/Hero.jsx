@@ -1,8 +1,10 @@
 import './Hero.css';
+import logo from '../../assets/logo.png';
 
 export default function Hero() {
   return (
     <section id="hero" className="hero-section">
+      <img src={logo} alt="Aerlyn" className="hero-logo" />
       <div className="hero-eyebrow">India's Most Comprehensive Home Automation</div>
       <h1 className="hero-h1">
         Stop doing things<br />
