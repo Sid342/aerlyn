@@ -35,6 +35,14 @@ export default function RoomCard({ room }) {
         </div>
         <button
           type="button"
+          className="room-dup-btn"
+          aria-label={`Duplicate ${room.name}`}
+          onClick={() => dispatch(actions.duplicateRoom(room.id))}
+        >
+          Duplicate
+        </button>
+        <button
+          type="button"
           className="room-remove-btn"
           aria-label={`Remove ${room.name}`}
           onClick={() => {

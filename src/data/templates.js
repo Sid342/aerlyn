@@ -77,3 +77,14 @@ export function buildRooms(homeType) {
 export function makeRoom(name, roomType, size = 'M') {
   return { id: nextId(), name, roomType, size, devices: seedDevices(roomType, size) };
 }
+
+// Clone a room into a new room with a fresh id and " (copy)" suffix on the name.
+// Devices are deep-copied (so toggling the copy's qty/on doesn't affect the original).
+export function cloneRoom(room) {
+  return {
+    ...room,
+    id: nextId(),
+    name: `${room.name} (copy)`,
+    devices: room.devices.map((d) => ({ ...d })),
+  };
+}

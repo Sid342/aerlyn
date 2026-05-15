@@ -1594,6 +1594,23 @@ Approved scope amendment to Phase 1, implemented before T12 boundary.
 
 ---
 
+### Task 11.6: Duplicate room
+
+**Goal:** Add a Duplicate button on each room that clones it (devices, size, name + (copy)) and inserts after the source.
+
+**Files:**
+- `cloneRoom` helper added to `src/data/templates.js`
+- `DUPLICATE_ROOM` reducer case + `duplicateRoom` action creator added to `src/context/homeReducer.js`
+- `Duplicate` button (`.room-dup-btn`) added between size buttons and Remove in `src/features/houseExplorer/RoomCard.jsx`
+- `.room-dup-btn` CSS rule added to `src/features/houseExplorer/RoomCard.css`
+- 6 new reducer tests added to `src/context/__tests__/homeReducer.test.js`
+
+**Decisions:** Devices are deep-copied so mutating the copy doesn't affect the source. Copy is inserted immediately after the source for predictability.
+
+**Status:** implemented mid-Phase-1, before T12 boundary.
+
+---
+
 ### Task 12: Phase 1 boundary — merge + push
 
 - [ ] **Step 1: Run the full test suite**

@@ -81,6 +81,63 @@ describe('homeReducer', () => {
     expect(s1).toEqual(initialHome);
   });
 
+  describe('DUPLICATE_ROOM', () => {
+    it('returns state unchanged when roomId is unknown', () => {
+      const s0 = withHome();
+      const s1 = homeReducer(s0, actions.duplicateRoom('non-existent-id'));
+      expect(s1).toBe(s0);
+    });
+
+    it('inserts the copy directly after the source room, not at the end', () => {
+      const s0 = withHome(); // 2BHK: 6 rooms
+      const sourceIdx = 1;
+      const sourceId = s0.rooms[sourceIdx].id;
+      const s1 = homeReducer(s0, actions.duplicateRoom(sourceId));
+      expect(s1.rooms.length).toBe(s0.rooms.length + 1);
+      expect(s1.rooms[sourceIdx].id).toBe(sourceId);
+      expect(s1.rooms[sourceIdx + 1].name).toContain('(copy)');
+      // room that was at sourceIdx+1 before should now be at sourceIdx+2
+      expect(s1.rooms[sourceIdx + 2].id).toBe(s0.rooms[sourceIdx + 1].id);
+    });
+
+    it("copy's id differs from source's id", () => {
+      const s0 = withHome();
+      const source = s0.rooms[0];
+      const s1 = homeReducer(s0, actions.duplicateRoom(source.id));
+      const copy = s1.rooms[1];
+      expect(copy.id).not.toBe(source.id);
+    });
+
+    it("copy's name is `${source.name} (copy)`", () => {
+      const s0 = withHome();
+      const source = s0.rooms[0];
+      const s1 = homeReducer(s0, actions.duplicateRoom(source.id));
+      const copy = s1.rooms[1];
+      expect(copy.name).toBe(`${source.name} (copy)`);
+    });
+
+    it("copy's devices are a separate array — mutating copy.devices[0].qty doesn't affect source", () => {
+      const s0 = withHome();
+      const source = s0.rooms[0];
+      const s1 = homeReducer(s0, actions.duplicateRoom(source.id));
+      const copy = s1.rooms[1];
+      // ensure they are not the same array reference
+      expect(copy.devices).not.toBe(source.devices);
+      // mutate copy's device qty and verify source is unaffected
+      copy.devices[0].qty = 99;
+      expect(s1.rooms[0].devices[0].qty).not.toBe(99);
+    });
+
+    it("copy's size and roomType match the source", () => {
+      const s0 = withHome();
+      const source = s0.rooms[0];
+      const s1 = homeReducer(s0, actions.duplicateRoom(source.id));
+      const copy = s1.rooms[1];
+      expect(copy.size).toBe(source.size);
+      expect(copy.roomType).toBe(source.roomType);
+    });
+  });
+
   describe('applyScene', () => {
     // 2BHK template: every room seeds smart-switch; only bath seeds geyser
     it('sets on flag for devices present in the deviceStates map', () => {

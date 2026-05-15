@@ -1,4 +1,4 @@
-import { buildRooms, makeRoom } from '../data/templates.js';
+import { cloneRoom, makeRoom, buildRooms } from '../data/templates.js';
 
 export const initialHome = {
   homeType: null,
@@ -21,6 +21,7 @@ export const actions = {
   setFloorPlan: (image) => ({ type: 'SET_FLOOR_PLAN', image }),
   applyScene: (deviceStates) => ({ type: 'APPLY_SCENE', deviceStates }),
   reset: () => ({ type: 'RESET' }),
+  duplicateRoom: (roomId) => ({ type: 'DUPLICATE_ROOM', roomId }),
 };
 
 // map over rooms, replacing the one matching roomId
@@ -38,6 +39,16 @@ export function homeReducer(state, action) {
 
     case 'REMOVE_ROOM':
       return { ...state, rooms: state.rooms.filter((r) => r.id !== action.roomId) };
+
+    case 'DUPLICATE_ROOM': {
+      const idx = state.rooms.findIndex((r) => r.id === action.roomId);
+      if (idx < 0) return state;
+      const copy = cloneRoom(state.rooms[idx]);
+      // Insert the copy immediately after the original.
+      const next = state.rooms.slice();
+      next.splice(idx + 1, 0, copy);
+      return { ...state, rooms: next };
+    }
 
     case 'RENAME_ROOM':
       return mapRoom(state, action.roomId, (r) => ({ ...r, name: action.name }));

@@ -11,6 +11,11 @@
   width: 32px; height: 32px; border-radius: 8px;
 }
 .room-size-group button.active { border-color: var(--teal); color: var(--teal); }
+.room-dup-btn {
+  background: transparent; border: 1px solid var(--border); color: var(--text-dim);
+  border-radius: 8px; padding: 6px 10px;
+}
+.room-dup-btn:hover { border-color: var(--teal); color: var(--teal); }
 .room-remove-btn {
   background: transparent; border: 1px solid var(--border); color: var(--text-dim);
   border-radius: 8px; padding: 6px 10px;
