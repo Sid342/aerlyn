@@ -1,0 +1,129 @@
+.room-workspace {
+  display: flex;
+  gap: 0;
+  min-height: 500px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 24px 0;
+}
+
+.room-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--surface-2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0;
+}
+
+.sidebar-fp {
+  width: calc(100% - 24px);
+  margin: 0 12px 12px;
+  border-radius: 6px;
+  object-fit: cover;
+  max-height: 100px;
+}
+
+.sidebar-rooms {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar-room {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  transition: background 0.15s;
+}
+
+.sidebar-room:hover { background: var(--card); }
+.sidebar-room.active { background: var(--card); color: var(--fg); font-weight: 500; }
+
+.sidebar-badge {
+  font-size: 0.75rem;
+  color: var(--teal);
+  font-weight: 700;
+}
+
+.sidebar-add-btn {
+  margin: 12px;
+  padding: 8px;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.sidebar-add-btn:hover { border-color: var(--teal); color: var(--teal); }
+
+.sidebar-add-form {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-add-input {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--fg);
+  font-size: 0.85rem;
+}
+
+.sidebar-add-type {
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--fg);
+  font-size: 0.8rem;
+}
+
+.sidebar-add-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.sidebar-add-actions button {
+  flex: 1;
+  padding: 5px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.sidebar-add-actions button:first-child {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.room-detail {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.room-detail-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
