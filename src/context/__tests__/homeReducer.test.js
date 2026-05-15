@@ -187,6 +187,43 @@ describe('homeReducer', () => {
     });
   });
 
+  describe('SET_SCENE_DEVICE_STATE', () => {
+    it('sets a device on/off inside a custom scene', () => {
+      let state = homeReducer(initialHome, { type: 'ADD_CUSTOM_SCENE', payload: { name: 'Test' } });
+      const id = state.customScenes[0].id;
+      state = homeReducer(state, {
+        type: 'SET_SCENE_DEVICE_STATE',
+        payload: { sceneId: id, deviceId: 'cct-light', on: true },
+      });
+      expect(state.customScenes[0].deviceStates['cct-light']).toBe(true);
+    });
+
+    it('updates existing device state', () => {
+      let state = homeReducer(initialHome, { type: 'ADD_CUSTOM_SCENE', payload: { name: 'Test' } });
+      const id = state.customScenes[0].id;
+      state = homeReducer(state, {
+        type: 'SET_SCENE_DEVICE_STATE',
+        payload: { sceneId: id, deviceId: 'cct-light', on: true },
+      });
+      state = homeReducer(state, {
+        type: 'SET_SCENE_DEVICE_STATE',
+        payload: { sceneId: id, deviceId: 'cct-light', on: false },
+      });
+      expect(state.customScenes[0].deviceStates['cct-light']).toBe(false);
+    });
+
+    it('does not mutate other scenes', () => {
+      let state = homeReducer(initialHome, { type: 'ADD_CUSTOM_SCENE', payload: { name: 'A' } });
+      state = homeReducer(state, { type: 'ADD_CUSTOM_SCENE', payload: { name: 'B' } });
+      const idA = state.customScenes[0].id;
+      state = homeReducer(state, {
+        type: 'SET_SCENE_DEVICE_STATE',
+        payload: { sceneId: idA, deviceId: 'cct-light', on: true },
+      });
+      expect(state.customScenes[1].deviceStates['cct-light']).toBeUndefined();
+    });
+  });
+
   describe('applyScene', () => {
     // 2BHK template: every room seeds bldc-fan in living/bedroom; only bath seeds geyser
     it('sets on flag for devices present in the deviceStates map', () => {

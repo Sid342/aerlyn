@@ -143,6 +143,18 @@ export function homeReducer(state, action) {
       };
     }
 
+    case 'SET_SCENE_DEVICE_STATE':
+      return {
+        ...state,
+        customScenes: state.customScenes.map((s) => {
+          if (s.id !== action.payload.sceneId) return s;
+          return {
+            ...s,
+            deviceStates: { ...s.deviceStates, [action.payload.deviceId]: action.payload.on },
+          };
+        }),
+      };
+
     case 'REMOVE_CUSTOM_SCENE':
       return {
         ...state,
