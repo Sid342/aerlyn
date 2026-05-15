@@ -13,9 +13,10 @@ export function HomeProvider({ children }) {
     dispatch({ type: 'RENAME_CUSTOM_SCENE', payload: { id, name } });
   const setSceneDeviceState = (sceneId, deviceId, on) =>
     dispatch({ type: 'SET_SCENE_DEVICE_STATE', payload: { sceneId, deviceId, on } });
+  const mergedActions = { ...actions, addCustomScene, removeCustomScene, renameCustomScene, setSceneDeviceState };
   return (
     <HomeContext.Provider
-      value={{ home, dispatch, actions, addCustomScene, removeCustomScene, renameCustomScene, setSceneDeviceState }}
+      value={{ home, dispatch, actions: mergedActions, addCustomScene, removeCustomScene, renameCustomScene, setSceneDeviceState }}
     >
       {children}
     </HomeContext.Provider>

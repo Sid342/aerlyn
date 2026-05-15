@@ -15,6 +15,7 @@ import RoomList from './features/houseExplorer/RoomList.jsx';
 import RoomDrawer from './features/houseExplorer/RoomDrawer.jsx';
 import ExportPanel from './features/houseExplorer/ExportPanel.jsx';
 import SceneBuilder from './features/sceneBuilder/SceneBuilder.jsx';
+import TouchPlateDesigner from './features/touchPlate/TouchPlateDesigner.jsx';
 
 function AppInner() {
   const [drawerRoomId, setDrawerRoomId] = useState(null);
@@ -37,6 +38,7 @@ function AppInner() {
       <RoomList />
       <ExportPanel />
       <SceneBuilder />
+      <TouchPlateDesigner />
       {drawerRoomId && (
         <RoomDrawer roomId={drawerRoomId} onClose={() => setDrawerRoomId(null)} />
       )}
