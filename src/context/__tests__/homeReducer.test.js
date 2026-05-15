@@ -286,3 +286,32 @@ describe('homeReducer', () => {
     });
   });
 });
+
+describe('SET_FLOOR_PLAN', () => {
+  it('stores image string', () => {
+    const s = homeReducer(initialHome, { type: 'SET_FLOOR_PLAN', img: 'data:img' });
+    expect(s.floorPlanImage).toBe('data:img');
+  });
+  it('clears image when null', () => {
+    const s1 = homeReducer({ ...initialHome, floorPlanImage: 'data:img' }, { type: 'SET_FLOOR_PLAN', img: null });
+    expect(s1.floorPlanImage).toBeNull();
+  });
+});
+
+describe('ADD_CUSTOM_SCENE with roomId', () => {
+  it('stores roomId on scene', () => {
+    const s = homeReducer(initialHome, { type: 'ADD_CUSTOM_SCENE', payload: { roomId: 'r1', name: 'Dinner' } });
+    expect(s.customScenes[0].roomId).toBe('r1');
+    expect(s.customScenes[0].name).toBe('Dinner');
+  });
+});
+
+describe('SET_PLATE_CONFIG', () => {
+  it('sets plateConfig on matching room', () => {
+    const base = homeReducer(initialHome, { type: 'SET_HOME_TYPE', homeType: '1BHK' });
+    const roomId = base.rooms[0].id;
+    const cfg = { model: 'nexus', material: 'black' };
+    const s = homeReducer(base, { type: 'SET_PLATE_CONFIG', roomId, config: cfg });
+    expect(s.rooms[0].plateConfig).toEqual(cfg);
+  });
+});

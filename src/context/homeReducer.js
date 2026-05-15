@@ -6,6 +6,7 @@ export const initialHome = {
   mode: 'build', // 'build' | 'play'
   rooms: [],
   customScenes: [],
+  floorPlanImage: null,
 };
 
 export const actions = {
@@ -144,7 +145,7 @@ export function homeReducer(state, action) {
         ...state,
         customScenes: [
           ...state.customScenes,
-          { id, name: action.payload.name, icon: '✨', deviceStates: {} },
+          { id, roomId: action.payload.roomId, name: action.payload.name, icon: '✨', deviceStates: {} },
         ],
       };
     }
@@ -174,6 +175,12 @@ export function homeReducer(state, action) {
           s.id === action.payload.id ? { ...s, name: action.payload.name } : s
         ),
       };
+    case 'SET_FLOOR_PLAN':
+      return { ...state, floorPlanImage: action.img };
+
+    case 'SET_PLATE_CONFIG':
+      return mapRoom(state, action.roomId, (r) => ({ ...r, plateConfig: action.config }));
+
     case 'RESET':
       return initialHome;
 

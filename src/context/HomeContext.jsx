@@ -5,19 +5,28 @@ const HomeContext = createContext(null);
 
 export function HomeProvider({ children }) {
   const [home, dispatch] = useReducer(homeReducer, initialHome);
-  const addCustomScene = (name) =>
-    dispatch({ type: 'ADD_CUSTOM_SCENE', payload: { name } });
+  const setFloorPlan = (img) => dispatch({ type: 'SET_FLOOR_PLAN', img });
+  const addCustomScene = (roomId, name) =>
+    dispatch({ type: 'ADD_CUSTOM_SCENE', payload: { roomId, name } });
   const removeCustomScene = (id) =>
     dispatch({ type: 'REMOVE_CUSTOM_SCENE', payload: { id } });
   const renameCustomScene = (id, name) =>
     dispatch({ type: 'RENAME_CUSTOM_SCENE', payload: { id, name } });
   const setSceneDeviceState = (sceneId, deviceId, on) =>
     dispatch({ type: 'SET_SCENE_DEVICE_STATE', payload: { sceneId, deviceId, on } });
-  const mergedActions = { ...actions, addCustomScene, removeCustomScene, renameCustomScene, setSceneDeviceState };
+  const setPlateConfig = (roomId, config) =>
+    dispatch({ type: 'SET_PLATE_CONFIG', roomId, config });
+  const mergedActions = {
+    ...actions,
+    setFloorPlan,
+    addCustomScene,
+    removeCustomScene,
+    renameCustomScene,
+    setSceneDeviceState,
+    setPlateConfig,
+  };
   return (
-    <HomeContext.Provider
-      value={{ home, dispatch, actions: mergedActions, addCustomScene, removeCustomScene, renameCustomScene, setSceneDeviceState }}
-    >
+    <HomeContext.Provider value={{ home, dispatch, actions: mergedActions }}>
       {children}
     </HomeContext.Provider>
   );
