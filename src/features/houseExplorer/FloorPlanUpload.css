@@ -1,0 +1,15 @@
+.floorplan { margin-top: 16px; }
+.floorplan-drop {
+  border: 1px dashed var(--border); border-radius: 10px; padding: 20px;
+  text-align: center; color: var(--text-dim); cursor: pointer;
+}
+.floorplan-drop:hover { border-color: var(--teal); color: var(--text); }
+.floorplan-preview { margin-top: 12px; position: relative; }
+.floorplan-preview img {
+  max-width: 100%; border-radius: 10px; border: 1px solid var(--border); display: block;
+}
+.floorplan-clear {
+  margin-top: 8px; background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); border-radius: 8px; padding: 6px 12px; cursor: pointer;
+}
+.floorplan-clear:hover { border-color: var(--rose); color: var(--rose); }
