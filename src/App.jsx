@@ -1,5 +1,11 @@
 import { useState } from 'react';
 import { HomeProvider } from './context/HomeContext.jsx';
+import SiteNav from './features/marketing/SiteNav.jsx';
+import Hero from './features/marketing/Hero.jsx';
+import WhyAutomate from './features/marketing/WhyAutomate.jsx';
+import DayInLife from './features/marketing/DayInLife.jsx';
+import HowItWorks from './features/marketing/HowItWorks.jsx';
+import ContactCTA from './features/marketing/ContactCTA.jsx';
 import HomeTypePicker from './features/houseExplorer/HomeTypePicker.jsx';
 import HouseSvg from './features/houseExplorer/HouseSvg.jsx';
 import FloorPlanUpload from './features/houseExplorer/FloorPlanUpload.jsx';
@@ -41,7 +47,15 @@ function AppInner() {
 export default function App() {
   return (
     <HomeProvider>
-      <AppInner />
+      <SiteNav />
+      <Hero />
+      <WhyAutomate />
+      <DayInLife />
+      <section id="planner" style={{ padding: '80px 0 40px' }}>
+        <AppInner />
+      </section>
+      <HowItWorks />
+      <ContactCTA />
     </HomeProvider>
   );
 }
