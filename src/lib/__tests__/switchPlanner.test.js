@@ -68,16 +68,24 @@ describe('switchPlanner', () => {
       expect(recommendPlates(2)).toEqual({ plates: [2], spareModules: 0 });
     });
 
-    it('recommendPlates(5) → [4, 2], spareModules: 1', () => {
-      expect(recommendPlates(5)).toEqual({ plates: [4, 2], spareModules: 1 });
+    it('recommendPlates(3) → [4], spareModules: 1', () => {
+      expect(recommendPlates(3)).toEqual({ plates: [4], spareModules: 1 });
     });
 
-    it('recommendPlates(9) → [8, 2], spareModules: 1', () => {
-      expect(recommendPlates(9)).toEqual({ plates: [8, 2], spareModules: 1 });
+    it('recommendPlates(5) → [6], spareModules: 1', () => {
+      expect(recommendPlates(5)).toEqual({ plates: [6], spareModules: 1 });
     });
 
-    it('recommendPlates(10) → [8, 2], spareModules: 0', () => {
-      expect(recommendPlates(10)).toEqual({ plates: [8, 2], spareModules: 0 });
+    it('recommendPlates(9) → [12], spareModules: 3', () => {
+      expect(recommendPlates(9)).toEqual({ plates: [12], spareModules: 3 });
+    });
+
+    it('recommendPlates(10) → [12], spareModules: 2', () => {
+      expect(recommendPlates(10)).toEqual({ plates: [12], spareModules: 2 });
+    });
+
+    it('recommendPlates(11) → [12], spareModules: 1', () => {
+      expect(recommendPlates(11)).toEqual({ plates: [12], spareModules: 1 });
     });
 
     it('recommendPlates(13) → [12, 2], spareModules: 1', () => {

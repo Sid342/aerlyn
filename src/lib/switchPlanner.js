@@ -14,25 +14,20 @@ export function computeRoomPoints(room) {
   return { ...tally, total, byType: { ...tally } };
 }
 
-// Greedy plate selection from standard Indian modular sizes.
-const PLATE_SIZES = [12, 8, 6, 4, 2];
+// Smallest-fit plate selection from standard Indian modular sizes.
+const PLATE_SIZES_ASC = [2, 4, 6, 8, 12];
 export function recommendPlates(total) {
-  if (total <= 0) return { plates: [], spareModules: 0 };
+  if (total === 0) return { plates: [], spareModules: 0 };
   const plates = [];
   let remaining = total;
   while (remaining > 0) {
-    const fit = PLATE_SIZES.find((s) => s <= remaining);
-    if (fit) {
-      plates.push(fit);
-      remaining -= fit;
-    } else {
-      // remaining === 1 — pad with a 2-module plate, 1 spare
-      plates.push(2);
-      remaining = 0;
-    }
+    if (remaining === 1) remaining = 2; // pad lone remainder to smallest plate
+    const fit = PLATE_SIZES_ASC.find((s) => s >= remaining) ?? 12;
+    plates.push(fit);
+    remaining -= fit;
   }
-  const spareModules = plates.reduce((a, b) => a + b, 0) - total;
-  return { plates, spareModules };
+  const capacity = plates.reduce((a, b) => a + b, 0);
+  return { plates, spareModules: capacity - total };
 }
 
 // Convenience composition.

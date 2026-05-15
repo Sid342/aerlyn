@@ -1,6 +1,5 @@
 import jsPDF from 'jspdf';
 import { buildExportPayload } from './exportJson.js';
-import { planRoom } from './switchPlanner.js';
 
 // Render a readable room-by-room summary PDF and trigger a download.
 export function downloadPdf(home) {
@@ -21,9 +20,7 @@ export function downloadPdf(home) {
   pdf.text(`Generated: ${new Date(payload.exportedAt).toLocaleString()}`, left, y);
   y += 8;
 
-  for (let i = 0; i < payload.rooms.length; i++) {
-    const room = payload.rooms[i];
-    const rawRoom = home.rooms[i];
+  for (const room of payload.rooms) {
     if (y > 270) {
       pdf.addPage();
       y = 18;
@@ -36,7 +33,7 @@ export function downloadPdf(home) {
     pdf.setFontSize(10);
 
     // Switch plan summary
-    const sp = planRoom(rawRoom);
+    const sp = room.switchPlan;
     if (sp.total > 0) {
       const breakdown = `   Switch plan: ${sp.gang} gangs · ${sp.fan} fan · ${sp.curtain} curtain · ${sp.socket} sockets = ${sp.total} modules`;
       pdf.text(breakdown, left, y);
