@@ -18,10 +18,10 @@ export default function SwitchPlanCard({ room }) {
     <div className="switch-plan">
       <div className="switch-plan-title">Switch plan</div>
       <ul className="switch-plan-breakdown">
-        <li><span>Light gangs</span><span className="num">{plan.gang}</span></li>
-        <li><span>Fan regulators</span><span className="num">{plan.fan}</span></li>
-        <li><span>Curtain switches</span><span className="num">{plan.curtain}</span></li>
-        <li><span>Charging sockets</span><span className="num">{plan.socket}</span></li>
+        {plan.gang > 0 && <li><span>Light gangs</span><span className="num">{plan.gang}</span></li>}
+        {plan.fan > 0 && <li><span>Fan regulators</span><span className="num">{plan.fan}</span></li>}
+        {plan.curtain > 0 && <li><span>Curtain switches</span><span className="num">{plan.curtain}</span></li>}
+        {plan.socket > 0 && <li><span>Charging sockets</span><span className="num">{plan.socket}</span></li>}
         <li className="switch-plan-total"><span>Total modules</span><span className="num">{plan.total}</span></li>
       </ul>
       <div className="switch-plan-rec">

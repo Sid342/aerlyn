@@ -28,7 +28,7 @@ export default function DeviceRow({ roomId, device }) {
     <div className="device-row">
       <span className="device-icon">{meta.icon}</span>
       <span className="device-name">
-        {meta.name} <span className="device-cat">· {meta.category}</span>
+        {meta.name}
       </span>
       <div className="qty-stepper">
         <button
