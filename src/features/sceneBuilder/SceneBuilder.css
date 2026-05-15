@@ -1,0 +1,34 @@
+.scene-builder { padding: 24px 0; }
+.scene-builder h2 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--fg); margin: 0 0 4px; }
+.scene-builder .sb-sub { font-size: 0.82rem; color: var(--muted); margin: 0 0 20px; }
+
+.sb-section-label { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--teal); font-weight: 600; margin: 24px 0 10px; }
+
+.sb-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+
+.sb-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+.sb-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.sb-card-icon { font-size: 1.5rem; }
+.sb-card-name { font-weight: 600; font-size: 0.95rem; color: var(--fg); flex: 1; }
+.sb-card-name input { background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--fg); font-size: 0.95rem; font-weight: 600; width: 100%; outline: none; padding: 2px 0; }
+
+.sb-device-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; color: var(--muted); }
+.sb-device-row:last-child { border-bottom: none; }
+.sb-device-name { flex: 1; }
+.sb-device-state { font-weight: 600; }
+.sb-device-state.on { color: var(--teal); }
+.sb-device-state.off { color: var(--muted); }
+
+.sb-device-toggle { background: none; border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; cursor: pointer; color: var(--muted); transition: all 0.15s; }
+.sb-device-toggle[aria-pressed="true"] { background: var(--teal); border-color: var(--teal); color: #000; }
+
+.sb-remove-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.8rem; padding: 4px 8px; border-radius: 8px; margin-top: 10px; }
+.sb-remove-btn:hover { color: var(--rose, #F43F5E); }
+
+.sb-add-form { display: flex; gap: 8px; margin-top: 8px; }
+.sb-add-input { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; color: var(--fg); font-size: 0.9rem; outline: none; }
+.sb-add-input:focus { border-color: var(--teal); }
+.sb-add-btn { background: var(--teal); color: #000; border: none; border-radius: 10px; padding: 8px 16px; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+
+.sb-export-row { margin-top: 20px; display: flex; justify-content: flex-end; }
+.sb-export-btn { background: var(--teal); color: #000; border: none; border-radius: 10px; padding: 10px 20px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }

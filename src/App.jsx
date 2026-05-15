@@ -6,6 +6,7 @@ import ModeToggle from './features/houseExplorer/ModeToggle.jsx';
 import ScenePresets from './features/houseExplorer/ScenePresets.jsx';
 import RoomList from './features/houseExplorer/RoomList.jsx';
 import ExportPanel from './features/houseExplorer/ExportPanel.jsx';
+import SceneBuilder from './features/sceneBuilder/SceneBuilder.jsx';
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
         <ScenePresets />
         <RoomList />
         <ExportPanel />
+        <SceneBuilder />
       </div>
     </HomeProvider>
   );
