@@ -34,4 +34,32 @@ describe('buildExportPayload', () => {
     const p = buildExportPayload(sampleHome());
     expect(() => new Date(p.exportedAt).toISOString()).not.toThrow();
   });
+  it('falls back to deviceId and Unknown category for an unknown deviceId', () => {
+    const home = {
+      ...initialHome,
+      homeType: '1BHK',
+      rooms: [
+        {
+          id: 'r1',
+          name: 'Test',
+          roomType: 'other',
+          size: 'M',
+          devices: [{ deviceId: 'FAKE-999', qty: 2, on: false }],
+        },
+      ],
+    };
+    const p = buildExportPayload(home);
+    expect(p.rooms[0].devices[0]).toEqual({
+      deviceId: 'FAKE-999',
+      name: 'FAKE-999',
+      category: 'Unknown',
+      qty: 2,
+    });
+  });
+  it('handles an empty home (no rooms, no homeType)', () => {
+    const p = buildExportPayload(initialHome);
+    expect(p.schemaVersion).toBe(1);
+    expect(p.homeType).toBeNull();
+    expect(p.rooms).toEqual([]);
+  });
 });
