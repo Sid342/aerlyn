@@ -33,3 +33,10 @@
 .switch-plan-rec { color: var(--text-dim); font-size: 0.85rem; }
 .switch-plan-rec strong { color: var(--teal); font-weight: 600; }
 .switch-plan-rec .spare { color: var(--amber); margin-left: 6px; }
+.switch-override-input {
+  width: 44px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; color: var(--text); font-size: 0.85rem;
+  text-align: center; padding: 1px 4px;
+}
+.switch-override-input:focus { border-color: var(--teal); outline: none; }
+.switch-override-input::placeholder { color: var(--text-dim); }

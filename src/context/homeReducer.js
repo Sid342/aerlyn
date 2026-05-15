@@ -1,4 +1,5 @@
 import { cloneRoom, makeRoom, buildRooms } from '../data/templates.js';
+import { getDevice } from '../data/devices.js';
 
 export const initialHome = {
   homeType: null,
@@ -17,6 +18,7 @@ export const actions = {
   removeDevice: (roomId, deviceId) => ({ type: 'REMOVE_DEVICE', roomId, deviceId }),
   setDeviceQty: (roomId, deviceId, qty) => ({ type: 'SET_DEVICE_QTY', roomId, deviceId, qty }),
   toggleDevice: (roomId, deviceId) => ({ type: 'TOGGLE_DEVICE', roomId, deviceId }),
+  setSwitchOverride: (roomId, overrideType, value) => ({ type: 'SET_SWITCH_OVERRIDE', roomId, overrideType, value }),
   setMode: (mode) => ({ type: 'SET_MODE', mode }),
   setFloorPlan: (image) => ({ type: 'SET_FLOOR_PLAN', image }),
   applyScene: (deviceStates) => ({ type: 'APPLY_SCENE', deviceStates }),
@@ -54,7 +56,15 @@ export function homeReducer(state, action) {
       return mapRoom(state, action.roomId, (r) => ({ ...r, name: action.name }));
 
     case 'SET_ROOM_SIZE':
-      return mapRoom(state, action.roomId, (r) => ({ ...r, size: action.size }));
+      return mapRoom(state, action.roomId, (r) => ({
+        ...r,
+        size: action.size,
+        devices: r.devices.map((d) => {
+          const meta = getDevice(d.deviceId);
+          if (!meta || !meta.sizeRule) return d;
+          return { ...d, qty: meta.sizeRule[action.size] ?? 1 };
+        }),
+      }));
 
     case 'ADD_DEVICE':
       return mapRoom(state, action.roomId, (r) => {
@@ -90,6 +100,12 @@ export function homeReducer(state, action) {
         devices: r.devices.map((d) =>
           d.deviceId === action.deviceId ? { ...d, on: !d.on } : d
         ),
+      }));
+
+    case 'SET_SWITCH_OVERRIDE':
+      return mapRoom(state, action.roomId, (r) => ({
+        ...r,
+        switchOverrides: { ...r.switchOverrides, [action.overrideType]: action.value },
       }));
 
     case 'SET_MODE':

@@ -63,6 +63,8 @@ function nextId() {
   return `room-${roomCounter}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
+const DEFAULT_OVERRIDES = { gang: null, fan: null, curtain: null, socket: null };
+
 export function buildRooms(homeType) {
   return (TEMPLATES[homeType] || []).map(([name, roomType, size]) => ({
     id: nextId(),
@@ -70,12 +72,17 @@ export function buildRooms(homeType) {
     roomType,
     size,
     devices: seedDevices(roomType, size),
+    switchOverrides: { ...DEFAULT_OVERRIDES },
   }));
 }
 
 // exported for use by the reducer when the user adds a blank room
 export function makeRoom(name, roomType, size = 'M') {
-  return { id: nextId(), name, roomType, size, devices: seedDevices(roomType, size) };
+  return {
+    id: nextId(), name, roomType, size,
+    devices: seedDevices(roomType, size),
+    switchOverrides: { ...DEFAULT_OVERRIDES },
+  };
 }
 
 // Clone a room into a new room with a fresh id and " (copy)" suffix on the name.
@@ -86,5 +93,6 @@ export function cloneRoom(room) {
     id: nextId(),
     name: `${room.name} (copy)`,
     devices: room.devices.map((d) => ({ ...d })),
+    switchOverrides: { ...(room.switchOverrides || DEFAULT_OVERRIDES) },
   };
 }
