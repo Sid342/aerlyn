@@ -1,0 +1,7 @@
+.scene-presets { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+.scene-btn {
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+  border-radius: 10px; padding: 10px 16px; font-size: 0.92rem; cursor: pointer;
+}
+.scene-btn:hover { border-color: var(--amber); }
+.scene-btn .scene-icon { margin-right: 6px; }
