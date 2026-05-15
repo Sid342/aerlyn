@@ -1,0 +1,15 @@
+.room-scenes { padding: 16px 0; border-top: 1px solid var(--border); }
+.room-scenes h4 { margin: 0 0 12px; font-size: 14px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .05em; }
+.rs-add-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.rs-name-input, .rs-rename-input { flex: 1; padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--fg); font-size: 13px; }
+.rs-add-btn { padding: 6px 14px; border: none; border-radius: 6px; background: var(--teal); color: #fff; font-size: 13px; cursor: pointer; }
+.rs-empty { font-size: 13px; color: var(--text-dim); }
+.rs-scene { margin-bottom: 12px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); }
+.rs-scene-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.rs-scene-name { font-size: 13px; font-weight: 500; cursor: default; user-select: none; }
+.rs-scene-actions { display: flex; gap: 6px; }
+.rs-apply-btn { padding: 3px 10px; border: none; border-radius: 4px; background: var(--teal); color: #fff; font-size: 12px; cursor: pointer; }
+.rs-del-btn { padding: 3px 8px; border: none; border-radius: 4px; background: transparent; color: var(--text-dim); font-size: 14px; cursor: pointer; }
+.rs-device-toggles { display: flex; flex-wrap: wrap; gap: 8px; }
+.rs-dev-toggle { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--fg); cursor: pointer; }
+.rs-no-devices { font-size: 12px; color: var(--text-dim); }
