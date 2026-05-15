@@ -4,6 +4,7 @@ import Hero from './features/marketing/Hero.jsx';
 import WhyAutomate from './features/marketing/WhyAutomate.jsx';
 import DayInLife from './features/marketing/DayInLife.jsx';
 import HowItWorks from './features/marketing/HowItWorks.jsx';
+import ContactCTA from './features/marketing/ContactCTA.jsx';
 import HomeTypePicker from './features/houseExplorer/HomeTypePicker.jsx';
 import HouseSvg from './features/houseExplorer/HouseSvg.jsx';
 import FloorPlanUpload from './features/houseExplorer/FloorPlanUpload.jsx';
@@ -39,6 +40,7 @@ export default function App() {
         </div>
       </section>
       <HowItWorks />
+      <ContactCTA />
     </HomeProvider>
   );
 }

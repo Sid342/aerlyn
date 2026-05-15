@@ -17,7 +17,7 @@ Aerlyn Studio — React + Vite smart-home configurator replacing the legacy `aer
 | **"Live Home Control"** (unplanned extra) | ✅ COMPLETE | `feature-b`, PR #1 open | `docs/superpowers/plans/2026-05-15-feature-b-live-control.md` |
 | **C: Scene Builder** | 🔲 NOT STARTED | — | `docs/superpowers/plans/2026-05-15-feature-c-scene-builder.md` |
 | **B (PRD): Touch Plate Designer** | 🔲 NOT STARTED | — | `docs/superpowers/plans/2026-05-15-feature-b-touch-plate.md` |
-| **D: Marketing Shell** | 🔲 NOT STARTED | — | `docs/superpowers/plans/2026-05-15-feature-d-marketing-shell.md` |
+| **D: Marketing Shell** | ✅ COMPLETE | `feature-d`, tagged `feature-d-marketing-complete` | `docs/superpowers/plans/2026-05-15-feature-d-marketing-shell.md` |
 
 **Recommended build order:**
 1. Merge PR #1 (feature-b → main)
