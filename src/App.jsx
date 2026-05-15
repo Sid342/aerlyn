@@ -1,6 +1,7 @@
 import { HomeProvider } from './context/HomeContext.jsx';
 import HomeTypePicker from './features/houseExplorer/HomeTypePicker.jsx';
 import RoomList from './features/houseExplorer/RoomList.jsx';
+import ExportPanel from './features/houseExplorer/ExportPanel.jsx';
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
         </header>
         <HomeTypePicker />
         <RoomList />
+        <ExportPanel />
       </div>
     </HomeProvider>
   );
