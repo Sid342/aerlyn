@@ -1,9 +1,9 @@
-# Handoff — Aerlyn Studio, Feature A (Interactive House Explorer)
+# Handoff — Aerlyn Studio, Feature B (Live Home Control)
 
 **Date:** 2026-05-15
 **Repo:** `https://github.com/Sid342/aerlyn.git`
 **Main branch:** `main` — tagged `feature-a-complete`
-**All previous branches:** `feature-a/phase-1`, `feature-a/phase-2` (all merged to main)
+**Feature B branch:** `feature-b` — tagged `feature-b-complete`
 
 ---
 
@@ -11,7 +11,7 @@
 
 Aerlyn Studio — a React + Vite smart-home configurator. Three features planned:
 - **A: Interactive House Explorer** — **COMPLETE** (all 23 tasks done across 4 phases)
-- **B: Touch Plate Designer** — not started
+- **B: Live Home Control** — **COMPLETE** (8 tasks, feature-b branch, tagged feature-b-complete)
 - **C: Scene Builder** — not started
 
 Source of truth:
@@ -24,75 +24,84 @@ Reference material (legacy site, source, handoff docx): `assets/reference/` — 
 
 ## 2. Feature A — complete state
 
-**All tests: 69/69 green. Build: clean.**
-
-### Commit log (feature-a — all merged to main, tagged feature-a-complete)
-
-```
-9f94421  feat: device info popover on hover/click (T11.10)
-8c8fe15  feat: per-room switch override inputs in SwitchPlanCard (T11.11)
-0b98afb  feat: collapsible room cards in play mode, trim export status text (T11.12)
-4f821b8  Phase 2 merge: SVG house, device tooltips, switch overrides, collapsible rooms, ambient animation
-12ef95e  feat: SVG house with clickable zones + ambient pulsing animation (T13, T14)
-ba797fd  feat: Build/Play mode toggle + play-mode SVG zone feedback (T16, T17)
-cbf096e  feat: one-tap scene presets in play mode (T18)
-f489ccf  Phase 3 merge: Play mode, scene presets, mode toggle
-bf5947c  feat: floor-plan reference image upload (T20)
-3256a16  feat: brand polish and mobile responsive pass (T22)
-a88c6df  Phase 4 merge: Floor-plan upload, brand polish, mobile responsive
-```
+**Tests: 69/69 green. Build: clean.**
 
 Tags on main: `phase-1-complete`, `phase-2-complete`, `phase-3-complete`, `feature-a-complete`
 
-### Architecture (full final state)
+---
+
+## 3. Feature B — complete state
+
+**Tests: 73/73 green. Build: clean. Branch: `feature-b`. Tag: `feature-b-complete`.**
+
+### What Feature B added
+
+- **Smart Speaker device** — id `smart-speaker`, category Audio, wired into Movie Night / Good Night / Good Morning scenes
+- **Live SVG room cells** — play mode shows up to 3 device icons per room + "{N} on — tap to control" label; cells glow teal when devices are on
+- **RoomDrawer** — bottom sheet slides up on room tap; shows per-device toggles, switchboard summary, per-room scene strip; backdrop tap closes
+- **ScenePresets pill strip** — horizontal scroll, `roomId` prop for per-room vs whole-home scope
+- **FloorPlanUpload removed** — component deleted, `floorPlanImage` removed from state, export payload cleaned
+- **APPLY_SCENE_TO_ROOM** — new reducer action; `SET_FLOOR_PLAN` removed
+- **Mobile breakpoints** — 480px and 360px rules for drawer, SVG, scene strip
+
+### Commit log (feature-b)
+
+```
+815e800  feat: wire RoomDrawer into App; scene strip above SVG; mobile breakpoints  (T7)
+c5390e0  feat: RoomDrawer bottom sheet with device toggles, switchboard, per-room scenes  (T6)
+b430be7  feat: scene strip horizontal scroll; support per-room roomId prop  (T5)
+e8b29a8  fix: add role=button and aria-label to interactive SVG room cells  (T4 fix)
+b01327d  feat: SVG room cells show live device icons in play mode  (T4)
+c738c6b  chore: remove floor plan upload feature  (T3)
+0dc7acc  feat: add applySceneToRoom; remove floorPlan from state  (T2)
+5182085  feat: add smart-speaker device; wire into scenes  (T1)
+```
+
+### Architecture (feature-b final state)
 
 ```
 src/
   main.jsx
-  App.jsx                          HomeProvider > header (with app-intro) > HomeTypePicker >
-                                   HouseSvg > FloorPlanUpload > ModeToggle > ScenePresets >
-                                   RoomList > ExportPanel
-  styles/global.css                --teal #00C8B4, --bg #080810, brand tokens, .card, .app
-                                   + responsive breakpoints @600px / @420px
+  App.jsx                          HomeProvider > AppInner
+                                   AppInner: header > HomeTypePicker > ModeToggle > ScenePresets >
+                                   HouseSvg > RoomList > ExportPanel > RoomDrawer (conditional)
+  styles/global.css                brand tokens + @600px/@420px + @480px/@360px (Feature B)
   data/
-    devices.js                     22 devices — DEVICES[] + getDevice(id)
-    templates.js                   HOME_TYPES, TEMPLATES, seedDevices(), buildRooms(), makeRoom(), cloneRoom()
-                                   All rooms now include switchOverrides: {gang,fan,curtain,socket}
-    scenes.js                      SCENES[] — 3 presets (Good Morning, Movie Night, Good Night)
+    devices.js                     23 devices — smart-speaker added (Audio category)
+    templates.js                   (unchanged from Feature A)
+    scenes.js                      3 scenes — smart-speaker wired into all 3
   context/
-    homeReducer.js                 initialHome, 15 action creators, homeReducer (pure)
-                                   New: setSwitchOverride / SET_SWITCH_OVERRIDE
-    HomeContext.jsx                HomeProvider + useHome() → { home, dispatch, actions }
+    homeReducer.js                 initialHome (no floorPlanImage), 15 action creators
+                                   Removed: setFloorPlan / SET_FLOOR_PLAN
+                                   Added: applySceneToRoom / APPLY_SCENE_TO_ROOM
+    HomeContext.jsx                (unchanged)
   features/houseExplorer/
-    HomeTypePicker.jsx / .css
-    HouseSvg.jsx / .css            Dollhouse SVG: clickable zones, ambient pulse dots,
-                                   play-mode lit zones (teal fill + "N on" label)
-    FloorPlanUpload.jsx / .css     Optional floor-plan image upload; stored as data-URL in home.floorPlanImage
-    ModeToggle.jsx / .css          Build/Play switcher with aria-pressed and mode hint text
-    ScenePresets.jsx / .css        3 preset scene buttons, visible in play mode only
-    RoomList.jsx                   list + add-new-room form
-    RoomCard.jsx / .css            Build mode: name input, S/M/L size picker, Duplicate, Remove, SwitchPlanCard, device list
-                                   Play mode: collapsible (default collapsed), "N on" badge when closed, no editing controls
-    DeviceRow.jsx                  Build mode: icon + name + DeviceInfo tooltip + qty stepper + delete
-                                   Play mode: icon + name×qty + DeviceInfo tooltip + on/off toggle
-    DeviceInfo.jsx / .css          "i" button popover showing device blurb (hover+click)
-    AddDeviceMenu.jsx              <select> filtered to devices not already in room
-    SwitchPlanCard.jsx / .css      Build: editable number inputs (placeholder = auto-derived) per type
-                                   Play: read-only tally + plate recommendation
-                                   Both: hides if total = 0 with no overrides
+    HomeTypePicker.jsx / .css      (unchanged)
+    HouseSvg.jsx / .css            Full rewrite — activeIcons(), layout(), onRoomClick prop
+                                   Play: icons + "N on — tap to control", teal glow, role=button
+                                   Plan: device count only
+    ModeToggle.jsx / .css          (unchanged)
+    ScenePresets.jsx / .css        Horizontal scroll pill strip; roomId prop for per-room scope
+    RoomDrawer.jsx / .css          NEW — bottom sheet; device toggles, switchboard, ScenePresets
+    RoomList.jsx                   (unchanged)
+    RoomCard.jsx / .css            (unchanged)
+    DeviceRow.jsx                  (unchanged)
+    DeviceInfo.jsx / .css          (unchanged)
+    AddDeviceMenu.jsx              (unchanged)
+    SwitchPlanCard.jsx / .css      (unchanged)
   lib/
-    switchPlanner.js               computeRoomPoints(), applyOverrides(), recommendPlates(), planRoom()
-    exportJson.js                  buildExportPayload(), downloadJson()
-    exportPdf.js                   downloadPdf() via jsPDF
-    sendFormspree.js               sendToAerlyn() with try/catch
+    switchPlanner.js               (unchanged — planRoom() called by RoomDrawer)
+    exportJson.js                  floorPlanImage removed from export payload
+    exportPdf.js                   (unchanged)
+    sendFormspree.js               (unchanged)
 ```
 
-### State shape
+### State shape (Feature B)
 
 ```js
 home = {
   homeType: '1BHK' | '2BHK' | '3BHK' | 'Villa' | null,
-  floorPlanImage: string | null,    // base64 data-URL from FileReader
+  // floorPlanImage REMOVED in Feature B
   mode: 'build' | 'play',
   rooms: [
     {
@@ -107,30 +116,25 @@ home = {
 }
 ```
 
-### switchPlanner.js additions
+---
 
-- `applyOverrides(points, overrides)` — merges `room.switchOverrides` on top of auto-derived points. Per-field nullable: null = use auto, number = use that value. Returns merged points with recalculated total.
-- `planRoom(room)` now calls `applyOverrides` automatically.
+## 4. Open items / known gaps
+
+- Formspree endpoint `https://formspree.io/f/mykokrdw` is a placeholder — swap before launch.
+- feature-b branch not yet merged to main — merge on user instruction.
+- RoomDrawer scene strip shows scenes that include devices the room doesn't have (applies silently, no visual mismatch — by design).
 
 ---
 
-## 3. Open items / known gaps
+## 5. Feature C — what's next
 
-None from Feature A. All T11.10 / T11.11 / T11.12 items from Phase 1 handoff are resolved.
+**Scene Builder** — not started. No branch or plan exists yet.
 
-Minor known fact: the Formspree endpoint `https://formspree.io/f/mykokrdw` is a placeholder — swap before launch (noted in-code and PRD §9).
-
----
-
-## 4. Feature B — what's next
-
-**Touch Plate Designer** — not started. No branch or plan exists yet.
-
-Before starting: create a new plan in `docs/superpowers/plans/` following the same format as the Feature A plan.
+Before starting: create a new plan in `docs/superpowers/plans/` following the same format as prior feature plans.
 
 ---
 
-## 5. Workflow
+## 6. Workflow
 
 Follows **superpowers:subagent-driven-development**:
 1. Implementer subagent per task (provide full task text, don't make subagent read plan)
@@ -148,7 +152,7 @@ Follows **superpowers:subagent-driven-development**:
 
 ---
 
-## 6. Environment
+## 7. Environment
 
 - Node v26, npm 11.12 (`/opt/homebrew/bin`)
 - `npm run dev` → localhost:5173 (dev server)
@@ -158,11 +162,12 @@ Follows **superpowers:subagent-driven-development**:
 
 ---
 
-## 7. TL;DR for next agent
+## 8. TL;DR for next agent
 
-1. Feature A is complete — 69/69 tests, build clean, tagged `feature-a-complete`.
-2. Read PRD for Feature B (Touch Plate Designer).
-3. Write a plan in `docs/superpowers/plans/` before starting.
-4. Invoke `superpowers:subagent-driven-development`.
-5. Create a new feature branch, implement per plan, merge at phase boundaries.
-6. Apply UI conventions. Push only on user instruction.
+1. Feature A complete — 69 tests, tagged `feature-a-complete` on main.
+2. Feature B complete — 73 tests, tagged `feature-b-complete` on `feature-b` branch (not yet merged to main).
+3. Next: Feature C (Scene Builder). Read PRD first.
+4. Write a plan in `docs/superpowers/plans/` before coding.
+5. Invoke `superpowers:subagent-driven-development`.
+6. Create a new `feature-c` branch, implement per plan.
+7. Apply UI conventions (type="button", aria-pressed, no TypeScript). Push only on user instruction.
