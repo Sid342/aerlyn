@@ -2,7 +2,7 @@
 
 **Updated:** 2026-05-16
 **Repo:** https://github.com/Sid342/aerlyn
-**Live branch:** `main` — 84/84 tests, build clean
+**Live branch:** `main` — 89/89 tests, build clean
 
 ---
 
@@ -11,12 +11,15 @@
 | Feature | Status | Tests | Notes |
 |---------|--------|-------|-------|
 | A: Interactive House Explorer | ✅ merged to main | — | phases 1–4 complete |
-| Live Home Control (feature-b) | ✅ merged to main | — | smart-speaker, RoomDrawer, scene-to-room |
+| B: Live Home Control | ✅ merged to main | — | smart-speaker, RoomDrawer, scene-to-room |
 | C: Scene Builder | ✅ merged to main | +11 | customScenes CRUD, exportScenesPdf |
 | D: Marketing Shell | ✅ merged to main | — | SiteNav, Hero, WhyAutomate, DayInLife, HowItWorks, ContactCTA, LeadModal |
-| **B (PRD): Touch Plate Designer** | 🔲 NOT STARTED | — | plan written, unblocked |
+| **B (PRD): Touch Plate Designer** | ✅ merged to main | +5 | 8-step wizard, click-to-place slots, PDF export |
 
-**Main: 84/84 tests. Build clean.**
+**Main: 89/89 tests. Build clean. All features complete.**
+
+### Bug fixed this session
+`HomeContext` exposed `addCustomScene`, `removeCustomScene`, `renameCustomScene`, `setSceneDeviceState` at context root only. `SceneBuilder` called them as `actions.X` → silent `undefined` → scene add/remove/rename broken. Fix: merged scene creators into the `actions` object before passing to context. Both `actions.addCustomScene(...)` and destructured `{ addCustomScene }` from `useHome()` now work.
 
 ---
 
@@ -38,6 +41,7 @@
       RoomList
       ExportPanel
       SceneBuilder
+      TouchPlateDesigner              ← new, renders below SceneBuilder
       RoomDrawer (conditional)
   </section>
   <HowItWorks />                       4-step process grid
@@ -69,6 +73,7 @@ src/
   context/
     homeReducer.js           initialHome + homeReducer (pure)
     HomeContext.jsx          HomeProvider + useHome() → { home, dispatch, actions }
+                             actions includes custom scene creators (merged in)
 
   features/
     houseExplorer/
@@ -93,6 +98,21 @@ src/
                                    + Download Scenes PDF button
       SceneBuilder.css
 
+    touchPlate/                    ← new feature
+      TouchPlateDesigner.jsx       8-step wizard shell; local state only (no HomeContext)
+      TouchPlateDesigner.css       .tpd-* tokens; uses --teal/--card/--border/--fg/--muted
+      steps/
+        StepModel.jsx              MODULE_OPTIONS (2/4/6/8/12 module) — resets accessories on change
+        StepMaterial.jsx           MATERIAL_COLORS — 5 swatches with hex
+        StepSize.jsx               Standard (86×86mm) / Slim (86×50mm)
+        StepAccessories.jsx        ACCESSORIES keyed by model; click-to-place into slot grid;
+                                   auto-places at first free contiguous block; remove by ✕
+                                   12-module uses CSS grid 2-row (6 cols) layout
+        StepIcons.jsx              emoji icon picker per switch/fan accessory; toggle off by re-click
+        StepPanel.jsx              Matte / Gloss / Satin
+        StepFrame.jsx              Square / Rounded / Minimal
+        StepExport.jsx             Summary card + Download PDF (calls downloadPlatePdf)
+
     marketing/
       SiteNav.jsx / .css           fixed 56px nav
       Hero.jsx / .css              eyebrow + serif h1 + CTAs + proof stats
@@ -108,12 +128,16 @@ src/
     exportJson.js            buildExportPayload(), downloadJson()
     exportPdf.js             downloadPdf() — jsPDF room-by-room
     exportScenesPdf.js       buildScenesPdfPayload(customScenes), downloadScenesPdf()
+    exportPlatePdf.js        buildPlatePdfPayload(config), downloadPlatePdf(config)
+                             payload: model/material/size/panel/frame + accessories[{name,slots,icon}]
     sendFormspree.js         sendToAerlyn()
 ```
 
 ---
 
 ## 4. State shape
+
+### Home state (HomeContext)
 
 ```js
 home = {
@@ -141,9 +165,27 @@ home = {
 }
 ```
 
+### Touch Plate config (local state in TouchPlateDesigner)
+
+```js
+config = {
+  model: '2 module' | '4 module' | '6 module' | '8 module' | '12 module' | null,
+  maxSlots: number,             // 2/4/6/8/12
+  material: string | null,      // 'Black' | 'Space Grey' | 'Titanium' | 'White' | 'Gray'
+  materialCode: string | null,  // hex
+  size: 'Standard' | 'Slim' | null,
+  accessories: [
+    { id: string, name: string, nodeSize: number, slots: number[] }
+  ],
+  icons: { [accId]: string },   // emoji per accessory id
+  panel: 'Matte' | 'Gloss' | 'Satin' | null,
+  frame: 'Square' | 'Rounded' | 'Minimal' | null,
+}
+```
+
 ---
 
-## 5. Reducer actions
+## 5. Reducer actions (18 total)
 
 | Action | Payload | Effect |
 |--------|---------|--------|
@@ -169,42 +211,33 @@ home = {
 
 ---
 
-## 6. Test suite (84 total)
+## 6. Test suite (89 total)
 
 Run: `npm test -- --run` (Vitest — `--watchAll` not supported)
 
 | File | Tests |
 |------|-------|
-| homeReducer.test.js | 42 — all reducer actions |
-| exportScenesPdf.test.js | 3 — preset/custom labelling |
-| exportJson.test.js | ~10 |
-| switchPlanner.test.js | ~10 |
-| devices.test.js | ~10 |
-| scenes.test.js | ~5 |
-| + feature-b tests | ~4 |
+| homeReducer.test.js | 31 |
+| exportPlatePdf.test.js | 5 — payload shape, icon mapping, null icon, empty accs, ISO date |
+| exportScenesPdf.test.js | 3 |
+| exportJson.test.js | 9 |
+| switchPlanner.test.js | 14 |
+| devices.test.js | 12 |
+| templates.test.js | 10 |
+| scenes.test.js | 5 |
 
 ---
 
-## 7. What's left before launch
+## 7. Launch checklist
 
-### Touch Plate Designer (only remaining feature)
+All features complete. Only pre-launch tasks remain:
 
-Plan: `docs/superpowers/plans/2026-05-15-feature-b-touch-plate.md`
-Source to port: `assets/reference/feturtles_src/StepperComponent.js` (4299 lines, 8-step wizard)
-
-Decisions already locked in the plan:
-- MUI → Aerlyn CSS (no new deps)
-- react-dnd → click-to-place slots (no new deps)
-- New lib: `exportPlatePdf.js`
-- Renders in App.jsx below SceneBuilder (inside `#planner` section)
-
-### Launch checklist
-
-- [ ] Swap Formspree endpoint in `src/features/marketing/LeadModal.jsx` line ~5
+- [ ] Swap Formspree endpoint — `src/features/marketing/LeadModal.jsx` line ~5
       replace `mykokrdw` with production endpoint
-- [ ] `npm run build` → confirm clean
+- [ ] `npm run build` → confirm clean (chunk size warning is pre-existing, not a blocker)
 - [ ] Deploy `dist/` to static host
 - [ ] Smoke-test lead modal on production (verify submission hits Formspree dashboard)
+- [ ] Smoke-test Touch Plate Designer end-to-end → Download PDF on production
 
 ---
 
@@ -216,11 +249,15 @@ Decisions already locked in the plan:
 - `window.confirm` for destructive actions (deliberate)
 - No TypeScript, no Redux
 
+**HomeContext pattern:**
+- `useHome()` returns `{ home, dispatch, actions }` where `actions` is the full merged object
+- Custom scene creators live in both `actions.X` and as direct destructures — both work
+- TouchPlateDesigner is intentionally outside HomeContext — plate config is local/ephemeral
+
 **Git:**
 - New feature → new branch from `main`
 - TDD per task: red → green → commit
 - Push only on explicit user instruction
-- `superpowers:executing-plans` or `superpowers:subagent-driven-development` for implementation
 
 ---
 
