@@ -157,6 +157,36 @@ describe('homeReducer', () => {
     });
   });
 
+  describe('REMOVE_CUSTOM_SCENE', () => {
+    it('removes a scene by id', () => {
+      const base = homeReducer(initialHome, {
+        type: 'ADD_CUSTOM_SCENE',
+        payload: { name: 'Test Scene' },
+      });
+      const id = base.customScenes[0].id;
+      const state = homeReducer(base, { type: 'REMOVE_CUSTOM_SCENE', payload: { id } });
+      expect(state.customScenes).toHaveLength(0);
+    });
+
+    it('leaves other scenes intact', () => {
+      let state = homeReducer(initialHome, { type: 'ADD_CUSTOM_SCENE', payload: { name: 'A' } });
+      state = homeReducer(state, { type: 'ADD_CUSTOM_SCENE', payload: { name: 'B' } });
+      const id = state.customScenes[0].id;
+      state = homeReducer(state, { type: 'REMOVE_CUSTOM_SCENE', payload: { id } });
+      expect(state.customScenes).toHaveLength(1);
+      expect(state.customScenes[0].name).toBe('B');
+    });
+  });
+
+  describe('RENAME_CUSTOM_SCENE', () => {
+    it('updates name of matching scene', () => {
+      let state = homeReducer(initialHome, { type: 'ADD_CUSTOM_SCENE', payload: { name: 'Old' } });
+      const id = state.customScenes[0].id;
+      state = homeReducer(state, { type: 'RENAME_CUSTOM_SCENE', payload: { id, name: 'New' } });
+      expect(state.customScenes[0].name).toBe('New');
+    });
+  });
+
   describe('applyScene', () => {
     // 2BHK template: every room seeds bldc-fan in living/bedroom; only bath seeds geyser
     it('sets on flag for devices present in the deviceStates map', () => {

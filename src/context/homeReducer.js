@@ -143,6 +143,20 @@ export function homeReducer(state, action) {
       };
     }
 
+    case 'REMOVE_CUSTOM_SCENE':
+      return {
+        ...state,
+        customScenes: state.customScenes.filter((s) => s.id !== action.payload.id),
+      };
+
+    case 'RENAME_CUSTOM_SCENE':
+      return {
+        ...state,
+        customScenes: state.customScenes.map((s) =>
+          s.id === action.payload.id ? { ...s, name: action.payload.name } : s
+        ),
+      };
+
     case 'RESET':
       return initialHome;
 
