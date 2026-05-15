@@ -30,8 +30,18 @@ export function recommendPlates(total) {
   return { plates, spareModules: capacity - total };
 }
 
+// Apply per-room overrides (nullable per field) on top of auto-derived points.
+export function applyOverrides(points, overrides = {}) {
+  const result = { ...points };
+  for (const t of ['gang', 'fan', 'curtain', 'socket']) {
+    if (overrides[t] != null) result[t] = Math.max(0, overrides[t] | 0);
+  }
+  result.total = result.gang + result.fan + result.curtain + result.socket;
+  return result;
+}
+
 // Convenience composition.
 export function planRoom(room) {
-  const points = computeRoomPoints(room);
+  const points = applyOverrides(computeRoomPoints(room), room.switchOverrides);
   return { ...points, ...recommendPlates(points.total) };
 }

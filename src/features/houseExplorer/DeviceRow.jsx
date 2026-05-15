@@ -1,5 +1,6 @@
 import { getDevice } from '../../data/devices.js';
 import { useHome } from '../../context/HomeContext.jsx';
+import DeviceInfo from './DeviceInfo.jsx';
 
 export default function DeviceRow({ roomId, device }) {
   const { home, dispatch, actions } = useHome();
@@ -12,6 +13,7 @@ export default function DeviceRow({ roomId, device }) {
         <span className="device-icon">{meta.icon}</span>
         <span className="device-name">
           {meta.name} <span className="device-cat">×{device.qty}</span>
+          {meta.blurb && <DeviceInfo blurb={meta.blurb} />}
         </span>
         <button
           type="button"
@@ -29,6 +31,7 @@ export default function DeviceRow({ roomId, device }) {
       <span className="device-icon">{meta.icon}</span>
       <span className="device-name">
         {meta.name}
+        {meta.blurb && <DeviceInfo blurb={meta.blurb} />}
       </span>
       <div className="qty-stepper">
         <button

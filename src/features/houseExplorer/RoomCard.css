@@ -44,6 +44,17 @@
   background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
   padding: 8px 10px; border-radius: 8px; font-family: var(--font-body);
 }
+.room-name-collapse {
+  background: transparent; border: none; color: var(--text);
+  font-family: var(--font-head); font-size: 1.15rem; padding: 4px 0;
+  display: flex; align-items: center; gap: 8px; flex: 1; text-align: left;
+}
+.room-name-collapse:hover { color: var(--teal); }
+.room-collapse-arrow { color: var(--text-dim); font-size: 0.9rem; }
+.room-on-badge {
+  font-size: 0.72rem; background: var(--teal); color: var(--bg);
+  border-radius: 10px; padding: 1px 7px; font-family: var(--font-body);
+}
 .play-toggle {
   width: 46px; height: 26px; border-radius: 13px; border: 1px solid var(--border);
   background: var(--surface-2); position: relative; transition: background 0.2s;

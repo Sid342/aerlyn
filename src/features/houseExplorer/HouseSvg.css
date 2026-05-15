@@ -1,0 +1,26 @@
+.house-svg-wrap { margin: 16px 0 8px; }
+.house-svg { width: 100%; height: auto; display: block; }
+.house-zone { cursor: pointer; }
+.house-zone-rect {
+  fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.2s, stroke 0.2s;
+}
+.house-zone:hover .house-zone-rect { stroke: var(--teal); }
+.house-zone-label {
+  fill: var(--text-dim); font-family: var(--font-body); font-size: 9px;
+}
+.house-roof { fill: none; stroke: var(--teal); stroke-width: 2; }
+.house-dot { fill: var(--amber); }
+
+@keyframes ambient-glow {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+.house-dot.ambient {
+  animation: ambient-glow 3.2s ease-in-out infinite;
+}
+.house-dot.ambient:nth-of-type(even) { animation-delay: 1.4s; }
+
+.house-zone-rect.active { fill: rgba(0, 200, 180, 0.12); stroke: var(--teal); }
+.house-dot.lit { fill: var(--teal); opacity: 1; animation: none; }
+.house-zone-on-label { fill: var(--teal); font-family: var(--font-body); font-size: 8px; }

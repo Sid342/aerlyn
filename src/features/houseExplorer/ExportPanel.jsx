@@ -24,8 +24,8 @@ export default function ExportPanel() {
       const ok = await sendToAerlyn(home, contact);
       setStatus(
         ok
-          ? { ok: true, msg: 'Sent to Aerlyn. A copy was not downloaded — use the buttons above for that.' }
-          : { ok: false, msg: 'Send failed. Try downloading the file and emailing it.' }
+          ? { ok: true, msg: 'Sent to Aerlyn.' }
+          : { ok: false, msg: 'Send failed. Try downloading instead.' }
       );
     } catch {
       setStatus({ ok: false, msg: 'Network error. Try downloading the file instead.' });
