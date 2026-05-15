@@ -10,6 +10,7 @@
 .export-actions button {
   border-radius: 10px; padding: 12px 20px; font-size: 0.95rem; border: 1px solid var(--border);
 }
+.export-actions button:disabled { opacity: 0.55; cursor: not-allowed; }
 .btn-primary { background: var(--teal); color: #04201d; border-color: var(--teal); font-weight: 600; }
 .btn-secondary { background: var(--surface-2); color: var(--text); }
 .export-status { margin-top: 10px; font-size: 0.9rem; }

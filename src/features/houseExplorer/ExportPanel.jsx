@@ -61,7 +61,12 @@ export default function ExportPanel() {
       </div>
 
       {status && (
-        <div className={`export-status ${status.ok ? 'ok' : 'err'}`}>{status.msg}</div>
+        <div
+          role={status.ok ? 'status' : 'alert'}
+          className={`export-status ${status.ok ? 'ok' : 'err'}`}
+        >
+          {status.msg}
+        </div>
       )}
     </div>
   );
