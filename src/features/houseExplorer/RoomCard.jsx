@@ -1,11 +1,13 @@
 import DeviceRow from './DeviceRow.jsx';
 import AddDeviceMenu from './AddDeviceMenu.jsx';
 import { useHome } from '../../context/HomeContext.jsx';
+import './RoomCard.css';
 
 const SIZES = ['S', 'M', 'L'];
 
 export default function RoomCard({ room }) {
   const { home, dispatch, actions } = useHome();
+  // d.deviceId matches DEVICES[n].id — AddDeviceMenu filters incoming presentIds against device.id
   const presentIds = room.devices.map((d) => d.deviceId);
 
   return (
@@ -34,6 +36,7 @@ export default function RoomCard({ room }) {
         <button
           type="button"
           className="room-remove-btn"
+          aria-label={`Remove ${room.name}`}
           onClick={() => {
             if (window.confirm(`Remove ${room.name}?`)) {
               dispatch(actions.removeRoom(room.id));

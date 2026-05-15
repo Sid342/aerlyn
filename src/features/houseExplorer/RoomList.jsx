@@ -36,6 +36,7 @@ export default function RoomList() {
           <input
             className="room-name-input"
             placeholder="New room name (e.g. Pooja Room)"
+            aria-label="New room name"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && addRoom()}
@@ -43,6 +44,7 @@ export default function RoomList() {
           <select
             value={newType}
             onChange={(e) => setNewType(e.target.value)}
+            aria-label="Room type"
             style={{
               background: 'var(--surface-2)',
               border: '1px solid var(--border)',
