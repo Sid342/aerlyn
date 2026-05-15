@@ -1611,6 +1611,40 @@ Approved scope amendment to Phase 1, implemented before T12 boundary.
 
 ---
 
+### Task 11.8: Switch-plate planner + Power SKUs
+
+**Goal:** Auto-derive switch-plate count from controllable devices per room, display a per-room breakdown card, attach the plan to JSON export, and add USB charger + power socket to the catalog.
+
+**Catalog changes:**
+- Removed: `smart-switch` (derived, not user-selectable)
+- Added: `usb-charger` (USB Charging Socket, Power category), `power-socket` (Power Socket, Power category)
+- Total catalog: 22 devices
+
+**`control` field schema** added to devices.js (documented in file header):
+- `control.type`: `'gang'` | `'fan'` | `'curtain'` | `'socket'`
+- `control.count`: integer modules per unit
+- Omitted on 9 standalone devices: geyser, ac-ir, camera, motion-sensor, gas-sensor, door-lock, energy-meter, scene-remote, voice
+
+**Plate-size algorithm:** Greedy selection from `[12, 8, 6, 4, 2]`. If remaining === 1, pad to a 2-module plate (1 spare). 1-module pads to 2 by design.
+
+**Files affected:**
+- `src/data/devices.js` — remove smart-switch, add control fields, add 2 Power SKUs
+- `src/data/__tests__/devices.test.js` — updated count (22), removed smart-switch asserts, added new SKU + control asserts
+- `src/data/__tests__/templates.test.js` — replaced smart-switch byId refs with usb-charger / power-socket
+- `src/context/__tests__/homeReducer.test.js` — replaced smart-switch applyScene test with bldc-fan
+- `src/lib/switchPlanner.js` — new library: `computeRoomPoints`, `recommendPlates`, `planRoom`
+- `src/lib/__tests__/switchPlanner.test.js` — 12 TDD tests (written before implementation)
+- `src/lib/exportJson.js` — attach `switchPlan` (gang/fan/curtain/socket/total/plates/spareModules) per room
+- `src/lib/__tests__/exportJson.test.js` — assert switchPlan shape + byType stripped
+- `src/lib/exportPdf.js` — print compact switch-plan summary lines after room title
+- `src/features/houseExplorer/SwitchPlanCard.jsx` — new UI card component
+- `src/features/houseExplorer/SwitchPlanCard.css` — card styles
+- `src/features/houseExplorer/RoomCard.jsx` — render SwitchPlanCard after room-card-head
+
+**Status:** implemented mid-Phase-1, before T12 boundary.
+
+---
+
 ### Task 12: Phase 1 boundary — merge + push
 
 - [ ] **Step 1: Run the full test suite**

@@ -62,4 +62,23 @@ describe('buildExportPayload', () => {
     expect(p.homeType).toBeNull();
     expect(p.rooms).toEqual([]);
   });
+  it('each room has switchPlan with expected fields', () => {
+    const p = buildExportPayload(sampleHome());
+    for (const room of p.rooms) {
+      expect(room.switchPlan).toBeDefined();
+      expect(typeof room.switchPlan.gang).toBe('number');
+      expect(typeof room.switchPlan.fan).toBe('number');
+      expect(typeof room.switchPlan.curtain).toBe('number');
+      expect(typeof room.switchPlan.socket).toBe('number');
+      expect(typeof room.switchPlan.total).toBe('number');
+      expect(Array.isArray(room.switchPlan.plates)).toBe(true);
+      expect(typeof room.switchPlan.spareModules).toBe('number');
+    }
+  });
+  it('switchPlan byType is stripped from export payload', () => {
+    const p = buildExportPayload(sampleHome());
+    for (const room of p.rooms) {
+      expect(room.switchPlan.byType).toBeUndefined();
+    }
+  });
 });

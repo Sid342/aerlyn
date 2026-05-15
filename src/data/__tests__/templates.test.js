@@ -28,7 +28,7 @@ describe('templates', () => {
       const seeded = seedDevices('living', 'L');
       const byId = Object.fromEntries(seeded.map((d) => [d.deviceId, d]));
       expect(byId['cob-downlight'].qty).toBe(6);
-      expect(byId['smart-switch'].qty).toBe(3);
+      expect(byId['usb-charger'].qty).toBe(2);
       expect(byId['cct-light'].qty).toBe(2);
       expect(byId['track-light']).toBeDefined();
       expect(byId['pendant-light']).toBeDefined();
@@ -40,7 +40,7 @@ describe('templates', () => {
       expect(byId['track-light']).toBeUndefined();
       expect(byId['pendant-light']).toBeUndefined();
       expect(byId['cob-downlight'].qty).toBe(2);
-      expect(byId['smart-switch'].qty).toBe(1);
+      expect(byId['usb-charger'].qty).toBe(1);
     });
 
     it('seedDevices living M includes whitelisted devices and uses correct qtys', () => {
@@ -48,11 +48,11 @@ describe('templates', () => {
       const byId = Object.fromEntries(seeded.map((d) => [d.deviceId, d]));
       expect(byId['track-light']).toBeDefined();
       expect(byId['pendant-light']).toBeDefined();
-      expect(byId['smart-switch'].qty).toBe(2);
+      expect(byId['usb-charger'].qty).toBe(2);
       expect(byId['cob-downlight'].qty).toBe(4);
     });
 
-    it('buildRooms 3BHK Living Room (L) seeds cob-downlight at qty 6', () => {
+    it('buildRooms 3BHK Living Room (L) seeds cob-downlight at qty 6 and power-socket at qty 4', () => {
       const rooms = buildRooms('3BHK');
       const living = rooms.find((r) => r.name === 'Living Room');
       expect(living).toBeDefined();
@@ -60,6 +60,9 @@ describe('templates', () => {
       const cobDownlight = living.devices.find((d) => d.deviceId === 'cob-downlight');
       expect(cobDownlight).toBeDefined();
       expect(cobDownlight.qty).toBe(6);
+      const powerSocket = living.devices.find((d) => d.deviceId === 'power-socket');
+      expect(powerSocket).toBeDefined();
+      expect(powerSocket.qty).toBe(4);
     });
 
     it('makeRoom forwards size — S "other" room excludes track-light', () => {

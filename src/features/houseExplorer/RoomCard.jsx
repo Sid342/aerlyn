@@ -1,5 +1,6 @@
 import DeviceRow from './DeviceRow.jsx';
 import AddDeviceMenu from './AddDeviceMenu.jsx';
+import SwitchPlanCard from './SwitchPlanCard.jsx';
 import { useHome } from '../../context/HomeContext.jsx';
 import './RoomCard.css';
 
@@ -54,6 +55,8 @@ export default function RoomCard({ room }) {
           Remove
         </button>
       </div>
+
+      <SwitchPlanCard room={room} />
 
       <div style={{ marginTop: 10 }}>
         {room.devices.length === 0 && (

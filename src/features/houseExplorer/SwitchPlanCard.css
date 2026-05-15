@@ -1,0 +1,35 @@
+.switch-plan {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 10px;
+  font-size: 0.85rem;
+}
+.switch-plan-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.switch-plan-breakdown {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 6px;
+}
+.switch-plan-breakdown li {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  color: var(--text-dim);
+}
+.switch-plan-breakdown li .num { font-variant-numeric: tabular-nums; color: var(--text); }
+.switch-plan-total {
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  padding-top: 4px !important;
+  font-weight: 600;
+}
+.switch-plan-total span { color: var(--text) !important; }
+.switch-plan-rec { color: var(--text-dim); font-size: 0.85rem; }
+.switch-plan-rec strong { color: var(--teal); font-weight: 600; }
+.switch-plan-rec .spare { color: var(--amber); margin-left: 6px; }

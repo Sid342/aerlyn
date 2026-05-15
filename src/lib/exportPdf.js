@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import { buildExportPayload } from './exportJson.js';
+import { planRoom } from './switchPlanner.js';
 
 // Render a readable room-by-room summary PDF and trigger a download.
 export function downloadPdf(home) {
@@ -20,7 +21,9 @@ export function downloadPdf(home) {
   pdf.text(`Generated: ${new Date(payload.exportedAt).toLocaleString()}`, left, y);
   y += 8;
 
-  for (const room of payload.rooms) {
+  for (let i = 0; i < payload.rooms.length; i++) {
+    const room = payload.rooms[i];
+    const rawRoom = home.rooms[i];
     if (y > 270) {
       pdf.addPage();
       y = 18;
@@ -31,6 +34,28 @@ export function downloadPdf(home) {
     y += 6;
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(10);
+
+    // Switch plan summary
+    const sp = planRoom(rawRoom);
+    if (sp.total > 0) {
+      const breakdown = `   Switch plan: ${sp.gang} gangs · ${sp.fan} fan · ${sp.curtain} curtain · ${sp.socket} sockets = ${sp.total} modules`;
+      pdf.text(breakdown, left, y);
+      y += 5;
+      const plateParts = Object.entries(
+        sp.plates.reduce((acc, p) => ({ ...acc, [p]: (acc[p] || 0) + 1 }), {})
+      )
+        .sort(([a], [b]) => Number(b) - Number(a))
+        .map(([size, count]) => `${count}× ${size}-mod`)
+        .join(' + ');
+      const spareStr = sp.spareModules > 0 ? ` (spare: ${sp.spareModules})` : '';
+      pdf.text(`   Plates: ${plateParts}${spareStr}`, left, y);
+      y += 5;
+      if (y > 285) {
+        pdf.addPage();
+        y = 18;
+      }
+    }
+
     if (room.devices.length === 0) {
       pdf.text('   — no devices', left, y);
       y += 5;

@@ -139,27 +139,29 @@ describe('homeReducer', () => {
   });
 
   describe('applyScene', () => {
-    // 2BHK template: every room seeds smart-switch; only bath seeds geyser
+    // 2BHK template: every room seeds bldc-fan in living/bedroom; only bath seeds geyser
     it('sets on flag for devices present in the deviceStates map', () => {
       const s0 = withHome('2BHK');
-      // turn smart-switch on everywhere
-      const s1 = homeReducer(s0, actions.applyScene({ 'smart-switch': true }));
-      s1.rooms.forEach((r) => {
-        const sw = r.devices.find((d) => d.deviceId === 'smart-switch');
-        expect(sw).toBeDefined();
-        expect(sw.on).toBe(true);
+      // turn bldc-fan on everywhere it appears
+      const s1 = homeReducer(s0, actions.applyScene({ 'bldc-fan': true }));
+      const roomsWithFan = s1.rooms.filter((r) => r.devices.some((d) => d.deviceId === 'bldc-fan'));
+      expect(roomsWithFan.length).toBeGreaterThan(0);
+      roomsWithFan.forEach((r) => {
+        const fan = r.devices.find((d) => d.deviceId === 'bldc-fan');
+        expect(fan).toBeDefined();
+        expect(fan.on).toBe(true);
       });
     });
 
     it('leaves devices not in the map untouched (same object reference)', () => {
       const s0 = withHome('2BHK');
-      // apply a scene that only touches geyser — smart-switch should be untouched
+      // apply a scene that only touches geyser — bldc-fan should be untouched
       const s1 = homeReducer(s0, actions.applyScene({ 'geyser': true }));
       s1.rooms.forEach((r) => {
-        const sw0 = s0.rooms.find((rx) => rx.id === r.id).devices.find((d) => d.deviceId === 'smart-switch');
-        const sw1 = r.devices.find((d) => d.deviceId === 'smart-switch');
-        // device entry for smart-switch must be the same reference (reducer returns d unchanged)
-        expect(sw1).toBe(sw0);
+        const fan0 = s0.rooms.find((rx) => rx.id === r.id).devices.find((d) => d.deviceId === 'bldc-fan');
+        const fan1 = r.devices.find((d) => d.deviceId === 'bldc-fan');
+        // device entry for bldc-fan must be the same reference (reducer returns d unchanged)
+        expect(fan1).toBe(fan0);
       });
     });
 
