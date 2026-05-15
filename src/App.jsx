@@ -14,6 +14,10 @@ export default function App() {
         <header className="app-header">
           <h1>Aerlyn Studio</h1>
           <p>Interactive House Explorer</p>
+          <p className="app-intro">
+            Build your home room by room, see what automation feels like in Play mode,
+            and send the plan straight to Aerlyn — no guesswork.
+          </p>
         </header>
         <HomeTypePicker />
         <HouseSvg />
