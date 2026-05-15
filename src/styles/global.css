@@ -11,13 +11,19 @@
   --font-head: 'DM Serif Display', Georgia, serif;
   --font-body: 'Outfit', system-ui, sans-serif;
   --font-mono: 'DM Mono', ui-monospace, monospace;
+  /* Aliases for marketing components */
+  --fg: var(--text);
+  --muted: var(--text-dim);
+  --card: var(--surface);
 }
+html { scroll-padding-top: 72px; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  padding-top: 56px;
 }
 h1, h2, h3 { font-family: var(--font-head); font-weight: 400; }
 button { font-family: var(--font-body); cursor: pointer; }
