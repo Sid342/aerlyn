@@ -5,6 +5,7 @@ export const initialHome = {
   homeType: null,
   mode: 'build', // 'build' | 'play'
   rooms: [],
+  customScenes: [],
 };
 
 export const actions = {
@@ -137,6 +138,42 @@ export function homeReducer(state, action) {
       }));
     }
 
+    case 'ADD_CUSTOM_SCENE': {
+      const id = `scene-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+      return {
+        ...state,
+        customScenes: [
+          ...state.customScenes,
+          { id, name: action.payload.name, icon: '✨', deviceStates: {} },
+        ],
+      };
+    }
+
+    case 'SET_SCENE_DEVICE_STATE':
+      return {
+        ...state,
+        customScenes: state.customScenes.map((s) => {
+          if (s.id !== action.payload.sceneId) return s;
+          return {
+            ...s,
+            deviceStates: { ...s.deviceStates, [action.payload.deviceId]: action.payload.on },
+          };
+        }),
+      };
+
+    case 'REMOVE_CUSTOM_SCENE':
+      return {
+        ...state,
+        customScenes: state.customScenes.filter((s) => s.id !== action.payload.id),
+      };
+
+    case 'RENAME_CUSTOM_SCENE':
+      return {
+        ...state,
+        customScenes: state.customScenes.map((s) =>
+          s.id === action.payload.id ? { ...s, name: action.payload.name } : s
+        ),
+      };
     case 'RESET':
       return initialHome;
 

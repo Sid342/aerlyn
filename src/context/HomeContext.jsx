@@ -5,8 +5,18 @@ const HomeContext = createContext(null);
 
 export function HomeProvider({ children }) {
   const [home, dispatch] = useReducer(homeReducer, initialHome);
+  const addCustomScene = (name) =>
+    dispatch({ type: 'ADD_CUSTOM_SCENE', payload: { name } });
+  const removeCustomScene = (id) =>
+    dispatch({ type: 'REMOVE_CUSTOM_SCENE', payload: { id } });
+  const renameCustomScene = (id, name) =>
+    dispatch({ type: 'RENAME_CUSTOM_SCENE', payload: { id, name } });
+  const setSceneDeviceState = (sceneId, deviceId, on) =>
+    dispatch({ type: 'SET_SCENE_DEVICE_STATE', payload: { sceneId, deviceId, on } });
   return (
-    <HomeContext.Provider value={{ home, dispatch, actions }}>
+    <HomeContext.Provider
+      value={{ home, dispatch, actions, addCustomScene, removeCustomScene, renameCustomScene, setSceneDeviceState }}
+    >
       {children}
     </HomeContext.Provider>
   );

@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { HomeProvider } from './context/HomeContext.jsx';
 import HomeTypePicker from './features/houseExplorer/HomeTypePicker.jsx';
 import HouseSvg from './features/houseExplorer/HouseSvg.jsx';
+import FloorPlanUpload from './features/houseExplorer/FloorPlanUpload.jsx';
 import ModeToggle from './features/houseExplorer/ModeToggle.jsx';
 import ScenePresets from './features/houseExplorer/ScenePresets.jsx';
 import RoomList from './features/houseExplorer/RoomList.jsx';
 import RoomDrawer from './features/houseExplorer/RoomDrawer.jsx';
 import ExportPanel from './features/houseExplorer/ExportPanel.jsx';
+import SceneBuilder from './features/sceneBuilder/SceneBuilder.jsx';
 
 function AppInner() {
   const [drawerRoomId, setDrawerRoomId] = useState(null);
@@ -22,11 +24,13 @@ function AppInner() {
         </p>
       </header>
       <HomeTypePicker />
+      <HouseSvg onRoomClick={(id) => setDrawerRoomId(id)} />
+      <FloorPlanUpload />
       <ModeToggle />
       <ScenePresets />
-      <HouseSvg onRoomClick={(id) => setDrawerRoomId(id)} />
       <RoomList />
       <ExportPanel />
+      <SceneBuilder />
       {drawerRoomId && (
         <RoomDrawer roomId={drawerRoomId} onClose={() => setDrawerRoomId(null)} />
       )}
