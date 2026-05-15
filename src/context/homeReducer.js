@@ -6,6 +6,7 @@ export const initialHome = {
   floorPlanImage: null,
   mode: 'build', // 'build' | 'play'
   rooms: [],
+  customScenes: [],
 };
 
 export const actions = {
@@ -128,6 +129,17 @@ export function homeReducer(state, action) {
               : { ...d, on: deviceStates[d.deviceId] }
           ),
         })),
+      };
+    }
+
+    case 'ADD_CUSTOM_SCENE': {
+      const id = `scene-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+      return {
+        ...state,
+        customScenes: [
+          ...state.customScenes,
+          { id, name: action.payload.name, icon: '✨', deviceStates: {} },
+        ],
       };
     }
 

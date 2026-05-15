@@ -138,6 +138,25 @@ describe('homeReducer', () => {
     });
   });
 
+  // --- customScenes ---
+  describe('ADD_CUSTOM_SCENE', () => {
+    it('adds a scene with given name and empty deviceStates', () => {
+      const state = homeReducer(initialHome, {
+        type: 'ADD_CUSTOM_SCENE',
+        payload: { name: 'Dinner Party' },
+      });
+      expect(state.customScenes).toHaveLength(1);
+      expect(state.customScenes[0].name).toBe('Dinner Party');
+      expect(state.customScenes[0].deviceStates).toEqual({});
+      expect(state.customScenes[0].id).toMatch(/^scene-/);
+      expect(state.customScenes[0].icon).toBe('✨');
+    });
+
+    it('initialHome has empty customScenes array', () => {
+      expect(initialHome.customScenes).toEqual([]);
+    });
+  });
+
   describe('applyScene', () => {
     // 2BHK template: every room seeds bldc-fan in living/bedroom; only bath seeds geyser
     it('sets on flag for devices present in the deviceStates map', () => {
