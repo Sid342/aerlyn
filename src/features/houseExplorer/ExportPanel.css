@@ -1,0 +1,19 @@
+.export-panel { margin-top: 24px; }
+.export-panel h3 { margin-bottom: 4px; }
+.export-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+.export-fields input, .export-fields textarea {
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+  border-radius: 8px; padding: 10px; font-family: var(--font-body); width: 100%;
+}
+.export-fields textarea { grid-column: 1 / -1; resize: vertical; min-height: 60px; }
+.export-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.export-actions button {
+  border-radius: 10px; padding: 12px 20px; font-size: 0.95rem; border: 1px solid var(--border);
+}
+.export-actions button:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-primary { background: var(--teal); color: #04201d; border-color: var(--teal); font-weight: 600; }
+.btn-secondary { background: var(--surface-2); color: var(--text); }
+.export-status { margin-top: 10px; font-size: 0.9rem; }
+.export-status.ok { color: var(--teal); }
+.export-status.err { color: var(--rose); }
+@media (max-width: 600px) { .export-fields { grid-template-columns: 1fr; } }

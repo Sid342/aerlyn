@@ -1551,6 +1551,100 @@ git commit -m "feat: export panel with JSON, PDF and email"
 
 ---
 
+### Task 11.5: Catalog expansion + size-aware seeding
+
+Approved scope amendment to Phase 1, implemented before T12 boundary.
+
+**New lighting SKUs (7 added):**
+
+| id | name | defaultRooms |
+|---|---|---|
+| cob-downlight | COB Downlight | living, bedroom, kitchen, bath, entrance |
+| track-light | Track Light | living, kitchen, other |
+| surface-panel | Surface Panel | kitchen, bath, balcony, entrance, other |
+| pendant-light | Pendant Light | living, kitchen |
+| wall-sconce | Wall Sconce | living, bedroom, balcony |
+| profile-light | Profile / Cove LED | living, bedroom |
+| outdoor-light | Outdoor Facade Light | balcony, entrance |
+
+**sizeRule table (qty by room size):**
+
+| id | S | M | L |
+|---|---|---|---|
+| smart-switch | 1 | 2 | 3 |
+| cob-downlight | 2 | 4 | 6 |
+| cct-light | 1 | 1 | 2 |
+| rgbw-strip | 1 | 1 | 2 |
+| profile-light | 1 | 1 | 2 |
+| bldc-fan | 1 | 1 | 2 |
+| curtain | 1 | 1 | 2 |
+
+**sizeWhitelist table (only seeds when room.size matches):**
+
+| id | sizeWhitelist |
+|---|---|
+| track-light | M, L |
+| pendant-light | M, L |
+
+**Note:** `SET_ROOM_SIZE` deliberately does not re-seed — preserves user customisation. homeReducer.js unchanged.
+
+**Files:** `devices.js`, `templates.js`, `devices.test.js`, `templates.test.js`
+
+**Status:** implemented mid-Phase-1, before T12 boundary.
+
+---
+
+### Task 11.6: Duplicate room
+
+**Goal:** Add a Duplicate button on each room that clones it (devices, size, name + (copy)) and inserts after the source.
+
+**Files:**
+- `cloneRoom` helper added to `src/data/templates.js`
+- `DUPLICATE_ROOM` reducer case + `duplicateRoom` action creator added to `src/context/homeReducer.js`
+- `Duplicate` button (`.room-dup-btn`) added between size buttons and Remove in `src/features/houseExplorer/RoomCard.jsx`
+- `.room-dup-btn` CSS rule added to `src/features/houseExplorer/RoomCard.css`
+- 6 new reducer tests added to `src/context/__tests__/homeReducer.test.js`
+
+**Decisions:** Devices are deep-copied so mutating the copy doesn't affect the source. Copy is inserted immediately after the source for predictability.
+
+**Status:** implemented mid-Phase-1, before T12 boundary.
+
+---
+
+### Task 11.8: Switch-plate planner + Power SKUs
+
+**Goal:** Auto-derive switch-plate count from controllable devices per room, display a per-room breakdown card, attach the plan to JSON export, and add USB charger + power socket to the catalog.
+
+**Catalog changes:**
+- Removed: `smart-switch` (derived, not user-selectable)
+- Added: `usb-charger` (USB Charging Socket, Power category), `power-socket` (Power Socket, Power category)
+- Total catalog: 22 devices
+
+**`control` field schema** added to devices.js (documented in file header):
+- `control.type`: `'gang'` | `'fan'` | `'curtain'` | `'socket'`
+- `control.count`: integer modules per unit
+- Omitted on 9 standalone devices: geyser, ac-ir, camera, motion-sensor, gas-sensor, door-lock, energy-meter, scene-remote, voice
+
+**Plate-size algorithm:** Greedy selection from `[12, 8, 6, 4, 2]`. If remaining === 1, pad to a 2-module plate (1 spare). 1-module pads to 2 by design.
+
+**Files affected:**
+- `src/data/devices.js` — remove smart-switch, add control fields, add 2 Power SKUs
+- `src/data/__tests__/devices.test.js` — updated count (22), removed smart-switch asserts, added new SKU + control asserts
+- `src/data/__tests__/templates.test.js` — replaced smart-switch byId refs with usb-charger / power-socket
+- `src/context/__tests__/homeReducer.test.js` — replaced smart-switch applyScene test with bldc-fan
+- `src/lib/switchPlanner.js` — new library: `computeRoomPoints`, `recommendPlates`, `planRoom`
+- `src/lib/__tests__/switchPlanner.test.js` — 12 TDD tests (written before implementation)
+- `src/lib/exportJson.js` — attach `switchPlan` (gang/fan/curtain/socket/total/plates/spareModules) per room
+- `src/lib/__tests__/exportJson.test.js` — assert switchPlan shape + byType stripped
+- `src/lib/exportPdf.js` — print compact switch-plan summary lines after room title
+- `src/features/houseExplorer/SwitchPlanCard.jsx` — new UI card component
+- `src/features/houseExplorer/SwitchPlanCard.css` — card styles
+- `src/features/houseExplorer/RoomCard.jsx` — render SwitchPlanCard after room-card-head
+
+**Status:** implemented mid-Phase-1, before T12 boundary.
+
+---
+
 ### Task 12: Phase 1 boundary — merge + push
 
 - [ ] **Step 1: Run the full test suite**
