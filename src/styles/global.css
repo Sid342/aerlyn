@@ -44,3 +44,15 @@ button { font-family: var(--font-body); cursor: pointer; }
   .htp { flex-direction: column; }
   .htp-btn { width: 100%; }
 }
+
+/* Mobile — drawer + SVG + scene strip */
+@media (max-width: 480px) {
+  .house-svg-wrap { margin: 8px 0 4px; }
+  .scene-pills { gap: 6px; }
+  .scene-btn { padding: 5px 10px; font-size: 12px; }
+  .drawer { max-height: 72vh; }
+  h1 { font-size: 22px; }
+}
+@media (max-width: 360px) {
+  .scene-btn { padding: 4px 8px; font-size: 11px; }
+}
