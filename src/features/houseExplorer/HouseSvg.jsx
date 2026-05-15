@@ -57,6 +57,7 @@ export default function HouseSvg({ onRoomClick }) {
               className="house-zone"
               onClick={() => isPlay && onRoomClick && onRoomClick(room.id)}
               style={{ cursor: isPlay ? 'pointer' : 'default' }}
+              {...(isPlay ? { role: 'button', 'aria-label': `Control ${room.name}` } : {})}
             >
               <rect
                 className={`house-zone-rect${isLit ? ' active' : ''}`}
