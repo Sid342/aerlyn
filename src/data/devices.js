@@ -51,7 +51,7 @@ export const DEVICES = [
     blurb: 'Works with Alexa, Google, and Siri — just say it.',
     defaultRooms: ['living', 'bedroom'] },
   // --- New lighting SKUs (T11.5) ---
-  { id: 'cob-downlight', name: 'COB Downlight', category: 'Lighting', icon: '\u{1F525}',
+  { id: 'cob-downlight', name: 'COB Downlight', category: 'Lighting', icon: '\u{1F7E1}',
     blurb: 'Recessed ceiling spots — even, glare-free task light.',
     defaultRooms: ['living', 'bedroom', 'kitchen', 'bath', 'entrance'],
     sizeRule: { S: 2, M: 4, L: 6 } },
@@ -62,7 +62,7 @@ export const DEVICES = [
   { id: 'surface-panel', name: 'Surface Panel', category: 'Lighting', icon: '\u{1F532}',
     blurb: 'Flush ceiling panel — uniform glare-free light for utility spaces.',
     defaultRooms: ['kitchen', 'bath', 'balcony', 'entrance', 'other'] },
-  { id: 'pendant-light', name: 'Pendant Light', category: 'Lighting', icon: '\u{1F4A1}',
+  { id: 'pendant-light', name: 'Pendant Light', category: 'Lighting', icon: '\u{1FA94}',
     blurb: 'Hanging fixture for dining tables and kitchen islands.',
     defaultRooms: ['living', 'kitchen'],
     sizeWhitelist: ['M', 'L'] },

@@ -43,14 +43,16 @@ export const TEMPLATES = {
   ],
 };
 
-// devices whose defaultRooms include this roomType, filtered and qty'd by size
+// devices whose defaultRooms include this roomType, filtered and qty'd by size.
+// sizeWhitelist: missing or empty array = seed at all sizes.
+// sizeRule[size]: nullish = qty 1 (a literal 0 is honoured as qty 0).
 export function seedDevices(roomType, size) {
   return DEVICES
     .filter((d) => d.defaultRooms.includes(roomType))
-    .filter((d) => !d.sizeWhitelist || d.sizeWhitelist.includes(size))
+    .filter((d) => !d.sizeWhitelist || d.sizeWhitelist.length === 0 || d.sizeWhitelist.includes(size))
     .map((d) => ({
       deviceId: d.id,
-      qty: (d.sizeRule && d.sizeRule[size]) || 1,
+      qty: d.sizeRule && d.sizeRule[size] != null ? d.sizeRule[size] : 1,
       on: false,
     }));
 }

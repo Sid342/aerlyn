@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { TEMPLATES, HOME_TYPES, seedDevices, buildRooms } from '../templates.js';
+import { TEMPLATES, HOME_TYPES, seedDevices, buildRooms, makeRoom } from '../templates.js';
 
 describe('templates', () => {
   it('exposes the four home types', () => {
@@ -60,6 +60,21 @@ describe('templates', () => {
       const cobDownlight = living.devices.find((d) => d.deviceId === 'cob-downlight');
       expect(cobDownlight).toBeDefined();
       expect(cobDownlight.qty).toBe(6);
+    });
+
+    it('makeRoom forwards size — S "other" room excludes track-light', () => {
+      const room = makeRoom('Den', 'other', 'S');
+      expect(room.size).toBe('S');
+      const ids = room.devices.map((d) => d.deviceId);
+      // track-light is in defaultRooms 'other' but sizeWhitelist ['M','L'] excludes S
+      expect(ids).not.toContain('track-light');
+    });
+
+    it('makeRoom default size M includes track-light for "other" room', () => {
+      const room = makeRoom('Study', 'other');
+      expect(room.size).toBe('M');
+      const ids = room.devices.map((d) => d.deviceId);
+      expect(ids).toContain('track-light');
     });
   });
 });
