@@ -1,18 +1,30 @@
-# Handoff — Aerlyn Studio, Feature A (Interactive House Explorer)
+# Handoff — Aerlyn Studio
 
-**Date:** 2026-05-15
+**Updated:** 2026-05-15
 **Repo:** `https://github.com/Sid342/aerlyn.git`
 **Main branch:** `main` — tagged `feature-a-complete`
-**All previous branches:** `feature-a/phase-1`, `feature-a/phase-2` (all merged to main)
+**All previous branches:** `feature-a/phase-1`, `feature-a/phase-2` (merged to main), `feature-b` (PR #1 open — not yet merged)
 
 ---
 
 ## 1. What this project is
 
-Aerlyn Studio — a React + Vite smart-home configurator. Three features planned:
-- **A: Interactive House Explorer** — **COMPLETE** (all 23 tasks done across 4 phases)
-- **B: Touch Plate Designer** — not started
-- **C: Scene Builder** — not started
+Aerlyn Studio — React + Vite smart-home configurator replacing the legacy `aerlyn_website.html` marketing site.
+
+| Feature | Status | Branch / Tag | Plan |
+|---------|--------|-------------|------|
+| **A: Interactive House Explorer** | ✅ COMPLETE | `main`, tagged `feature-a-complete` | `docs/superpowers/plans/2026-05-14-feature-a-house-explorer.md` |
+| **"Live Home Control"** (unplanned extra) | ✅ COMPLETE | `feature-b`, PR #1 open | `docs/superpowers/plans/2026-05-15-feature-b-live-control.md` |
+| **C: Scene Builder** | 🔲 NOT STARTED | — | `docs/superpowers/plans/2026-05-15-feature-c-scene-builder.md` |
+| **B (PRD): Touch Plate Designer** | 🔲 NOT STARTED | — | `docs/superpowers/plans/2026-05-15-feature-b-touch-plate.md` |
+| **D: Marketing Shell** | 🔲 NOT STARTED | — | `docs/superpowers/plans/2026-05-15-feature-d-marketing-shell.md` |
+
+**Recommended build order:**
+1. Merge PR #1 (feature-b → main)
+2. Feature C — Scene Builder (simple, fully unblocked)
+3. Feature B (PRD) — Touch Plate Designer (complex port)
+4. Feature D — Marketing Shell (full landing page)
+5. Launch: swap Formspree endpoint → deploy
 
 Source of truth:
 - **PRD:** `docs/superpowers/specs/2026-05-14-aerlyn-studio-prd.md`
@@ -122,11 +134,28 @@ Minor known fact: the Formspree endpoint `https://formspree.io/f/mykokrdw` is a 
 
 ---
 
-## 4. Feature B — what's next
+## 4. Remaining features — what's next
 
-**Touch Plate Designer** — not started. No branch or plan exists yet.
+**Step 0:** Merge PR #1 (`feature-b` → `main`) at https://github.com/Sid342/aerlyn/pull/1
 
-Before starting: create a new plan in `docs/superpowers/plans/` following the same format as the Feature A plan.
+**Feature C — Scene Builder** (`docs/superpowers/plans/2026-05-15-feature-c-scene-builder.md`)
+- 8 tasks. View preset scenes + create custom scenes + PDF export.
+- New state: `home.customScenes[]`. 4 new reducer actions. `exportScenesPdf.js`.
+- No new dependencies.
+
+**Feature B (PRD) — Touch Plate Designer** (`docs/superpowers/plans/2026-05-15-feature-b-touch-plate.md`)
+- 5 tasks. 8-step wizard porting `assets/reference/feturtles_src/StepperComponent.js`.
+- MUI replaced with Aerlyn CSS. react-dnd replaced with click-to-place slots.
+- New lib: `exportPlatePdf.js`.
+
+**Feature D — Marketing Shell** (`docs/superpowers/plans/2026-05-15-feature-d-marketing-shell.md`)
+- 6 tasks. Full landing page: SiteNav + Hero + WhyAutomate + DayInLife + HowItWorks + ContactCTA + LeadModal.
+- Content ported from `assets/reference/aerlyn_website.html` (do not modify or stage).
+- Lead modal sends to Formspree — swap endpoint before launch.
+
+**Launch prep**
+- Swap `mykokrdw` Formspree endpoint in `src/features/marketing/LeadModal.jsx`
+- `npm run build` → deploy `dist/` to static host
 
 ---
 
