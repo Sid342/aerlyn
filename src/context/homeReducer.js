@@ -3,7 +3,6 @@ import { getDevice } from '../data/devices.js';
 
 export const initialHome = {
   homeType: null,
-  floorPlanImage: null,
   mode: 'build', // 'build' | 'play'
   rooms: [],
 };
@@ -20,8 +19,8 @@ export const actions = {
   toggleDevice: (roomId, deviceId) => ({ type: 'TOGGLE_DEVICE', roomId, deviceId }),
   setSwitchOverride: (roomId, overrideType, value) => ({ type: 'SET_SWITCH_OVERRIDE', roomId, overrideType, value }),
   setMode: (mode) => ({ type: 'SET_MODE', mode }),
-  setFloorPlan: (image) => ({ type: 'SET_FLOOR_PLAN', image }),
   applyScene: (deviceStates) => ({ type: 'APPLY_SCENE', deviceStates }),
+  applySceneToRoom: (roomId, deviceStates) => ({ type: 'APPLY_SCENE_TO_ROOM', roomId, deviceStates }),
   reset: () => ({ type: 'RESET' }),
   duplicateRoom: (roomId) => ({ type: 'DUPLICATE_ROOM', roomId }),
 };
@@ -111,9 +110,6 @@ export function homeReducer(state, action) {
     case 'SET_MODE':
       return { ...state, mode: action.mode };
 
-    case 'SET_FLOOR_PLAN':
-      return { ...state, floorPlanImage: action.image };
-
     case 'APPLY_SCENE': {
       // deviceStates: { [deviceId]: boolean } applied to every room
       // guard: if payload is missing/malformed, degrade to no-op
@@ -129,6 +125,16 @@ export function homeReducer(state, action) {
           ),
         })),
       };
+    }
+
+    case 'APPLY_SCENE_TO_ROOM': {
+      const deviceStates = action.deviceStates || {};
+      return mapRoom(state, action.roomId, (r) => ({
+        ...r,
+        devices: r.devices.map((d) =>
+          deviceStates[d.deviceId] === undefined ? d : { ...d, on: deviceStates[d.deviceId] }
+        ),
+      }));
     }
 
     case 'RESET':
