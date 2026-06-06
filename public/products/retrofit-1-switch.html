@@ -8,7 +8,7 @@
   <style>
     :root{--teal:#00C8B4;--bg:#080810;--card:#12121c;--ink:#eef0f5;--muted:#9aa0ad;--line:#23232f;}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+    body{background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding-top:56px}
     a{color:var(--teal)}
     .wrap{max-width:860px;margin:0 auto;padding:48px 20px}
     h1{font-size:2rem;margin-bottom:8px}h2{color:var(--teal);font-size:1.25rem;margin:28px 0 8px}
@@ -17,21 +17,45 @@
     .badge{background:var(--teal);color:#04130f;font-weight:600;padding:2px 10px;border-radius:999px;font-size:.75rem}
     .hero{position:relative;aspect-ratio:4/3;background:var(--card);border:1px dashed var(--line);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--muted);overflow:hidden;margin:18px 0}
     .hero img{width:100%;height:100%;object-fit:cover}
-    .cta{display:inline-block;background:var(--teal);color:#04130f;font-weight:600;padding:12px 22px;border-radius:10px;text-decoration:none;margin:18px 0}
+    .cta{display:inline-block;background:var(--teal);color:#04130f;font-weight:700;padding:12px 22px;border-radius:10px;text-decoration:none;border:none;font-size:1rem;cursor:pointer}
+    .cta.secondary{background:transparent;color:var(--teal);border:1px solid var(--teal)}
     table{width:100%;border-collapse:collapse;margin-top:8px} td,th{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left}
     .trust{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:.9rem;margin-top:14px}
-    body{padding-top:56px}
+    /* buy row */
+    .buy{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:18px 0}
+    .qtywrap{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.9rem}
+    .qtywrap input{width:64px;padding:9px;background:var(--card);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:1rem}
+    /* nav */
     .site-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,8,16,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
     .site-nav-logo{font-size:1.1rem;font-weight:700;color:var(--ink);text-decoration:none}
     .site-nav-links{display:flex;gap:28px;list-style:none}
     .site-nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem}
     .site-nav-links a:hover{color:var(--ink)}
+    .site-nav-right{display:flex;align-items:center;gap:16px}
+    .site-nav-cart{position:relative;color:var(--ink);text-decoration:none;font-size:1.2rem}
+    .site-nav-cart span{position:absolute;top:-6px;right:-10px;background:var(--teal);color:#04130f;font-size:.65rem;font-weight:700;min-width:16px;height:16px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 4px}
     .site-nav-cta{background:var(--teal);color:#000;border-radius:8px;padding:7px 16px;font-size:.82rem;font-weight:700;text-decoration:none;white-space:nowrap}
     .site-nav-hamburger{display:none;background:none;border:none;color:var(--ink);font-size:1.3rem;cursor:pointer}
     .site-nav-mobile{display:none;position:fixed;top:56px;left:0;right:0;background:var(--bg);border-bottom:1px solid var(--line);padding:16px 24px;z-index:99;flex-direction:column;gap:16px}
     .site-nav-mobile a{color:var(--muted);text-decoration:none;font-size:.95rem}
     .site-nav-mobile.open{display:flex}
     @media(max-width:640px){.site-nav-links{display:none}.site-nav-cta{display:none}.site-nav-hamburger{display:block}}
+    /* cart drawer */
+    .cart-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200}
+    .cart-overlay.open{display:block}
+    .cart-drawer{position:fixed;top:0;right:0;height:100%;width:340px;max-width:90vw;background:var(--card);border-left:1px solid var(--line);z-index:201;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column;padding:20px}
+    .cart-drawer.open{transform:translateX(0)}
+    .cart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .cart-head button{background:none;border:none;color:var(--ink);font-size:1.2rem;cursor:pointer}
+    #cartItems{flex:1;overflow:auto}
+    .cart-item{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:12px 0;font-size:.9rem}
+    .cart-item small{color:var(--muted)}
+    .cart-item button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.8rem}
+    .cart-empty{color:var(--muted);padding:24px 0}
+    .cart-foot{border-top:1px solid var(--line);padding-top:14px;margin-top:8px}
+    .cart-total{display:flex;justify-content:space-between;font-weight:700;margin-bottom:12px}
+    .cart-foot .cta{width:100%;text-align:center;margin-bottom:8px}
+    .cart-foot .link{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.85rem;width:100%}
   </style>
 </head>
 <body>
@@ -43,8 +67,11 @@
       <li><a href="/#how">How it Works</a></li>
       <li><a href="/#contact">Contact</a></li>
     </ul>
-    <a class="site-nav-cta" href="/#planner">Build My Plan</a>
-    <button type="button" class="site-nav-hamburger" aria-label="Menu" onclick="var m=document.getElementById('navmobile');m.classList.toggle('open');this.textContent=m.classList.contains('open')?'✕':'☰'">&#9776;</button>
+    <div class="site-nav-right">
+      <a class="site-nav-cart" href="#" aria-label="Cart" onclick="openCart();return false">&#128722;<span id="cartCount">0</span></a>
+      <a class="site-nav-cta" href="/#planner">Build My Plan</a>
+      <button type="button" class="site-nav-hamburger" aria-label="Menu" onclick="var m=document.getElementById('navmobile');m.classList.toggle('open');this.textContent=m.classList.contains('open')?'✕':'☰'">&#9776;</button>
+    </div>
   </nav>
   <div class="site-nav-mobile" id="navmobile">
     <a href="/#why">Why Automate</a>
@@ -52,6 +79,7 @@
     <a href="/#how">How it Works</a>
     <a href="/#contact">Contact</a>
   </div>
+
   <div class="wrap">
     <div class="hero">
       <span class="badge" style="position:absolute;top:12px;left:12px">Best Seller</span>
@@ -63,6 +91,17 @@
 
     <p class="price">₹2,300 <span class="strike">₹3,286</span></p>
 
+    <div class="buy">
+      <label class="qtywrap">Qty
+        <input id="qty" type="number" min="1" value="1">
+      </label>
+      <button type="button" class="cta" onclick="addToCart()">Add to Cart</button>
+      <a class="cta secondary" href="mailto:shaurya.goel.34@gmail.com?subject=Order%20Aerlyn%20Retrofit%201-Switch">Contact to order</a>
+    </div>
+    <p class="muted">In stock · ships in 2–3 days</p>
+
+    <div class="trust"><span>1-Year Warranty</span><span>Easy Returns</span><span>Fast Shipping</span></div>
+
     <h2>Key Features</h2>
     <ul>
       <li>Capacitive touch controls</li>
@@ -71,11 +110,6 @@
       <li>No-neutral-wire installation</li>
       <li>Child lock &amp; overload protection</li>
     </ul>
-
-    <a class="cta" href="mailto:shaurya.goel.34@gmail.com?subject=Order%20Aerlyn%20Retrofit%201-Switch">Contact to order</a>
-    <span class="muted">In stock · ships in 2–3 days</span>
-
-    <div class="trust"><span>1-Year Warranty</span><span>Easy Returns</span><span>Fast Shipping</span></div>
 
     <h2>Technical Specifications</h2>
     <table>
@@ -89,5 +123,58 @@
 
     <p class="muted" style="margin-top:40px">Home Decor · 216, Green Square Market, Hisar – 125001 · <a href="mailto:shaurya.goel.34@gmail.com">shaurya.goel.34@gmail.com</a></p>
   </div>
+
+  <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping cart">
+    <div class="cart-head"><strong>Your Cart</strong><button type="button" aria-label="Close" onclick="closeCart()">&#10005;</button></div>
+    <div id="cartItems"></div>
+    <div class="cart-foot">
+      <div class="cart-total">Total<span id="cartTotal">₹0</span></div>
+      <button type="button" class="cta" onclick="checkout()">Checkout</button>
+      <button type="button" class="link" onclick="clearCart()">Clear cart</button>
+    </div>
+  </aside>
+
+  <script>
+    var PRODUCT = { id: 'AER-SW1G-WiFi', name: 'Aerlyn Retrofit 1-Switch', price: 2300 };
+    var KEY = 'aerlyn_cart';
+    function getCart(){ try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch(e){ return []; } }
+    function setCart(c){ localStorage.setItem(KEY, JSON.stringify(c)); render(); }
+    function inr(n){ return '₹' + n.toLocaleString('en-IN'); }
+    function addToCart(){
+      var qty = Math.max(1, parseInt(document.getElementById('qty').value, 10) || 1);
+      var c = getCart();
+      var line = c.find(function(i){ return i.id === PRODUCT.id; });
+      if (line) line.qty += qty; else c.push({ id: PRODUCT.id, name: PRODUCT.name, price: PRODUCT.price, qty: qty });
+      setCart(c); openCart();
+    }
+    function removeItem(id){ setCart(getCart().filter(function(i){ return i.id !== id; })); }
+    function clearCart(){ setCart([]); }
+    function render(){
+      var c = getCart();
+      var count = c.reduce(function(s,i){ return s + i.qty; }, 0);
+      var total = c.reduce(function(s,i){ return s + i.price * i.qty; }, 0);
+      document.getElementById('cartCount').textContent = count;
+      document.getElementById('cartTotal').textContent = inr(total);
+      var box = document.getElementById('cartItems');
+      if (!c.length){ box.innerHTML = '<p class="cart-empty">Your cart is empty.</p>'; return; }
+      box.innerHTML = c.map(function(i){
+        return '<div class="cart-item"><div>' + i.name + '<br><small>Qty ' + i.qty + ' · ' + inr(i.price) + '</small></div>' +
+               '<div style="text-align:right">' + inr(i.price * i.qty) + '<br>' +
+               '<button type="button" onclick="removeItem(\'' + i.id + '\')">Remove</button></div></div>';
+      }).join('');
+    }
+    function openCart(){ document.getElementById('cartDrawer').classList.add('open'); document.getElementById('cartOverlay').classList.add('open'); }
+    function closeCart(){ document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
+    function checkout(){
+      var c = getCart();
+      if (!c.length){ alert('Your cart is empty.'); return; }
+      var lines = c.map(function(i){ return i.name + ' x' + i.qty + ' = ' + inr(i.price * i.qty); }).join('\n');
+      var total = c.reduce(function(s,i){ return s + i.price * i.qty; }, 0);
+      var body = encodeURIComponent('I would like to order:\n\n' + lines + '\n\nTotal: ' + inr(total) + '\n\nName:\nDelivery address:\nPhone:');
+      window.location.href = 'mailto:shaurya.goel.34@gmail.com?subject=' + encodeURIComponent('Aerlyn order — ' + inr(total)) + '&body=' + body;
+    }
+    render();
+  </script>
 </body>
 </html>
