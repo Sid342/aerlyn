@@ -6,6 +6,7 @@ import WhyAutomate from './features/marketing/WhyAutomate.jsx';
 import DayInLife from './features/marketing/DayInLife.jsx';
 import HowItWorks from './features/marketing/HowItWorks.jsx';
 import ContactCTA from './features/marketing/ContactCTA.jsx';
+import SiteFooter from './features/marketing/SiteFooter.jsx';
 import HomeTypePicker from './features/houseExplorer/HomeTypePicker.jsx';
 import HouseSvg from './features/houseExplorer/HouseSvg.jsx';
 import FloorPlanUpload from './features/houseExplorer/FloorPlanUpload.jsx';
@@ -58,6 +59,7 @@ export default function App() {
       </section>
       <HowItWorks />
       <ContactCTA />
+      <SiteFooter />
     </HomeProvider>
   );
 }
