@@ -167,12 +167,8 @@
     function openCart(){ document.getElementById('cartDrawer').classList.add('open'); document.getElementById('cartOverlay').classList.add('open'); }
     function closeCart(){ document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
     function checkout(){
-      var c = getCart();
-      if (!c.length){ alert('Your cart is empty.'); return; }
-      var lines = c.map(function(i){ return i.name + ' x' + i.qty + ' = ' + inr(i.price * i.qty); }).join('\n');
-      var total = c.reduce(function(s,i){ return s + i.price * i.qty; }, 0);
-      var body = encodeURIComponent('I would like to order:\n\n' + lines + '\n\nTotal: ' + inr(total) + '\n\nName:\nDelivery address:\nPhone:');
-      window.location.href = 'mailto:shaurya.goel.34@gmail.com?subject=' + encodeURIComponent('Aerlyn order — ' + inr(total)) + '&body=' + body;
+      if (!getCart().length){ alert('Your cart is empty.'); return; }
+      window.location.href = 'checkout.html';
     }
     render();
   </script>

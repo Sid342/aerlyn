@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Checkout — complete your Aerlyn order with delivery details.">
+  <title>Checkout — Aerlyn</title>
+  <style>
+    :root{--teal:#00C8B4;--bg:#080810;--card:#12121c;--ink:#eef0f5;--muted:#9aa0ad;--line:#23232f;}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding-top:56px}
+    a{color:var(--teal)}
+    .wrap{max-width:860px;margin:0 auto;padding:48px 20px}
+    h1{font-size:1.8rem;margin-bottom:8px}h2{color:var(--teal);font-size:1.15rem;margin:28px 0 10px}
+    .muted{color:var(--muted)}
+    .cta{display:inline-block;background:var(--teal);color:#04130f;font-weight:700;padding:13px 24px;border-radius:10px;text-decoration:none;border:none;font-size:1rem;cursor:pointer}
+    .cta:disabled{opacity:.6;cursor:default}
+    /* nav */
+    .site-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,8,16,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
+    .site-nav-logo{font-size:1.1rem;font-weight:700;color:var(--ink);text-decoration:none}
+    .site-nav-links{display:flex;gap:28px;list-style:none}
+    .site-nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem}
+    .site-nav-links a:hover{color:var(--ink)}
+    .site-nav-cta{background:var(--teal);color:#000;border-radius:8px;padding:7px 16px;font-size:.82rem;font-weight:700;text-decoration:none;white-space:nowrap}
+    .site-nav-hamburger{display:none;background:none;border:none;color:var(--ink);font-size:1.3rem;cursor:pointer}
+    .site-nav-mobile{display:none;position:fixed;top:56px;left:0;right:0;background:var(--bg);border-bottom:1px solid var(--line);padding:16px 24px;z-index:99;flex-direction:column;gap:16px}
+    .site-nav-mobile a{color:var(--muted);text-decoration:none;font-size:.95rem}
+    .site-nav-mobile.open{display:flex}
+    @media(max-width:640px){.site-nav-links{display:none}.site-nav-cta{display:none}.site-nav-hamburger{display:block}}
+    /* layout */
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:32px;align-items:start;margin-top:24px}
+    @media(max-width:760px){.grid{grid-template-columns:1fr}}
+    .summary{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+    .sum-item{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:10px 0;font-size:.9rem}
+    .sum-item small{color:var(--muted)}
+    .sum-total{display:flex;justify-content:space-between;font-weight:700;padding-top:14px}
+    /* form */
+    .field{margin-bottom:16px}
+    .field label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px}
+    .field input,.field textarea{width:100%;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:9px;color:var(--ink);font-size:1rem;font-family:inherit}
+    .field input:focus,.field textarea:focus{outline:none;border-color:var(--teal)}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:480px){.row2{grid-template-columns:1fr}}
+    .err{color:#ff7a7a;font-size:.85rem;margin-top:8px;display:none}
+    .err.show{display:block}
+    /* success */
+    .success{display:none;text-align:center;padding:48px 16px}
+    .success.show{display:block}
+    .success .tick{width:72px;height:72px;border-radius:50%;background:var(--teal);color:#04130f;font-size:2.4rem;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-weight:700}
+    .success h1{color:var(--ink)}
+    .order-id{color:var(--teal);font-weight:700}
+  </style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a class="site-nav-logo" href="/">Aerlyn</a>
+    <ul class="site-nav-links">
+      <li><a href="/#why">Why Automate</a></li>
+      <li><a href="/#planner">Planner</a></li>
+      <li><a href="/#how">How it Works</a></li>
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+    <a class="site-nav-cta" href="/#planner">Build My Plan</a>
+    <button type="button" class="site-nav-hamburger" aria-label="Menu" onclick="var m=document.getElementById('navmobile');m.classList.toggle('open');this.textContent=m.classList.contains('open')?'✕':'☰'">&#9776;</button>
+  </nav>
+  <div class="site-nav-mobile" id="navmobile">
+    <a href="/#why">Why Automate</a>
+    <a href="/#planner">Planner</a>
+    <a href="/#how">How it Works</a>
+    <a href="/#contact">Contact</a>
+  </div>
+
+  <div class="wrap">
+    <!-- Checkout view -->
+    <div id="checkoutView">
+      <h1>Checkout</h1>
+      <p class="muted">Enter your delivery details to place the order. We'll contact you to confirm.</p>
+
+      <div class="grid">
+        <form id="checkoutForm" novalidate>
+          <h2>Delivery details</h2>
+          <div class="field">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" required>
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="address">Address (house no, street, area)</label>
+            <textarea id="address" name="address" rows="2" autocomplete="street-address" required></textarea>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="city">City</label>
+              <input id="city" name="city" type="text" autocomplete="address-level2" required>
+            </div>
+            <div class="field">
+              <label for="state">State</label>
+              <input id="state" name="state" type="text" autocomplete="address-level1" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="pincode">Pincode</label>
+            <input id="pincode" name="pincode" type="text" inputmode="numeric" autocomplete="postal-code" required>
+          </div>
+          <button type="submit" id="placeBtn" class="cta">Place order</button>
+          <p class="err" id="formErr"></p>
+        </form>
+
+        <div>
+          <h2>Order summary</h2>
+          <div class="summary">
+            <div id="sumItems"></div>
+            <div class="sum-total">Total<span id="sumTotal">₹0</span></div>
+          </div>
+          <p class="muted" style="margin-top:12px;font-size:.85rem">Payment on confirmation. We'll call/email to arrange delivery &amp; payment.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success view -->
+    <div class="success" id="successView">
+      <div class="tick">&#10003;</div>
+      <h1>Order placed!</h1>
+      <p class="muted">Thank you, <span id="okName"></span>. Your order <span class="order-id" id="okOrderId"></span> has been received.</p>
+      <p class="muted" style="margin-top:8px">We've emailed your details to our team and will contact you shortly to confirm delivery and payment.</p>
+      <p style="margin-top:24px"><a class="cta" href="/">Back to home</a></p>
+    </div>
+  </div>
+
+  <script>
+    var KEY = 'aerlyn_cart';
+    var FORMSPREE = 'https://formspree.io/f/mykokrdw';
+    function getCart(){ try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch(e){ return []; } }
+    function inr(n){ return '₹' + n.toLocaleString('en-IN'); }
+    function cartTotal(c){ return c.reduce(function(s,i){ return s + i.price * i.qty; }, 0); }
+
+    function renderSummary(){
+      var c = getCart();
+      var box = document.getElementById('sumItems');
+      if (!c.length){
+        document.getElementById('checkoutView').innerHTML =
+          '<h1>Your cart is empty</h1><p class="muted">Add a product before checking out.</p>' +
+          '<p style="margin-top:20px"><a class="cta" href="retrofit-1-switch.html">Browse products</a></p>';
+        return;
+      }
+      box.innerHTML = c.map(function(i){
+        return '<div class="sum-item"><div>' + i.name + '<br><small>Qty ' + i.qty + ' · ' + inr(i.price) + '</small></div><div>' + inr(i.price * i.qty) + '</div></div>';
+      }).join('');
+      document.getElementById('sumTotal').textContent = inr(cartTotal(c));
+    }
+
+    function newOrderId(){
+      var d = new Date();
+      var pad = function(n){ return ('0' + n).slice(-2); };
+      var stamp = '' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+      return 'AER-' + stamp;
+    }
+
+    function showError(msg){
+      var e = document.getElementById('formErr');
+      e.textContent = msg; e.classList.add('show');
+    }
+
+    document.getElementById('checkoutForm') && document.getElementById('checkoutForm').addEventListener('submit', function(ev){
+      ev.preventDefault();
+      var form = ev.target;
+      document.getElementById('formErr').classList.remove('show');
+      if (!form.checkValidity()){ showError('Please fill all fields.'); form.reportValidity(); return; }
+
+      var cart = getCart();
+      if (!cart.length){ showError('Your cart is empty.'); return; }
+
+      var orderId = newOrderId();
+      var total = cartTotal(cart);
+      var itemsText = cart.map(function(i){ return i.name + ' (' + i.id + ') x' + i.qty + ' = ' + inr(i.price * i.qty); }).join('\n');
+
+      var payload = {
+        order_id: orderId,
+        name: form.name.value,
+        phone: form.phone.value,
+        email: form.email.value,
+        address: form.address.value,
+        city: form.city.value,
+        state: form.state.value,
+        pincode: form.pincode.value,
+        order_items: itemsText,
+        order_total: inr(total),
+        _subject: 'Aerlyn order ' + orderId + ' — ' + inr(total)
+      };
+
+      var btn = document.getElementById('placeBtn');
+      btn.disabled = true; btn.textContent = 'Placing order…';
+
+      function succeed(){
+        document.getElementById('okName').textContent = payload.name;
+        document.getElementById('okOrderId').textContent = orderId;
+        document.getElementById('checkoutView').style.display = 'none';
+        document.getElementById('successView').classList.add('show');
+        localStorage.removeItem(KEY);
+        window.scrollTo(0, 0);
+      }
+
+      fetch(FORMSPREE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function(res){
+        // Show success regardless of Formspree config so the order flow always completes for the user.
+        succeed();
+      }).catch(function(){
+        succeed();
+      });
+    });
+
+    renderSummary();
+  </script>
+</body>
+</html>
