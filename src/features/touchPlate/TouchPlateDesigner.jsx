@@ -12,23 +12,14 @@ import './TouchPlateDesigner.css';
 
 const STEP_LABELS = ['Model', 'Material', 'Size', 'Accessories', 'Icons', 'Panel', 'Frame', 'Export'];
 
-const emptyConfig = {
-  model: null,
-  maxSlots: 0,
-  material: null,
-  materialCode: null,
-  size: null,
-  accessories: [],
-  icons: {},
-  panel: null,
-  frame: null,
-};
-
 export default function TouchPlateDesigner() {
   const [step, setStep] = useState(0);
-  const [config, setConfig] = useState(emptyConfig);
-  const { home } = useHome();
+  const { home, dispatch, actions } = useHome();
   if (!home.homeType) return null;
+
+  const config = home.plateConfig;
+  const setConfig = (next) => dispatch(actions.setPlateConfig(next));
+  const plateRoom = home.rooms.find((r) => r.id === home.plateRoomId);
 
   function canAdvance() {
     if (step === 0) return !!config.model;
@@ -52,9 +43,12 @@ export default function TouchPlateDesigner() {
   }
 
   return (
-    <div className="tpd">
+    <div className="tpd" id="plate-designer">
       <h2>Touch Plate Designer</h2>
-      <p className="tpd-sub">Configure and visualise your Aerlyn smart switch plate.</p>
+      <p className="tpd-sub">
+        Configure and visualise your Aerlyn smart switch plate.
+        {plateRoom && <> Designing for: <strong>{plateRoom.name}</strong>.</>}
+      </p>
 
       <div className="tpd-stepper">
         {STEP_LABELS.map((label, i) => (

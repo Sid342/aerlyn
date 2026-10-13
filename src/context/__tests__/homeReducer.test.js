@@ -340,6 +340,27 @@ describe('homeReducer', () => {
     });
   });
 
+  describe('DESIGN_PLATE', () => {
+    it('presets the model to the given size and remembers the room', () => {
+      const s0 = withHome();
+      const s1 = homeReducer(s0, actions.designPlate(s0.rooms[2].id, 8));
+      expect(s1.plateRoomId).toBe(s0.rooms[2].id);
+      expect(s1.plateConfig.model).toBe('8 module');
+      expect(s1.plateConfig.maxSlots).toBe(8);
+    });
+    it('clears accessories and icons but keeps the chosen finish', () => {
+      const s0 = homeReducer(withHome(), actions.setPlateConfig({
+        ...emptyPlateConfig, model: '4 module', maxSlots: 4, material: 'Black', panel: 'Matte',
+        accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 1] }], icons: { a1: '💡' },
+      }));
+      const s1 = homeReducer(s0, actions.designPlate(s0.rooms[0].id, 12));
+      expect(s1.plateConfig.accessories).toEqual([]);
+      expect(s1.plateConfig.icons).toEqual({});
+      expect(s1.plateConfig.material).toBe('Black');
+      expect(s1.plateConfig.panel).toBe('Matte');
+    });
+  });
+
   describe('HYDRATE', () => {
     it('replaces the plan with the saved one', () => {
       const saved = withHome('1BHK');

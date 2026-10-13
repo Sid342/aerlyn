@@ -62,6 +62,37 @@ describe('buildExportPayload', () => {
     expect(p.homeType).toBeNull();
     expect(p.rooms).toEqual([]);
   });
+  it('includes custom scenes with device names', () => {
+    let home = homeReducer(sampleHome(), { type: 'ADD_CUSTOM_SCENE', payload: { name: 'Dinner' } });
+    home = homeReducer(home, {
+      type: 'SET_SCENE_DEVICE_STATE',
+      payload: { sceneId: home.customScenes[0].id, deviceId: 'rgbw-strip', on: true },
+    });
+    expect(buildExportPayload(home).customScenes).toEqual([
+      { name: 'Dinner', devices: [{ deviceId: 'rgbw-strip', name: 'RGBW Strip Light', on: true }] },
+    ]);
+  });
+  it('plate is null until a model is chosen', () => {
+    expect(buildExportPayload(sampleHome()).plate).toBeNull();
+    expect(buildExportPayload(initialHome).customScenes).toEqual([]);
+  });
+  it('includes the plate config and the room it was designed for', () => {
+    let home = sampleHome();
+    home = homeReducer(home, actions.designPlate(home.rooms[1].id, 4));
+    home = homeReducer(home, actions.setPlateConfig({
+      ...home.plateConfig, material: 'Black', size: 'Standard', panel: 'Matte', frame: 'Square',
+      accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 1] }], icons: { a1: '💡' },
+    }));
+    expect(buildExportPayload(home).plate).toEqual({
+      room: home.rooms[1].name,
+      model: '4 module', material: 'Black', size: 'Standard', panel: 'Matte', frame: 'Square',
+      accessories: [{ name: '4 Switch', slots: [0, 1], icon: '💡' }],
+    });
+  });
+  it('never includes the floor plan image', () => {
+    const home = homeReducer(sampleHome(), actions.setFloorPlan('data:image/png;base64,SECRET'));
+    expect(JSON.stringify(buildExportPayload(home))).not.toContain('SECRET');
+  });
   it('each room has switchPlan with expected fields', () => {
     const p = buildExportPayload(sampleHome());
     for (const room of p.rooms) {

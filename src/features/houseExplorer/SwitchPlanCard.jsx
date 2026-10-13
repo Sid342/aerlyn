@@ -28,6 +28,11 @@ export default function SwitchPlanCard({ room }) {
 
   const isBuild = home.mode === 'build';
 
+  function designPlate() {
+    dispatch(actions.designPlate(room.id, Math.max(...plan.plates)));
+    document.getElementById('plate-designer')?.scrollIntoView({ behavior: 'smooth' });
+  }
+
   function handleOverride(key, raw) {
     const trimmed = raw.trim();
     const value = trimmed === '' ? null : Math.max(0, parseInt(trimmed, 10) || 0);
@@ -72,6 +77,11 @@ export default function SwitchPlanCard({ room }) {
         Plates: <strong>{PLATE_LABELS(plan.plates)}</strong>
         {plan.spareModules > 0 && <span className="spare"> (spare: {plan.spareModules})</span>}
       </div>
+      {plan.plates.length > 0 && (
+        <button type="button" className="switch-plan-design" onClick={designPlate}>
+          Design this plate →
+        </button>
+      )}
     </div>
   );
 }

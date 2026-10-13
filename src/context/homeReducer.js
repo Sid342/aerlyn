@@ -41,6 +41,7 @@ export const actions = {
   duplicateRoom: (roomId) => ({ type: 'DUPLICATE_ROOM', roomId }),
   setFloorPlan: (image) => ({ type: 'SET_FLOOR_PLAN', image }),
   setPlateConfig: (config) => ({ type: 'SET_PLATE_CONFIG', config }),
+  designPlate: (roomId, slots) => ({ type: 'DESIGN_PLATE', roomId, slots }),
   hydrate: (home) => ({ type: 'HYDRATE', home }),
 };
 
@@ -198,6 +199,20 @@ export function homeReducer(state, action) {
 
     case 'SET_PLATE_CONFIG':
       return { ...state, plateConfig: action.config };
+
+    // open the designer for a room, preset to a plate size (same reset as picking a model by hand)
+    case 'DESIGN_PLATE':
+      return {
+        ...state,
+        plateRoomId: action.roomId,
+        plateConfig: {
+          ...state.plateConfig,
+          model: `${action.slots} module`,
+          maxSlots: action.slots,
+          accessories: [],
+          icons: {},
+        },
+      };
 
     // replace the plan with a saved one (browser storage or a plan link)
     case 'HYDRATE':

@@ -14,7 +14,7 @@
 - [x] **1.5 Reducer fixes.** `SET_FLOOR_PLAN` + `floorPlanImage`; per-device `edited` flag so size change keeps edited quantities; `plateConfig` in state; `HYDRATE` action. Tests for each.
 - [x] **1.6 Persistence.** `src/lib/planStorage.js` (`savePlan`/`loadPlan`/`encodePlan`/`decodePlan`) + tests; wire into `HomeProvider`.
 - [x] **1.7 UI bugs.** Room card open state follows mode; custom scenes in Play; Scene Builder + Touch Plate gated on home type; custom scenes list only present devices; scenes PDF uses device names.
-- [ ] **1.8 Plate link.** "Design this plate" on `SwitchPlanCard` presets the designer; designer config stored in home state; payload builder includes scenes + plate.
+- [x] **1.8 Plate link.** "Design this plate" on `SwitchPlanCard` presets the designer; designer config stored in home state; payload builder includes scenes + plate.
 
 ## Phase 2 — Save-my-plan CTA
 

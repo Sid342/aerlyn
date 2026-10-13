@@ -1,7 +1,34 @@
 import { getDevice } from '../data/devices.js';
 import { planRoom } from './switchPlanner.js';
 
+function scenePayload(scene) {
+  return {
+    name: scene.name,
+    devices: Object.entries(scene.deviceStates).map(([deviceId, on]) => {
+      const meta = getDevice(deviceId);
+      return { deviceId, name: meta ? meta.name : deviceId, on };
+    }),
+  };
+}
+
+// null until a plate model has been chosen in the designer
+function platePayload(home) {
+  const c = home.plateConfig;
+  if (!c || !c.model) return null;
+  const room = home.rooms.find((r) => r.id === home.plateRoomId);
+  return {
+    room: room ? room.name : null,
+    model: c.model,
+    material: c.material,
+    size: c.size,
+    panel: c.panel,
+    frame: c.frame,
+    accessories: c.accessories.map((a) => ({ name: a.name, slots: a.slots, icon: c.icons[a.id] || null })),
+  };
+}
+
 // Convert the live Home state into the canonical, B-compatible export payload.
+// This is what a lead carries — the floor plan image is deliberately not part of it.
 export function buildExportPayload(home) {
   return {
     schemaVersion: 1,
@@ -25,6 +52,8 @@ export function buildExportPayload(home) {
         switchPlan: { gang, fan, curtain, socket, total, plates, spareModules },
       };
     }),
+    customScenes: (home.customScenes || []).map(scenePayload),
+    plate: platePayload(home),
   };
 }
 
