@@ -31,4 +31,12 @@ describe('routes', () => {
     expect(matchRoute('/nope').page).toBe('landing');
     expect(matchRoute('/index.html').page).toBe('landing');
   });
+
+  it('matches a page without .html or with a trailing slash', () => {
+    expect(matchRoute('/products/retrofit-1-switch').product.id).toBe('AER-SW1G-WiFi');
+    expect(matchRoute('/products/retrofit-2-switch/').product.id).toBe('AER-SW2G-WiFi');
+    expect(matchRoute('/privacy-policy').page).toBe('privacy');
+    expect(matchRoute('/terms').policy).toBe('terms');
+    expect(matchRoute('/').page).toBe('landing');
+  });
 });

@@ -17,6 +17,9 @@ export const routes = [
 ];
 
 // Unknown paths fall back to the landing page.
+// Hosts with "pretty URLs" (Netlify) also serve and link pages without `.html` or with a
+// trailing slash, so those forms must resolve to the same page.
 export function matchRoute(pathname) {
-  return routes.find((r) => r.path === pathname) || routes[0];
+  const bare = (p) => p.replace(/\/+$/, '').replace(/\.html$/, '') || '/';
+  return routes.find((r) => bare(r.path) === bare(pathname)) || routes[0];
 }
