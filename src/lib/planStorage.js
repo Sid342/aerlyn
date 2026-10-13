@@ -1,8 +1,6 @@
 import { nextId, HOME_TYPES } from '../data/templates.js';
 import { getDevice } from '../data/devices.js';
-import { ACCESSORIES, MATERIAL_COLORS, MODULE_OPTIONS } from '../data/plateAccessories.js';
-import { iconLabel } from '../data/plateIcons.js';
-import { parseAccessory } from './plateLayout.js';
+import { hasPlate, encodePlate, decodePlate } from './plateConfig.js';
 
 const KEY = 'aerlyn_plan_v1';
 const VERSION = 1;
@@ -69,39 +67,6 @@ function fromBase64Url(str) {
   return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
 }
 
-// Plate for a link: [modules, colour, profile, finish, frame, [[accessory, first module]…], icons].
-// Accessory ids are rebuilt as `a<first module>` on the way back in, so icon keys are rewritten to match.
-function encodePlate(c) {
-  const accessories = Array.isArray(c.accessories) ? c.accessories : [];
-  const shortId = new Map(accessories.map((a) => [a.id, `a${Math.min(...a.slots)}`]));
-  const icons = {};
-  for (const [key, icon] of Object.entries(c.icons || {})) {
-    const dot = key.lastIndexOf('.');
-    const id = shortId.get(key.slice(0, dot));
-    if (id && icon) icons[`${id}${key.slice(dot)}`] = icon;
-  }
-  return [
-    c.maxSlots, c.material ?? null, c.size ?? null, c.panel ?? null, c.frame ?? null,
-    accessories.map((a) => [a.name, Math.min(...a.slots)]), icons,
-  ];
-}
-
-function expandPlate([maxSlots, material, size, panel, frame, list, icons]) {
-  const option = MODULE_OPTIONS.find((o) => o.maxSlots === maxSlots);
-  if (!option || !Array.isArray(list)) return null;
-  const accessories = list.map((entry) => {
-    const [name, start] = Array.isArray(entry) ? entry : [];
-    const item = ACCESSORIES[option.label].find((a) => a.name === name);
-    if (!item || !Number.isInteger(start)) return null;
-    return { id: `a${start}`, name, nodeSize: item.nodeSize, slots: Array.from({ length: item.nodeSize }, (_, k) => start + k) };
-  });
-  if (accessories.includes(null)) return null;
-  return {
-    model: option.label, material, size, panel, frame, accessories, icons,
-    materialCode: MATERIAL_COLORS.find((c) => c.label === material)?.code ?? null,
-  };
-}
-
 export function encodePlan(home) {
   const compact = {
     v: VERSION,
@@ -117,7 +82,7 @@ export function encodePlan(home) {
     }),
     s: home.customScenes.map((s) => [s.name, s.icon, s.deviceStates]),
   };
-  if (home.plateConfig && home.plateConfig.model) {
+  if (hasPlate(home.plateConfig)) {
     compact.p = encodePlate(home.plateConfig);
     compact.pr = home.rooms.findIndex((r) => r.id === home.plateRoomId);
   }
@@ -149,44 +114,8 @@ function cleanDeviceStates(states) {
   );
 }
 
-// Returns a full plate config, or null if any part of it is not what the designer produces.
-function cleanPlate(p) {
-  if (!p || typeof p !== 'object') return null;
-  const option = MODULE_OPTIONS.find((o) => o.label === p.model);
-  if (!option) return null;
-  const choices = ['material', 'size', 'panel', 'frame'];
-  if (!choices.every((k) => p[k] == null || isText(p[k]))) return null;
-  if (p.materialCode != null && !(typeof p.materialCode === 'string' && /^#[0-9a-f]{6}$/i.test(p.materialCode))) return null;
-
-  const isSlot = (n) => Number.isInteger(n) && n >= 0 && n < option.maxSlots;
-  const isAccessory = (a) => !!a && typeof a === 'object' && isText(a.id) && isText(a.name)
-    && isSlot(a.nodeSize - 1) && Array.isArray(a.slots) && a.slots.length <= option.maxSlots && a.slots.every(isSlot);
-  if (!Array.isArray(p.accessories) || p.accessories.length > option.maxSlots || !p.accessories.every(isAccessory)) return null;
-
-  if (!p.icons || typeof p.icons !== 'object' || Array.isArray(p.icons)) return null;
-  // an icon is kept only if it is a known icon id on a switch button that exists
-  const switches = new Map(p.accessories.map((a) => [a.id, parseAccessory(a.name).filter((k) => k === 'switch').length]));
-  const icons = Object.entries(p.icons).filter(([key, icon]) => {
-    const dot = key.lastIndexOf('.');
-    const index = Number(key.slice(dot + 1));
-    return typeof icon === 'string' && iconLabel(icon) && Number.isInteger(index) && index >= 0 && index < (switches.get(key.slice(0, dot)) ?? 0);
-  });
-
-  return {
-    model: option.label,
-    maxSlots: option.maxSlots,
-    material: p.material ?? null,
-    materialCode: p.materialCode ?? null,
-    size: p.size ?? null,
-    accessories: p.accessories.map(({ id, name, nodeSize, slots }) => ({ id, name, nodeSize, slots })),
-    icons: Object.fromEntries(icons),
-    panel: p.panel ?? null,
-    frame: p.frame ?? null,
-  };
-}
-
 // Returns a plan ready for HYDRATE (rooms and scenes get fresh ids), or null if the string is not a valid plan.
-// Unknown devices are dropped, quantities clamped, rooms and scenes capped; a bad plate is dropped on its own.
+// Unknown devices are dropped, quantities clamped, rooms and scenes capped; the plate is cleaned on its own (see decodePlate).
 export function decodePlan(str) {
   try {
     const c = JSON.parse(fromBase64Url(str));
@@ -213,7 +142,7 @@ export function decodePlan(str) {
       })),
       plateRoomId: null,
     };
-    const plate = cleanPlate(Array.isArray(c.p) ? expandPlate(c.p) : c.p);
+    const plate = decodePlate(c.p);
     if (plate) {
       plan.plateConfig = plate;
       plan.plateRoomId = rooms[c.pr] ? rooms[c.pr].id : null;

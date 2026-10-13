@@ -1,22 +1,13 @@
 import { getDevice, sceneDevicesInHome } from '../data/devices.js';
 import { planRoom } from './switchPlanner.js';
-import { plateDetails } from './plateLayout.js';
+import { hasPlate, describePlate } from './plateConfig.js';
 
-// null until a plate model has been chosen in the designer
+// null until something has been chosen in the plate designer
 function platePayload(home) {
-  const c = home.plateConfig;
-  if (!c || !c.model) return null;
+  if (!hasPlate(home.plateConfig)) return null;
   const room = home.rooms.find((r) => r.id === home.plateRoomId);
-  return {
-    room: room ? room.name : null,
-    model: c.model,
-    material: c.material,
-    size: c.size,
-    panel: c.panel,
-    frame: c.frame,
-    // readable rows: { name, modules: 'Modules 1–4', icons: ['Switch 3: Fan'] }
-    accessories: plateDetails(c),
-  };
+  // readable: { model, material, size, panel, frame, remote, accessories: [{ name, modules: 'Modules 1–5', icons: ['Switch 3: Fan F1'] }] }
+  return { room: room ? room.name : null, ...describePlate(home.plateConfig) };
 }
 
 // Convert the live Home state into the canonical, B-compatible export payload.

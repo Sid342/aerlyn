@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { buildPlatePdfPayload, pdfSafe } from '../exportPlatePdf.js';
-import { ACCESSORIES } from '../../data/plateAccessories.js';
-import { PLATE_ICONS } from '../../data/plateIcons.js';
+import { PLATE_ACCESSORIES } from '../../data/plateCatalogue.js';
+import { SNAP_ON_PLATES } from '../../data/plateSnapOn.js';
+import { PLATE_ICON_CATEGORIES } from '../../data/plateIconLibrary.js';
+import { emptyPlateConfig, plateButtons } from '../plateConfig.js';
 import { site } from '../../config/site.js';
 
 // what jsPDF's built-in Helvetica can encode: WinAnsi (cp1252)
@@ -9,9 +11,8 @@ const WIN_ANSI = /^[\x20-\x7E\xA0-\xFF€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’�
 const strings = (v) => (typeof v === 'string' ? [v] : v && typeof v === 'object' ? Object.values(v).flatMap(strings) : []);
 
 const config = {
-  model: '8 module', maxSlots: 8, material: 'Titanium', materialCode: '#f4debe', size: 'Standard', panel: 'Matte', frame: 'Rounded',
-  accessories: [{ id: 'a0', name: '8 Switch 1 Socket', nodeSize: 7, slots: [0, 1, 2, 3, 4, 5, 6] }],
-  icons: { 'a0.0': 'light', 'a0.2': 'fan' },
+  ...emptyPlateConfig, model: 'full-glass', material: 'glass', size: 8, accessory: '8-switch-2-20a-1-socket-1-10a',
+  icons: { '1.0.0': 'li-l1', '1.1.0': 'fa-f7' }, panel: 'titanium', frame: 'space-grey',
 };
 const when = new Date(2026, 9, 13, 17, 50);
 
@@ -23,20 +24,22 @@ describe('buildPlatePdfPayload', () => {
     expect(p.date).toBe('13 October 2026');
   });
 
-  it('lists the five specifications in order, with a dash for anything not chosen', () => {
+  it('lists the specification in order, with what the plate shows for anything not chosen', () => {
     expect(buildPlatePdfPayload(config).specs).toEqual([
-      ['Plate size', '8 module'], ['Colour', 'Titanium'], ['Profile', 'Standard'], ['Finish', 'Matte'], ['Frame', 'Rounded'],
+      ['Model', 'Full Glass Touch'], ['Material', 'Glass'], ['Size', '8 module'], ['Panel colour', 'Titanium'], ['Frame colour', 'Space Grey'], ['Remote', 'No'],
     ]);
-    const bare = buildPlatePdfPayload({ ...config, panel: null, frame: null });
-    expect(bare.specs.slice(3)).toEqual([['Finish', '—'], ['Frame', '—']]);
+    const bare = buildPlatePdfPayload({ ...config, material: null, panel: null, frame: null });
+    expect(bare.specs.slice(1, 5)).toEqual([['Material', '—'], ['Size', '8 module'], ['Panel colour', 'Black'], ['Frame colour', 'Silver']]);
+    // only Full Glass Touch has a frame colour
+    expect(buildPlatePdfPayload({ ...config, model: 'touch-plus', accessory: null }).specs.map((row) => row[0])).not.toContain('Frame colour');
   });
 
-  it('gives each accessory its 1-based modules and per-button icon labels', () => {
+  it('gives the accessory its 1-based modules and per-switch icon labels', () => {
     expect(buildPlatePdfPayload(config).accessories).toEqual([
-      { name: '8 Switch 1 Socket', modules: 'Modules 1–7', icons: 'Switch 1: Light, Switch 3: Fan' },
+      { name: '8 Switch (2-20A) 1 Socket (1-10A)', modules: 'Modules 1–7', icons: 'Switch 1: Light L1, Switch 2: Fan F7' },
     ]);
     expect(buildPlatePdfPayload({ ...config, icons: {} }).accessories[0].icons).toBe('—');
-    expect(buildPlatePdfPayload({ ...config, accessories: [], icons: {} }).accessories).toEqual([]);
+    expect(buildPlatePdfPayload({ ...config, accessory: null, icons: {} }).accessories).toEqual([]);
   });
 
   it('has no room when the designer was not opened from one', () => {
@@ -51,23 +54,21 @@ describe('buildPlatePdfPayload', () => {
   });
 
   it('only ever returns characters Helvetica can encode', () => {
-    const everyIcon = Object.fromEntries(PLATE_ICONS.map((icon, i) => [`a0.${i}`, icon.id]));
-    const hostile = {
-      ...config, model: '12 module', maxSlots: 12, material: 'Black 🖤', size: 'स्लिम', panel: 'Gloss ✨', frame: 'Rounded™',
-      accessories: [
-        { id: 'a0', name: '20 Switch (4-20A)', nodeSize: 5, slots: [0, 1, 2, 3, 4] },
-        { id: 'a6', name: '8 Switch 💡 4 Fan', nodeSize: 5, slots: [6, 7, 8, 9, 10] },
-      ],
-      icons: { ...everyIcon, a0: '💡', 'a6.0': '🔌' }, // includes icons an old plan stored as emoji
-    };
-    const p = buildPlatePdfPayload(hostile, 'बैठक Living ✨ Room', when);
-    for (const s of strings(p)) expect(s, s).toMatch(WIN_ANSI);
-    expect(p.room).toBe('Living Room');
-    expect(p.accessories[0].icons).toContain('Switch 11: Scene');
-    expect(p.accessories[1].icons).toBe('—');
+    // every library icon, spread over the 20 switches of the largest accessory
+    const big = { ...config, size: 12, accessory: '20-switch-4-20a', icons: {} };
+    const keys = plateButtons(big).map((b) => b.key);
+    const icons = PLATE_ICON_CATEGORIES.flatMap((c) => c.icons);
+    for (let i = 0; i < icons.length; i += keys.length) {
+      const p = buildPlatePdfPayload({ ...big, icons: Object.fromEntries(keys.map((key, k) => [key, icons[(i + k) % icons.length].id])) }, 'बैठक Living ✨ Room', when);
+      for (const s of strings(p)) expect(s, s).toMatch(WIN_ANSI);
+      expect(p.room).toBe('Living Room');
+      expect(p.accessories[0].icons.split(', ')).toHaveLength(20);
+    }
   });
 
-  it('keeps every catalogue accessory name printable', () => {
-    for (const list of Object.values(ACCESSORIES)) for (const { name } of list) expect(pdfSafe(name)).toBe(name);
+  it('keeps every catalogue name printable', () => {
+    for (const list of [...Object.values(PLATE_ACCESSORIES), ...Object.values(SNAP_ON_PLATES)]) {
+      for (const { name } of list) expect(pdfSafe(name)).toBe(name);
+    }
   });
 });

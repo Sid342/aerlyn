@@ -81,21 +81,20 @@ describe('buildExportPayload', () => {
     for (const r of home.rooms) home = homeReducer(home, actions.removeDevice(r.id, 'geyser'));
     expect(buildExportPayload(home).customScenes[0].devices.map((d) => d.deviceId)).toEqual(['rgbw-strip']);
   });
-  it('plate is null until a model is chosen', () => {
+  it('plate is null until something is chosen in the designer', () => {
     expect(buildExportPayload(sampleHome()).plate).toBeNull();
     expect(buildExportPayload(initialHome).customScenes).toEqual([]);
   });
-  it('includes the plate config and the room it was designed for', () => {
+  it('describes the plate in words, with the room it was designed for', () => {
     let home = sampleHome();
     home = homeReducer(home, actions.designPlate(home.rooms[1].id, 4));
     home = homeReducer(home, actions.setPlateConfig({
-      ...home.plateConfig, material: 'Black', size: 'Standard', panel: 'Matte', frame: 'Square',
-      accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 1] }], icons: { 'a1.2': 'fan', a1: '💡' },
+      ...home.plateConfig, model: 'full-glass', material: 'glass', accessory: '4-switch', icons: { '1.1.0': 'fa-f7' }, panel: 'titanium',
     }));
     expect(buildExportPayload(home).plate).toEqual({
       room: home.rooms[1].name,
-      model: '4 module', material: 'Black', size: 'Standard', panel: 'Matte', frame: 'Square',
-      accessories: [{ name: '4 Switch', modules: 'Modules 1–2', icons: ['Switch 3: Fan'] }],
+      model: 'Full Glass Touch', material: 'Glass', size: '4 module', panel: 'Titanium', frame: 'Silver', remote: 'No',
+      accessories: [{ name: '4 Switch', modules: 'Modules 1–2', icons: ['Switch 2: Fan F7'] }],
     });
   });
   it('never includes the floor plan image', () => {

@@ -70,7 +70,7 @@ input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
 }
 button.plan-bar-save:focus-visible, button.lead-submit:focus-visible, .btn-cta:focus-visible, .site-nav-cta:focus-visible,
 .hero-cta-primary:focus-visible, .contact-submit:focus-visible, .sb-add-btn:focus-visible, .sb-export-btn:focus-visible,
-.tpd-nav-btn.primary:focus-visible, .plan-notice-btn.primary:focus-visible { outline-color: var(--text); }
+.tpd-btn.primary:focus-visible, .plan-notice-btn.primary:focus-visible { outline-color: var(--text); }
 [tabindex='-1']:focus { outline: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 

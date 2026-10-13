@@ -1,79 +1,161 @@
+/* Aerlyn's chrome around the plate. The plate itself is drawn by reference.css (rules copied from the
+   reference configurator); the last block here is what the port adds to or changes in that drawing. */
+@import './reference.css';
+
 .tpd { padding: 24px 0; }
+.tpd-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 24px; margin-bottom: 20px; }
 .tpd h2 { font-family: var(--font-head); font-size: 1.4rem; color: var(--fg); margin: 0 0 4px; overflow-wrap: anywhere; }
-.tpd-sub { font-size: 0.82rem; color: var(--muted); margin: 0 0 20px; }
+.tpd-sub { font-size: 0.82rem; color: var(--muted); }
+.tpd-reset { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--fg); }
 
-.tpd-stepper { display: flex; gap: 0; margin-bottom: 20px; overflow-x: auto; }
-.tpd-step { flex: 1; min-width: 70px; text-align: center; padding: 8px 4px; font-size: 0.72rem; color: var(--muted); background: none; border: none; border-bottom: 2px solid var(--border); white-space: nowrap; }
-.tpd-step:disabled { cursor: default; }
-.tpd-step:focus-visible { outline-offset: -2px; }
-.tpd-step.active { color: var(--teal); border-bottom-color: var(--teal); font-weight: 700; }
-.tpd-step.done { color: var(--teal); border-bottom-color: var(--teal); opacity: 0.6; }
+.tpd-btn { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 18px; color: var(--fg); font-size: 0.88rem; line-height: 1.3; transition: border-color 0.15s, background-color 0.15s; }
+.tpd-btn:hover:not(:disabled) { border-color: var(--teal); }
+.tpd-btn.primary { background: var(--teal); border-color: var(--teal); color: #000; font-weight: 700; }
+.tpd-btn.primary:hover:not(:disabled) { background: color-mix(in srgb, var(--teal) 85%, #fff); }
+.tpd-btn.danger { border-color: color-mix(in srgb, var(--rose) 60%, var(--border)); color: var(--rose); }
+.tpd-btn.danger:hover:not(:disabled) { border-color: var(--rose); }
+.tpd-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.tpd-link { background: none; border: none; padding: 0; color: var(--teal); font-size: 0.8rem; text-decoration: underline; }
+.tpd-link:disabled { color: var(--muted); text-decoration: none; cursor: default; opacity: 0.6; }
 
-/* preview above the step on narrow screens, beside it on wide ones */
-.tpd-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
-.tpd-stage {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 200px;
-  background: color-mix(in srgb, var(--text) 10%, var(--surface-2)); border: 1px solid var(--border); border-radius: 14px; padding: 24px 16px 14px;
+/* stepper: numbered dots joined by a line; labels drop away on narrow screens */
+.tpd-stepper { list-style: none; display: flex; margin-bottom: 22px; }
+.tpd-step { flex: 1; min-width: 0; position: relative; }
+.tpd-step + .tpd-step::before { content: ''; position: absolute; top: 13px; right: 50%; width: 100%; height: 2px; background: var(--border); }
+.tpd-step.done + .tpd-step::before, .tpd-step.done::before, .tpd-step.active::before { background: var(--teal); }
+.tpd-step button { position: relative; z-index: 1; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; background: none; border: none; padding: 0 2px; color: var(--muted); font-size: 0.74rem; }
+.tpd-step button:disabled { cursor: default; }
+.tpd-step-dot { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); border: 2px solid var(--border); font-family: var(--font-mono); font-size: 0.74rem; color: var(--muted); }
+.tpd-step-label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tpd-step.done button { color: var(--fg); }
+.tpd-step.done .tpd-step-dot { background: color-mix(in srgb, var(--teal) 22%, var(--surface)); border-color: var(--teal); color: var(--teal); }
+.tpd-step.done button:hover .tpd-step-dot { background: color-mix(in srgb, var(--teal) 40%, var(--surface)); }
+.tpd-step.active button { color: var(--teal); font-weight: 700; }
+.tpd-step.active .tpd-step-dot { background: var(--teal); border-color: var(--teal); color: #000; font-weight: 700; }
+@media (max-width: 599px) {
+  .tpd-step-label { display: none; }
 }
-.tpd-panel { min-width: 0; }
+
+.tpd-step-title { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; font-weight: 700; color: var(--fg); margin-bottom: 16px; outline: none; }
+.tpd-step-title::before { content: ''; width: 10px; height: 26px; border-radius: 4px; background: var(--teal); }
+
+/* option cards (model, material, size) — the reference's "Model 1 / Full Glass Touch" boxes */
+.tpd-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.tpd-card { display: flex; flex-direction: column; gap: 4px; text-align: left; background: var(--card); border: 2px solid var(--border); border-radius: 12px; padding: 14px 16px; color: inherit; transition: border-color 0.15s, background-color 0.15s; }
+.tpd-card:hover { border-color: color-mix(in srgb, var(--teal) 60%, var(--border)); }
+.tpd-card[aria-checked='true'] { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 10%, var(--card)); }
+.tpd-card-kicker { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
+.tpd-card-name { font-size: 1.2rem; font-weight: 700; color: var(--fg); overflow-wrap: anywhere; }
+
+/* options on the left, plate on the right; stacked (plate first) when narrow */
+.tpd-split { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.tpd-split > .tpd-stage { order: -1; }
+.tpd-side { min-width: 0; }
 @media (min-width: 900px) {
-  .tpd-body { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 28px; align-items: start; }
-  .tpd-stage { position: sticky; top: 76px; min-height: 340px; }
+  .tpd-split { grid-template-columns: 250px minmax(0, 1fr); gap: 24px; align-items: start; }
+  .tpd-split > .tpd-stage { order: 0; position: sticky; top: 76px; }
+}
+.tpd-side-title { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal); font-weight: 600; margin-bottom: 10px; }
+.tpd-hint { color: var(--muted); font-size: 0.82rem; line-height: 1.45; margin-bottom: 10px; }
+.tpd-notice { color: var(--amber); font-size: 0.82rem; line-height: 1.45; margin-top: 10px; }
+
+/* the surface the plate sits on: light, like the reference's page, so a black plate and its pale frame read */
+.tpd-stage { min-width: 0; display: flex; align-items: center; justify-content: center; padding: 24px 14px; border-radius: 14px; border: 1px solid var(--border); background: linear-gradient(180deg, #f3f4f7, #dcdfe6); }
+.tpd-cards + .tpd-stage { margin-top: 16px; }
+@media (min-width: 900px) {
+  .tpd-stage { min-height: 420px; padding: 28px 16px; }
 }
 
-.tpd-plate { position: relative; width: 100%; margin: auto 0; }
-.tpd-plate svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45)); }
-.tpd-plate text { font-family: var(--font-mono); }
-.tpd-plate-none { color: var(--muted); font-size: 0.85rem; text-align: center; margin: auto 0; }
-.tpd-hit { position: absolute; background: none; border: none; border-radius: 6px; padding: 0; }
-.tpd-hit:hover { background: color-mix(in srgb, var(--teal) 18%, transparent); }
-.tpd-hit:focus-visible { outline-offset: -2px; }
-.tpd-caption { font-size: 0.78rem; color: var(--fg); text-align: center; margin-top: 8px; }
-.tpd-caption-note { font-size: 0.7rem; color: var(--muted); margin-top: 0; }
+.tpd-accessories { display: flex; flex-direction: column; gap: 8px; }
+.tpd-accessory { text-align: left; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; color: var(--fg); font-size: 0.8rem; line-height: 1.35; letter-spacing: 0.02em; text-transform: uppercase; transition: border-color 0.15s, background-color 0.15s; }
+.tpd-accessory:hover { border-color: var(--teal); }
+.tpd-accessory[aria-pressed='true'] { background: var(--teal); border-color: var(--teal); color: #000; font-weight: 700; }
+.tpd-accessory[aria-pressed='true']:focus-visible { outline-color: var(--text); }
+@media (max-width: 899px) {
+  .tpd-accessories { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}
 
-.tpd-nav { display: flex; justify-content: space-between; margin-top: 24px; }
-.tpd-nav-btn { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 20px; color: var(--fg); font-size: 0.9rem; cursor: pointer; }
-.tpd-nav-btn.primary { background: var(--teal); border-color: var(--teal); color: #000; font-weight: 700; }
-.tpd-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.tpd-download { display: flex; justify-content: flex-end; margin-top: 20px; }
+.tpd-current { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; font-size: 0.82rem; color: var(--fg); margin-bottom: 10px; }
+.tpd-palette { max-height: 300px; overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--border); border-radius: 12px; background: var(--card); padding: 0 10px 10px; }
+.tpd-palette-title { position: sticky; top: 0; z-index: 1; background: var(--card); padding: 10px 0 6px; font-size: 0.78rem; font-weight: 600; color: var(--fg); }
+.tpd-palette-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 8px; }
+.tpd-palette-icon { aspect-ratio: 1; display: grid; place-items: center; background: #0a0a12; border: 1px solid var(--border); border-radius: 10px; padding: 16%; cursor: grab; transition: border-color 0.15s, background-color 0.15s; }
+.tpd-palette-icon:hover { border-color: var(--teal); background: #12121f; }
+.tpd-palette-icon:focus-visible { outline-offset: -2px; }
+.tpd-palette-icon img { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+@media (min-width: 900px) {
+  .tpd-palette { max-height: 30rem; }
+  .tpd-palette-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tpd-palette-icon { padding: 22%; }
+}
 
-.tpd-option-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 10px; }
-.tpd-option { background: var(--card); border: 2px solid var(--border); border-radius: 12px; padding: 14px 10px; text-align: center; color: inherit; transition: border-color 0.15s; }
-.tpd-option:hover:not(:disabled) { border-color: var(--teal); }
-.tpd-option.selected { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 10%, transparent); }
-.tpd-option:disabled { opacity: 0.4; cursor: not-allowed; }
-.tpd-option-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--fg); }
-.tpd-option-sub { display: block; font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+.tpd-swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+.tpd-swatch { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 104px; background: var(--card); border: 2px solid var(--border); border-radius: 12px; padding: 12px 8px 10px; color: var(--fg); font-size: 0.8rem; transition: border-color 0.15s; }
+.tpd-swatch:hover { border-color: color-mix(in srgb, var(--teal) 60%, var(--border)); }
+.tpd-swatch[aria-checked='true'] { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 10%, var(--card)); }
+.tpd-swatch-chip { width: 64px; height: 64px; border-radius: 8px; border: 1px solid #4a4a60; }
 
-.tpd-color-grid { display: flex; flex-wrap: wrap; gap: 12px; }
-.tpd-color-swatch { display: block; width: 52px; height: 52px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: border-color 0.15s; }
-.tpd-color-swatch.selected { border-color: var(--teal); }
-.tpd-color-label { font-size: 0.72rem; text-align: center; margin-top: 4px; color: var(--muted); }
+.tpd-nav { display: flex; align-items: center; gap: 12px; margin-top: 24px; }
+.tpd-nav .primary { margin-left: auto; }
+.tpd-nav-hint { margin-left: auto; font-size: 0.8rem; color: var(--muted); text-align: right; }
+.tpd-nav-hint + .primary { margin-left: 0; }
 
-.tpd-hint { color: var(--muted); font-size: 0.85rem; }
-.tpd-placed { list-style: none; }
-.tpd-placed-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; color: var(--fg); }
-.tpd-placed-row:last-child { border-bottom: none; }
-.tpd-placed-where { display: block; font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
-.tpd-remove-acc { background: none; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 0.78rem; padding: 5px 10px; }
-.tpd-remove-acc:hover { color: var(--rose); border-color: var(--rose); }
+.tpd-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; margin-top: 16px; }
+.tpd-box { min-width: 0; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+.tpd-box-sub { font-size: 0.78rem; color: var(--muted); font-weight: 600; margin: 14px 0 6px; }
+.tpd-spec > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+.tpd-spec > div:last-child { border-bottom: none; padding-bottom: 0; }
+.tpd-spec dt { color: var(--muted); white-space: nowrap; }
+.tpd-spec dd { color: var(--fg); font-weight: 600; text-align: right; overflow-wrap: anywhere; }
+.tpd-icon-list { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px 12px; font-size: 0.8rem; color: var(--fg); }
+.tpd-select { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; color: var(--fg); font: inherit; font-size: 0.85rem; padding: 6px 10px; }
+.tpd-logo-row { display: flex; align-items: stretch; gap: 12px; }
+.tpd-upload { flex: 1; min-width: 0; position: relative; display: flex; flex-direction: column; justify-content: center; gap: 4px; text-align: center; border: 2px dashed var(--border); border-radius: 12px; padding: 18px 12px; color: var(--fg); font-size: 0.86rem; cursor: pointer; transition: border-color 0.15s; }
+.tpd-upload:hover, .tpd-upload:focus-within { border-color: var(--teal); }
+.tpd-upload input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.tpd-upload small { color: var(--muted); font-size: 0.74rem; }
+.tpd-logo-preview { width: 84px; height: 84px; object-fit: contain; border: 1px solid var(--border); border-radius: 12px; background: #f4f4f7; padding: 6px; }
+.tpd-field { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; font-size: 0.86rem; color: var(--muted); }
+.tpd-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.tpd-box .tpd-actions { margin-top: 14px; }
+.tpd-downloads { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; font-size: 0.85rem; color: var(--muted); }
+.tpd-downloads .tpd-notice { flex-basis: 100%; margin-top: 0; }
 
-.tpd-chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
-.tpd-chip { background: var(--card); border: 1px solid var(--border); border-radius: 999px; color: var(--fg); font-size: 0.78rem; padding: 6px 12px; }
-.tpd-chip.selected { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 14%, transparent); }
-.tpd-chip-icon { color: var(--teal); }
-.tpd-icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: 8px; }
-.tpd-icon-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; background: var(--card); border: 2px solid var(--border); border-radius: 10px; color: var(--fg); font-size: 0.7rem; padding: 10px 4px 8px; }
-.tpd-icon-btn:hover { border-color: var(--teal); }
-.tpd-icon-btn.selected { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 10%, transparent); color: var(--teal); }
-.tpd-icon { display: block; width: 26px; height: 26px; }
+/* ---- the plate: what the port adds to the reference's drawing ---- */
+.tpd-ref { width: 100%; display: flex; justify-content: center; }
+/* the plate is laid out at the reference's full size and scaled as one piece into this box */
+.tpd-fit { position: relative; flex: none; }
+.tpd-fit > .module-display { position: absolute; top: 0; left: 0; transform-origin: 0 0; box-sizing: border-box; }
 
-.tpd-section-label { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--teal); font-weight: 600; margin: 18px 0 8px; }
-.tpd-panel > div:first-child > .tpd-section-label:first-child { margin-top: 0; }
+/* the reference has no rule for .scene12, so its 12 module plates come out as one column of twenty rings
+   running off the plate; here the upper and lower panel each take half of it, laid out like .scene6 */
+.tpd-ref .scene12 { display: flex; justify-content: center; text-align: center; height: 50%; }
 
-.tpd-summary-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 6px 16px; }
-.tpd-summary-row { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
-.tpd-summary-row:last-child { border-bottom: none; }
-.tpd-summary-label { color: var(--muted); white-space: nowrap; }
-.tpd-summary-value { color: var(--fg); font-weight: 600; text-align: right; overflow-wrap: anywhere; }
-.tpd-summary-icons { display: block; font-size: 0.76rem; font-weight: 400; color: var(--muted); margin-top: 2px; }
+/* the reference never styles its two curtain buttons, so they are invisible there; here they are rings like
+   the switches, on the same rows (the second rule is the reference's own reset for .switch2Image) */
+.tpd-ref .curtain1Image, .tpd-ref .curtain2Image { position: relative; width: 12mm; height: 12mm; border: 1px solid #fff; border-radius: 50%; }
+.tpd-ref .nodeSize > .curtain1Image, .tpd-ref .nodeSize > .curtain2Image { top: 0; left: 0; right: 0; }
+
+/* a placed icon takes the place of its ring: same centre, same box */
+.tpd-ref .tpd-has-icon { border-color: transparent; background-image: none; }
+.tpd-ref .tpd-icon { position: absolute; top: -1px; left: -1px; width: calc(100% + 2px); height: calc(100% + 2px); max-width: none; object-fit: contain; }
+.tpd-ref .snapon-btn .tpd-icon { top: 0; left: 0; width: 100%; height: 100%; }
+.tpd-ref [role='button'] { cursor: pointer; }
+.tpd-ref .tpd-selected { outline: 2px solid var(--teal); outline-offset: 4px; }
+.tpd-ref .tpd-over { outline: 2px dashed var(--teal); outline-offset: 4px; }
+
+.tpd-ref .tpd-bin { min-width: 64px; padding: 4px 9px; background: none; border: none; border-radius: 4px; color: #1976d2; line-height: 0; }
+.tpd-ref .tpd-bin:hover { background: rgba(25, 118, 210, 0.16); }
+
+.tpd-logo { position: absolute; z-index: 10; width: 60px; height: 60px; object-fit: contain; border: 2px solid #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); background-color: rgba(255, 255, 255, 0.9); }
+
+/* light panels: dark outlines, graphics and icons (white on white in the reference) */
+.tpd-light .sub-module-2, .tpd-light .sub-module-4, .tpd-light .sub-module-6, .tpd-light .sub-module-8, .tpd-light .sub-module-12 { border-color: #6b6b76; }
+.tpd-light .switch2Image:not(.tpd-has-icon), .tpd-light .switch2ImageFan:not(.tpd-has-icon), .tpd-light .curtain1Image:not(.tpd-has-icon), .tpd-light .curtain2Image:not(.tpd-has-icon),
+.tpd-light .snapon-static-circle, .tpd-light .snapon-earth-pin { border-color: #1c1c22; }
+.tpd-light .sixampImage { background-image: url(./media/socket-3pin-10a-dark.svg); }
+.tpd-light .socket16amp { background-image: url(./media/socket-16a-dark.png); }
+.tpd-light .switch2ImageDimmer { background-image: url(./media/dimmer-dark.png); }
+.tpd-light .curtainImage { background-image: url(./media/curtain-dark.png); }
+.tpd-light .snapon-btn:not(.tpd-has-icon) { background-image: url(./media/vertical-line-dark.svg); }
+.tpd-light .tpd-icon { filter: brightness(0); }

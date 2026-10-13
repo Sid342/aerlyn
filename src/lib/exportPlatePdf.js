@@ -1,6 +1,5 @@
 import { site } from '../config/site.js';
-import { placeSymbol } from '../data/plateIcons.js';
-import { plateLayout, plateDetails, hexRgb } from './plateLayout.js';
+import { describePlate } from './plateConfig.js';
 
 // jsPDF's built-in Helvetica can only encode WinAnsi (cp1252). Anything else — emoji, Devanagari —
 // prints as garbage and breaks the spacing of its whole line, so it is removed.
@@ -10,21 +9,23 @@ export const pdfSafe = (value) => String(value ?? '').replace(NOT_WIN_ANSI, '').
 // Every string the PDF prints. `roomName` is the room the designer was opened from, if any.
 export function buildPlatePdfPayload(config, roomName = null, now = new Date()) {
   const choice = (v) => pdfSafe(v) || '—';
+  const d = describePlate(config);
   return {
     title: 'Aerlyn — Switch plate design',
     room: pdfSafe(roomName) || null,
     date: now.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
     specs: [
-      ['Plate size', choice(config.model)],
-      ['Colour', choice(config.material)],
-      ['Profile', choice(config.size)],
-      ['Finish', choice(config.panel)],
-      ['Frame', choice(config.frame)],
+      ['Model', choice(d.model)],
+      ['Material', choice(d.material)],
+      ['Size', choice(d.size)],
+      ['Panel colour', choice(d.panel)],
+      ...(d.frame ? [['Frame colour', choice(d.frame)]] : []),
+      ['Remote', d.remote],
     ],
-    accessories: plateDetails(config).map((a) => ({
+    accessories: d.accessories.map((a) => ({
       name: choice(a.name),
-      modules: a.modules,
-      icons: a.icons.join(', ') || '—',
+      modules: pdfSafe(a.modules),
+      icons: a.icons.map(pdfSafe).join(', ') || '—',
     })),
     footer: `${site.origin.replace(/^https?:\/\//, '')} · Illustration only, not to scale.`,
   };
@@ -36,51 +37,18 @@ const BOTTOM = 272;
 const INK = [28, 28, 34];
 const GREY = [110, 110, 122];
 const RULE = [214, 214, 222];
+export const BACKDROP = [240, 240, 244];
 
-function drawShapes(pdf, shapes, at) {
-  for (const s of shapes) {
-    if (s.c) {
-      pdf.circle(at.x(s.c[0]), at.y(s.c[1]), s.c[2] * at.k, 'S');
-    } else {
-      const deltas = s.pts.slice(1).map((p, i) => [(p[0] - s.pts[i][0]) * at.k, (p[1] - s.pts[i][1]) * at.k]);
-      pdf.lines(deltas, at.x(s.pts[0][0]), at.y(s.pts[0][1]), [1, 1], 'S', !!s.closed);
-    }
-  }
-}
-
-// Draws the plate centred in the page width, top at `top`. Returns the y below it.
-function drawPlate(pdf, layout, top) {
-  const k = Math.min(2.4, (WIDTH - 20) / layout.w, 72 / layout.h); // mm per plate unit
-  const at = { k, x: (u) => LEFT + (WIDTH - layout.w * k) / 2 + u * k, y: (u) => top + 8 + u * k };
-  const rect = (r, radius, style) => pdf.roundedRect(at.x(r.x), at.y(r.y), r.w * k, r.h * k, radius * k, radius * k, style);
-  const line = hexRgb(layout.line);
-
-  pdf.setFillColor(240, 240, 244);
-  pdf.roundedRect(LEFT, top, WIDTH, layout.h * k + 16, 3, 3, 'F');
-
-  pdf.setLineJoin('round');
-  pdf.setLineCap('round');
-  pdf.setFillColor(...hexRgb(layout.fill));
-  pdf.setDrawColor(...line);
-  pdf.setLineWidth((layout.bezel ? 0.5 : 0.2) * k);
-  rect({ x: 0, y: 0, w: layout.w, h: layout.h }, layout.radius, 'FD');
-  pdf.setLineWidth(0.25 * k);
-  if (layout.bezel) rect({ x: 1.3, y: 1.3, w: layout.w - 2.6, h: layout.h - 2.6 }, Math.max(0, layout.radius - 1.1), 'S');
-
-  pdf.setLineDashPattern([1.2 * k, 1.2 * k], 0);
-  for (const m of layout.empty) rect({ x: m.x + 1, y: m.y + 1, w: m.w - 2, h: m.h - 2 }, 1, 'S');
-  pdf.setLineDashPattern([], 0);
-
-  for (const c of layout.controls) {
-    pdf.setFillColor(...hexRgb(layout.button));
-    pdf.setDrawColor(...line);
-    pdf.setLineWidth(0.3 * k);
-    rect(c.button, c.button.r, 'FD');
-    pdf.setDrawColor(...hexRgb(layout.ink));
-    pdf.setLineWidth(c.symbol.stroke * k);
-    drawShapes(pdf, placeSymbol(c.symbol.name, c.symbol.cx, c.symbol.cy, c.symbol.size), at);
-  }
-  return top + layout.h * k + 16;
+// Places the picture of the plate (see capturePlate) centred in the page width, top at `top`. Returns the y below it.
+function drawPlate(pdf, image, top) {
+  const k = Math.min((WIDTH - 12) / image.width, 84 / image.height); // mm per image pixel
+  const w = image.width * k;
+  const h = image.height * k;
+  pdf.setFillColor(...BACKDROP);
+  pdf.roundedRect(LEFT, top, WIDTH, h + 12, 3, 3, 'F');
+  // 'FAST' deflates the pixels; left raw, a plate is close to 10 MB
+  pdf.addImage(image.dataUrl, 'PNG', LEFT + (WIDTH - w) / 2, top + 6, w, h, undefined, 'FAST');
+  return top + h + 12;
 }
 
 function heading(pdf, text, y) {
@@ -120,10 +88,9 @@ function table(pdf, y, widths, rows, { head = false, bold = -1 } = {}) {
   return y;
 }
 
-// Draws the whole document into a jsPDF instance.
-export function drawPlatePdf(pdf, config, roomName = null, now = new Date()) {
+// Draws the whole document into a jsPDF instance. `image` is { dataUrl, width, height } or null.
+export function drawPlatePdf(pdf, config, roomName = null, image = null, now = new Date()) {
   const p = buildPlatePdfPayload(config, roomName, now);
-  const layout = plateLayout(config);
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(18);
@@ -135,19 +102,19 @@ export function drawPlatePdf(pdf, config, roomName = null, now = new Date()) {
   pdf.text(pdf.splitTextToSize([p.room && `Room: ${p.room}`, p.date].filter(Boolean).join('   ·   '), WIDTH), LEFT, 31);
 
   let y = 38;
-  if (layout) y = drawPlate(pdf, layout, y) + 12;
+  if (image) y = drawPlate(pdf, image, y) + 12;
 
   y = heading(pdf, 'Specification', y);
   y = table(pdf, y, [50, WIDTH - 50], p.specs, { bold: 1 }) + 12;
 
   y = heading(pdf, 'Accessories', y);
   if (p.accessories.length) {
-    // non-breaking spaces keep "Switch 9: Lock" on one line when the cell wraps
+    // non-breaking spaces keep "Switch 9: Fan F1" on one line when the cell wraps
     const whole = (icons) => icons.split(', ').map((label) => label.replace(/ /g, '\u00A0')).join(', ');
-    const rows = [['Accessory', 'Modules', 'Button icons'], ...p.accessories.map((a) => [a.name, a.modules, whole(a.icons)])];
+    const rows = [['Accessory', 'Modules', 'Switch icons'], ...p.accessories.map((a) => [a.name, a.modules, whole(a.icons)])];
     table(pdf, y, [62, 34, WIDTH - 96], rows, { head: true });
   } else {
-    table(pdf, y, [WIDTH], [['No accessories placed.']]);
+    table(pdf, y, [WIDTH], [['No accessory chosen.']]);
   }
 
   for (let page = 1; page <= pdf.getNumberOfPages(); page++) {
@@ -160,10 +127,60 @@ export function drawPlatePdf(pdf, config, roomName = null, now = new Date()) {
   return pdf;
 }
 
-// jsPDF is large, so it loads only when a PDF is actually asked for.
-export async function downloadPlatePdf(config, roomName = null) {
-  const { jsPDF } = await import('jspdf');
-  const pdf = drawPlatePdf(new jsPDF('p', 'mm', 'a4'), config, roomName);
-  const slug = (config.model || 'plate').replace(/\s+/g, '-').toLowerCase();
-  pdf.save(`aerlyn-plate-${slug}-${Date.now()}.pdf`);
+// html2canvas ignores object-fit and CSS filters, so every image on the plate (icons, logo) is redrawn
+// here first: fitted into a square, and inked dark where the plate shows it dark (light panels).
+function fitted(img, dark) {
+  const size = 384;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const k = Math.min(size / img.naturalWidth, size / img.naturalHeight);
+  const w = img.naturalWidth * k;
+  const h = img.naturalHeight * k;
+  ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+  if (dark) {
+    ctx.globalCompositeOperation = 'source-in';
+    ctx.fillStyle = `rgb(${INK.join(',')})`;
+    ctx.fillRect(0, 0, size, size);
+  }
+  return canvas.toDataURL('image/png');
+}
+
+// Rasterises the plate element as it is on screen, at full size and without its shadow.
+// html2canvas is large (and jsPDF bundles it anyway), so it loads only when a download is asked for.
+export async function capturePlate(element) {
+  const { default: html2canvas } = await import('html2canvas');
+  const dark = !!element.closest('.tpd-light');
+  const images = [...element.querySelectorAll('img')];
+  await Promise.all(images.map((img) => img.decode().catch(() => {})));
+  const redrawn = images.map((img) => (img.naturalWidth ? fitted(img, dark && img.classList.contains('tpd-icon')) : null));
+  const canvas = await html2canvas(element, {
+    scale: 3,
+    backgroundColor: `rgb(${BACKDROP.join(',')})`,
+    logging: false,
+    onclone: (_doc, clone) => {
+      clone.style.transform = 'none';
+      clone.style.boxShadow = 'none';
+      clone.querySelectorAll('img').forEach((img, i) => {
+        if (redrawn[i]) img.src = redrawn[i];
+        img.style.filter = 'none';
+      });
+    },
+  });
+  return { dataUrl: canvas.toDataURL('image/png'), width: canvas.width, height: canvas.height };
+}
+
+const fileName = (config, ext) => `aerlyn-plate-${config.size || 'design'}-module-${Date.now()}.${ext}`;
+
+export async function downloadPlatePdf(config, roomName, element) {
+  const [{ jsPDF }, image] = await Promise.all([import('jspdf'), capturePlate(element)]);
+  drawPlatePdf(new jsPDF('p', 'mm', 'a4'), config, roomName, image).save(fileName(config, 'pdf'));
+}
+
+export async function downloadPlateImage(config, element) {
+  const { dataUrl } = await capturePlate(element);
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = fileName(config, 'png');
+  link.click();
 }

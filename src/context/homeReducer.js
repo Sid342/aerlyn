@@ -1,33 +1,6 @@
 import { cloneRoom, makeRoom, buildRooms } from '../data/templates.js';
 import { getDevice } from '../data/devices.js';
-import { iconLabel } from '../data/plateIcons.js';
-
-export const emptyPlateConfig = {
-  model: null,
-  maxSlots: 0,
-  material: null,
-  materialCode: null,
-  size: null,
-  accessories: [],
-  icons: {}, // `${accessoryId}.${switchIndex}` -> icon id from data/plateIcons.js
-  panel: null,
-  frame: null,
-};
-
-// A stored or linked plate config may be partial — fill it out so the designer and exports can rely on the shape.
-// Icons that are not known icon ids (older plans stored emoji) are dropped.
-export function fullPlateConfig(config) {
-  const c = config && typeof config === 'object' ? config : {};
-  return {
-    ...emptyPlateConfig,
-    ...c,
-    accessories: (Array.isArray(c.accessories) ? c.accessories : [])
-      .filter((a) => a && typeof a.name === 'string' && Array.isArray(a.slots)),
-    icons: Object.fromEntries(
-      Object.entries(c.icons && typeof c.icons === 'object' ? c.icons : {}).filter(([, id]) => typeof id === 'string' && iconLabel(id))
-    ),
-  };
-}
+import { emptyPlateConfig, cleanPlateConfig } from '../lib/plateConfig.js';
 
 export const initialHome = {
   homeType: null,
@@ -37,6 +10,7 @@ export const initialHome = {
   floorPlanImage: null, // data URL, in memory only — never persisted or sent
   plateConfig: emptyPlateConfig,
   plateRoomId: null, // room the plate designer was opened from
+  plateOpens: 0, // "Design this plate" clicks this session; each one moves the designer to the right step
 };
 
 export const actions = {
@@ -216,23 +190,18 @@ export function homeReducer(state, action) {
     case 'SET_PLATE_CONFIG':
       return { ...state, plateConfig: action.config };
 
-    // open the designer for a room, preset to a plate size (same reset as picking a model by hand)
+    // open the designer for a room, preset to a plate size (same reset as picking a size by hand)
     case 'DESIGN_PLATE':
       return {
         ...state,
         plateRoomId: action.roomId,
-        plateConfig: {
-          ...state.plateConfig,
-          model: `${action.slots} module`,
-          maxSlots: action.slots,
-          accessories: [],
-          icons: {},
-        },
+        plateOpens: state.plateOpens + 1,
+        plateConfig: cleanPlateConfig({ ...state.plateConfig, size: action.slots, accessory: null, icons: {} }),
       };
 
     // replace the plan with a saved one (browser storage or a plan link)
     case 'HYDRATE':
-      return { ...initialHome, ...action.home, plateConfig: fullPlateConfig(action.home.plateConfig) };
+      return { ...initialHome, ...action.home, plateConfig: cleanPlateConfig(action.home.plateConfig) };
 
     case 'RESET':
       return initialHome;

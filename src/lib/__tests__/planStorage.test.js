@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { savePlan, loadPlan, encodePlan, decodePlan, planOnLoad } from '../planStorage.js';
-import { homeReducer, initialHome, emptyPlateConfig, actions } from '../../context/homeReducer.js';
+import { homeReducer, initialHome, actions } from '../../context/homeReducer.js';
+import { emptyPlateConfig } from '../plateConfig.js';
 
 const KEY = 'aerlyn_plan_v1';
 
@@ -16,9 +17,8 @@ function sampleHome() {
     payload: { sceneId: s.customScenes[0].id, deviceId: 'rgbw-strip', on: true },
   });
   s = homeReducer(s, actions.setPlateConfig({
-    ...emptyPlateConfig, model: '8 module', maxSlots: 8, material: 'Black', materialCode: '#000000', size: 'Slim', panel: 'Gloss', frame: 'Rounded',
-    accessories: [{ id: 'a0', name: '8 Switch 1 Socket', nodeSize: 7, slots: [0, 1, 2, 3, 4, 5, 6] }],
-    icons: { 'a0.0': 'light', 'a0.7': 'fan' },
+    ...emptyPlateConfig, model: 'full-glass', material: 'glass', size: 8, accessory: '8-switch-2-20a-1-socket-1-10a',
+    icons: { '1.0.0': 'li-l1', '1.3.1': 'fa-f7' }, panel: 'black', frame: 'titanium', remote: true,
   }));
   s = homeReducer(s, actions.setFloorPlan('data:image/png;base64,SECRET'));
   return { ...s, plateRoomId: s.rooms[1].id };
@@ -204,77 +204,52 @@ describe('decodePlan — untrusted links', () => {
 
   describe('plate', () => {
     const goodPlate = {
-      model: '4 module', maxSlots: 4, material: 'Black', materialCode: '#000000', size: 'Standard', panel: 'Matte', frame: 'Square',
-      accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 1] }], icons: { 'a1.0': 'light' },
+      ...emptyPlateConfig, model: 'full-glass', material: 'acrylic', size: 4, accessory: '4-switch', icons: { '1.0.0': 'li-l1' }, panel: 'space-grey',
     };
     const decodeWithPlate = (p) => decodePlan(link({ r: [linkRoom([['camera', 1]])], p, pr: 0 }));
+    const compactOf = (plateConfig) => {
+      const home = homeReducer(homeReducer(initialHome, actions.setHomeType('1BHK')), actions.setPlateConfig(plateConfig));
+      return JSON.parse(Buffer.from(encodePlan(home), 'base64url').toString());
+    };
+
+    it('writes the plate into a link compactly, icons by short id on their switch', () => {
+      expect(compactOf(goodPlate).p).toEqual(['p3', 'full-glass', 'acrylic', 4, '4-switch', 'space-grey', null, 0, { '1.0.0': 'li-l1' }]);
+    });
 
     it('keeps a well-formed plate and its room', () => {
-      const plan = decodeWithPlate(goodPlate);
+      const plan = decodeWithPlate(compactOf(goodPlate).p);
       expect(plan.plateConfig).toEqual(goodPlate);
       expect(plan.plateRoomId).toBe(plan.rooms[0].id);
     });
 
-    it('takes the slot count from the model, not from the link', () => {
-      expect(decodeWithPlate({ ...goodPlate, maxSlots: 9999 }).plateConfig.maxSlots).toBe(4);
+    it('drops unknown ids and icons on no switch — the plate survives', () => {
+      const plan = decodeWithPlate(['p3', 'full-glass', 'granite', 4, '4-switch', 'pink', null, 0, { '1.0.0': 'li-l1', '1.0.1': '💡', '5.0.0': 'li-l1' }]);
+      expect(plan.plateConfig).toEqual({ ...goodPlate, material: null, panel: null });
     });
 
-    it('drops icons that are not icon ids or sit on no switch button — the plate survives', () => {
-      const icons = { 'a1.0': 'light', 'a1.3': 'fan', 'a1.4': 'tv', 'ghost.0': 'lock', a1: '💡', 'a1.1': '💡', 'a1.2': { html: '<b>' }, 'a1.x': 'tv' };
-      expect(decodeWithPlate({ ...goodPlate, icons }).plateConfig.icons).toEqual({ 'a1.0': 'light', 'a1.3': 'fan' });
+    it('loads a link made before the reference port: size, colour and a single accessory', () => {
+      const plan = decodeWithPlate([4, 'Black', 'Standard', 'Matte', 'Square', [['4 Switch', 2]], { 'a2.1': 'ac' }]);
+      expect(plan.plateConfig).toEqual({ ...emptyPlateConfig, size: 4, panel: 'black', accessory: '4-switch' });
     });
 
-    it('loads a plate saved with the old emoji icons, without its icons', () => {
-      const plan = decodeWithPlate({ ...goodPlate, icons: { a1: '💡' } });
-      expect(plan.plateConfig).toEqual({ ...goodPlate, icons: {} });
-    });
-
-    it('writes the plate into a link compactly and rebuilds accessory ids', () => {
-      let home = homeReducer(initialHome, actions.setHomeType('1BHK'));
-      home = homeReducer(home, actions.setPlateConfig({
-        ...goodPlate, accessories: [{ id: '4 Switch-1760000000000', name: '4 Switch', nodeSize: 2, slots: [2, 3] }],
-        icons: { '4 Switch-1760000000000.1': 'ac' },
-      }));
-      const compact = JSON.parse(Buffer.from(encodePlan(home), 'base64url').toString());
-      expect(compact.p).toEqual([4, 'Black', 'Standard', 'Matte', 'Square', [['4 Switch', 2]], { 'a2.1': 'ac' }]);
-      expect(decodePlan(encodePlan(home)).plateConfig).toEqual({
-        ...goodPlate, accessories: [{ id: 'a2', name: '4 Switch', nodeSize: 2, slots: [2, 3] }], icons: { 'a2.1': 'ac' },
-      });
+    it.each([
+      ['a stored plate with emoji icons', { model: '4 module', maxSlots: 4, material: 'Black', accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 1] }], icons: { a1: '💡' } }],
+      ['a stored plate with the home-made icon ids', { model: '4 module', maxSlots: 4, material: 'Black', accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 1] }], icons: { 'a1.0': 'light' } }],
+    ])('loads %s without its icons', (_, old) => {
+      expect(decodeWithPlate(old).plateConfig).toEqual({ ...emptyPlateConfig, size: 4, panel: 'black', accessory: '4-switch' });
     });
 
     it.each([
       ['unknown plate size', [5, 'Black', null, null, null, [], {}]],
-      ['accessory that is not in the catalogue', [4, 'Black', null, null, null, [['40 Switch', 0]], {}]],
-      ['accessory that runs off the plate', [4, 'Black', null, null, null, [['4 Switch', 3]], {}]],
-      ['accessories that are not a list', [4, 'Black', null, null, null, 'x', {}]],
-    ])('drops a compact plate: %s', (_, p) => {
-      expect('plateConfig' in decodeWithPlate(p)).toBe(false);
-    });
-
-    it.each([
-      ['unknown model', { model: '99 module' }],
-      ['missing model', { model: null }],
-      ['material of the wrong type', { material: { a: 1 } }],
-      ['colour that is not a hex code', { materialCode: 'url(https://example.com/x.png)' }],
-      ['accessories that are not a list', { accessories: 'x' }],
-      ['missing accessories', { accessories: undefined }],
-      ['accessory without slots', { accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2 }] }],
-      ['accessory slot outside the plate', { accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 7] }] }],
-      ['accessory with a non-text name', { accessories: [{ id: 'a1', name: 5, nodeSize: 2, slots: [0, 1] }] }],
-      ['accessory wider than the plate', { accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 50, slots: [0, 1] }] }],
-      ['more accessories than slots', { accessories: Array.from({ length: 5 }, (_, i) => ({ id: `a${i}`, name: 'Fan', nodeSize: 1, slots: [0] })) }],
-      ['icons that are not an object', { icons: ['💡'] }],
-      ['missing icons', { icons: undefined }],
+      ['nothing recognisable', { model: '99 module', accessories: 'x' }],
+      ['a string', '8 module'],
+      ['an empty new-shape plate', ['p3', null, null, null, null, null, null, 0, {}]],
     ])('drops the plate but keeps the rest: %s', (_, bad) => {
-      const plan = decodeWithPlate({ ...goodPlate, ...bad });
+      const plan = decodeWithPlate(bad);
       expect(plan).not.toBeNull();
       expect('plateConfig' in plan).toBe(false);
       expect(plan.plateRoomId).toBeNull();
       expect(plan.rooms[0].devices).toEqual([{ deviceId: 'camera', qty: 1, on: false }]);
-    });
-
-    it('a plate that is not an object is ignored', () => {
-      expect('plateConfig' in decodeWithPlate('8 module')).toBe(false);
     });
   });
 });

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { homeReducer, initialHome, emptyPlateConfig, fullPlateConfig, actions } from '../homeReducer.js';
+import { homeReducer, initialHome, actions } from '../homeReducer.js';
+import { emptyPlateConfig } from '../../lib/plateConfig.js';
 
 function withHome(type = '2BHK') {
   return homeReducer(initialHome, actions.setHomeType(type));
@@ -334,30 +335,31 @@ describe('homeReducer', () => {
       expect(initialHome.plateRoomId).toBeNull();
     });
     it('replaces the plate config', () => {
-      const config = { ...emptyPlateConfig, model: '4 module', maxSlots: 4 };
+      const config = { ...emptyPlateConfig, model: 'full-glass', size: 4 };
       const s1 = homeReducer(withHome(), actions.setPlateConfig(config));
       expect(s1.plateConfig).toEqual(config);
     });
   });
 
   describe('DESIGN_PLATE', () => {
-    it('presets the model to the given size and remembers the room', () => {
+    it('presets the size and remembers the room', () => {
       const s0 = withHome();
       const s1 = homeReducer(s0, actions.designPlate(s0.rooms[2].id, 8));
       expect(s1.plateRoomId).toBe(s0.rooms[2].id);
-      expect(s1.plateConfig.model).toBe('8 module');
-      expect(s1.plateConfig.maxSlots).toBe(8);
+      expect(s1.plateConfig).toEqual({ ...emptyPlateConfig, size: 8 });
+      // each click is counted so the designer can move to the right step, even for the same room and size
+      expect([s0.plateOpens, s1.plateOpens, homeReducer(s1, actions.designPlate(s0.rooms[2].id, 8)).plateOpens]).toEqual([0, 1, 2]);
     });
-    it('clears accessories and icons but keeps the chosen finish', () => {
+    it('clears the accessory and icons, as picking a size does, but keeps the other choices', () => {
       const s0 = homeReducer(withHome(), actions.setPlateConfig({
-        ...emptyPlateConfig, model: '4 module', maxSlots: 4, material: 'Black', panel: 'Matte',
-        accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 1] }], icons: { a1: '💡' },
+        ...emptyPlateConfig, model: 'full-glass', material: 'glass', size: 4, accessory: '4-switch', icons: { '1.0.0': 'sh-circle' }, panel: 'titanium',
       }));
       const s1 = homeReducer(s0, actions.designPlate(s0.rooms[0].id, 12));
-      expect(s1.plateConfig.accessories).toEqual([]);
-      expect(s1.plateConfig.icons).toEqual({});
-      expect(s1.plateConfig.material).toBe('Black');
-      expect(s1.plateConfig.panel).toBe('Matte');
+      expect(s1.plateConfig).toEqual({ ...emptyPlateConfig, model: 'full-glass', material: 'glass', size: 12, panel: 'titanium' });
+    });
+    it('ignores a size no plate comes in', () => {
+      const s0 = withHome();
+      expect(homeReducer(s0, actions.designPlate(s0.rooms[0].id, 5)).plateConfig.size).toBeNull();
     });
   });
 
@@ -377,33 +379,11 @@ describe('homeReducer', () => {
       expect(s1.floorPlanImage).toBeNull();
     });
 
-    it('fills out a plate config with missing fields', () => {
-      const s1 = homeReducer(initialHome, actions.hydrate({ homeType: '1BHK', rooms: [], plateConfig: { model: '4 module' } }));
-      expect(s1.plateConfig).toEqual({ ...emptyPlateConfig, model: '4 module' });
-    });
-  });
-
-  describe('fullPlateConfig', () => {
-    it('gives the empty config for anything that is not a config', () => {
-      for (const bad of [undefined, null, 'x', 7]) expect(fullPlateConfig(bad)).toEqual(emptyPlateConfig);
-    });
-
-    it('repairs accessories and icons of the wrong shape', () => {
-      const good = { id: 'a1', name: 'Fan', nodeSize: 2, slots: [0, 1] };
-      const c = fullPlateConfig({ model: '4 module', maxSlots: 4, accessories: [good, null, { name: 'no slots' }, { slots: [] }], icons: 'x' });
-      expect(c.accessories).toEqual([good]);
-      expect(c.icons).toEqual({});
-      expect(fullPlateConfig({ accessories: 'x' }).accessories).toEqual([]);
-    });
-
-    it('keeps a complete config as it is', () => {
-      const full = { ...emptyPlateConfig, model: '2 module', maxSlots: 2, icons: { 'a0.1': 'fan' } };
-      expect(fullPlateConfig(full)).toEqual(full);
-    });
-
-    it('drops icons that are not icon ids, such as the emoji older plans stored', () => {
-      const old = { ...emptyPlateConfig, model: '2 module', maxSlots: 2, icons: { a: '💡', 'a0.0': 'light', b: null, c: { x: 1 } } };
-      expect(fullPlateConfig(old).icons).toEqual({ 'a0.0': 'light' });
+    it('cleans the saved plate config, whatever shape it is in', () => {
+      const hydrate = (plateConfig) => homeReducer(initialHome, actions.hydrate({ homeType: '1BHK', rooms: [], plateConfig })).plateConfig;
+      expect(hydrate({ model: 'touch-plus' })).toEqual({ ...emptyPlateConfig, model: 'touch-plus' });
+      expect(hydrate({ model: '4 module', accessories: [], icons: { a: '💡' } })).toEqual({ ...emptyPlateConfig, size: 4 });
+      expect(hydrate('junk')).toEqual(emptyPlateConfig);
     });
   });
 });
