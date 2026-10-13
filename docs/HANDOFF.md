@@ -152,8 +152,9 @@ selling.
 - **The plate stylesheet rules** in `src/features/touchPlate/reference.css` were copied from
   touch.feturtles.com (`/static/css/main.251d01ce.css`), each selector prefixed with `.tpd-ref`
   so nothing leaks into the rest of the site, together with the images those rules point at
-  (`src/features/touchPlate/media/`: the dimmer dots, the 10 A and 16 A sockets, the curtain
-  graphic, the Snap On button mark; the `-dark` files are recoloured copies for light panels).
+  (`src/features/touchPlate/media/`: the dimmer dots, the 10 A socket, the Snap On button mark;
+  the `-dark` files are recoloured copies for light panels. `socket-16a.png` and `curtain.png`
+  are still named by reference.css but are overridden and no longer drawn — see below).
 - **The 209 icon files** in `public/plate-icons/` were copied from touch.feturtles.com
   (`/assets/<Category>/…svg`), renamed to URL-safe names. Each file's `viewBox` was then squared
   onto its artwork (the originals leave up to two thirds of the box empty and off-centre) so an
@@ -192,8 +193,39 @@ How it is built:
     one column and off the plate. Here the upper and lower panel each take half the plate.
   - The reference's two curtain buttons have no size and cannot be seen or used; here they are
     rings like the switches.
+  - **Accessories that no longer follow the reference's positions** (`isRelaid` in
+    `plateConfig.js` puts `.tpd-relaid` on their panel; the rules are in the "misplaces" block of
+    `TouchPlateDesigner.css`). The reference pushes every socket 16 mm to the right of its column
+    and gives it no room of its own, which on these plates put it on top of switches or another
+    socket, or across the panel outline:
+    - every 8 module accessory with a socket (7 Full Glass, of which 2 are also Touch Plus);
+    - every 12 module accessory with a socket (8 Full Glass "…2 Socket", 2 Touch Plus "…3 Socket");
+    - 6 module "2 Switch 2 Socket", "4 Switch 2 Socket" and "6 Switch 1 Socket 1 Curtain".
+    There the socket stands in the row as a column of its own, 10 mm clear of its neighbours, and
+    the row is centred in the panel (the reference keeps 6 module rows to the left; these three
+    are centred). 8 module plates with seven columns use a 22 mm column pitch instead of 24.8 mm,
+    or they would not fit. Ring sizes, strokes and the switch/fan/curtain columns are the
+    reference's. Everything else — all 2 and 4 module plates, the other 6, 8 and 12 module
+    plates, Snap On — is still drawn by the reference's rules, untouched.
+  - The curtain graphic of "6 Switch 1 Socket 1 Curtain" (two small blue pictures in the
+    reference) is two rings, like the curtain buttons of the other accessories; it still takes
+    no icon. "Socket 16A" (a picture of filled, overlapping blobs in the reference) is three
+    outlined circles like the 10 A socket, with larger pads and wider spacing
+    (`media/socket-16a.svg`); it sits where "Socket 10A" does.
+  - The 10 A socket drawing has 0.4 mm of clear space around its pads and its box is that much
+    larger: the pads are where they were and as large, but their strokes are no longer cut at
+    the box edge. This is the only change to plates that are otherwise untouched.
   - No cart, prices, quantity, admin view, laser/DXF export or user icon. The last step is
     "Summary": the plate, its specification, PDF and PNG download.
+- **Checking the plate layouts:** `scripts/plate-layout-check.js` runs in the browser, not in
+  the build. `npm run build`, copy it into `dist/`, `npx vite preview`, open the page, pick a
+  home type so the designer shows, then in the console
+  `await import('/plate-layout-check.js'); await plateCheck.run()`. It places every accessory
+  of every model and size through the UI (removing the last one with the bin first) and fails a
+  plate when a control is under 4 px from the panel outline or two controls are under 1 px
+  apart. `plateCheck.sheet('Full Glass Touch', 12)` shows every plate of a size on one screen —
+  look at it, the numbers do not judge balance. `plateCheck.places()` / `plateCheck.moved()`
+  compare two builds control by control. Last run: 88 plates, 0 failing (20 before the fix).
 - **Icons step:** native HTML5 drag-and-drop from the library onto one switch, or pick a switch
   (click, or Tab + Enter) and then an icon (click, or arrow keys + Enter); Delete/Backspace on a
   switch or "Remove icon" clears it. The library tiles are not `<button>`s — browsers will not
