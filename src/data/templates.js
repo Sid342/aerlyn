@@ -58,7 +58,7 @@ export function seedDevices(roomType, size) {
 }
 
 let roomCounter = 0;
-function nextId() {
+export function nextId() {
   roomCounter += 1;
   return `room-${roomCounter}-${Math.random().toString(36).slice(2, 7)}`;
 }

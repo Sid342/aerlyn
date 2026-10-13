@@ -1,10 +1,18 @@
-import { createContext, useContext, useReducer } from 'react';
+import { createContext, useContext, useEffect, useReducer } from 'react';
 import { homeReducer, initialHome, actions } from './homeReducer.js';
+import { loadPlan, savePlan } from '../lib/planStorage.js';
 
 const HomeContext = createContext(null);
 
+// start from the plan saved in this browser, if there is one
+function restore(initial) {
+  const saved = loadPlan();
+  return saved ? homeReducer(initial, actions.hydrate(saved)) : initial;
+}
+
 export function HomeProvider({ children }) {
-  const [home, dispatch] = useReducer(homeReducer, initialHome);
+  const [home, dispatch] = useReducer(homeReducer, initialHome, restore);
+  useEffect(() => savePlan(home), [home]);
   const addCustomScene = (name) =>
     dispatch({ type: 'ADD_CUSTOM_SCENE', payload: { name } });
   const removeCustomScene = (id) =>
