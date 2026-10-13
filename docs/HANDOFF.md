@@ -140,46 +140,91 @@ fallback if `whatsapp` is configured. Formspree emails the submission to the bus
 ## 7a. Touch plate designer
 
 Lives below the planner on the landing page (`src/features/touchPlate/`); opened for a room by
-"Design this plate" on its switch-plan card, which presets the plate size and puts the room's
-name in the heading and the PDF.
+"Design this plate" on its switch-plan card, which presets the plate size, puts the room's name
+in the heading and the PDF, and moves the designer to the first step still to do.
 
-- **One model, two renderers.** `src/lib/plateLayout.js` (pure, tested) turns a plate config
-  into abstract-unit rectangles: the plate, each accessory, every button and its symbol. The
-  on-screen SVG (`PlatePreview.jsx`) and the PDF (`src/lib/exportPlatePdf.js`) both draw from it.
-  Change geometry there, not in a renderer.
-- **Data:** `src/data/plateAccessories.js` (plate sizes, colours, profile/finish/frame options,
-  the accessory catalogue) and `src/data/plateIcons.js` (line symbols as polylines and circles in
-  a 24-unit box, so SVG and jsPDF draw the same shapes; no icon library, no emoji).
-- **Accessory names are parsed** into controls ("8 Switch 1 Socket (1-10A)" -> 8 switch buttons
-  + 1 socket). A test iterates the whole catalogue; a new accessory name must use the words
-  Switch / Fan / Curtain / Socket or it draws nothing.
-- **Steps:** Size, Colour, Profile, Accessories, Icons, Finish (panel + frame), Summary. The
-  Icons step is skipped when the plate has no switch buttons. The preview is on every step —
-  beside the step from 900 px, above it below that.
-- **Icons are per switch button**, stored as `icons: { '<accessoryId>.<switchIndex>': '<iconId>' }`.
-  Accessory ids are `a<first module>`. Anything that is not a known icon id is dropped on load
-  (`fullPlateConfig`), which is how plans saved with the old emoji icons open — without icons.
-- **Plan link:** the plate is a compact array `[modules, colour, profile, finish, frame,
-  [[accessory, first module]…], icons]`; accessories must be in the catalogue. The older object
-  form is still accepted.
-- **Lead payload:** `plate.accessories` is `[{ name, modules: 'Modules 1–7', icons: ['Switch 3: Fan'] }]`.
-- **PDF:** title, room, en-IN date, vector drawing of the plate, specification table,
-  accessories table, footer with the site address. Text passes through `pdfSafe` — jsPDF's
-  Helvetica only encodes WinAnsi, so emoji or Devanagari in a room name are removed, not printed
-  as garbage. The PDF does not draw the gloss/satin sheen (it is listed in the table).
-- 12-module plates are two rows of six; an accessory is never placed across the two rows.
+It is a **port of the configurator at https://touch.feturtles.com** (the "reference"): same
+steps, options, rules and plate drawing, in Aerlyn's own chrome and without anything to do with
+selling.
 
-**Open questions for the owner — nothing here was invented:**
+**Copied from the reference — the owner must confirm the right to use these:**
 
-- The Profile step used to say "Standard 86 × 86 mm" and "Slim 86 × 50 mm". Those cannot be
-  right for 4- to 12-module plates and their source is unknown, so the figures were removed from
-  the UI and PDF. What do Standard and Slim actually mean, and what are the real sizes?
-- "Rounded — 4 mm corner radius" was likewise reworded to "Soft corners". Confirm the radius if
-  it should be stated.
-- The drawing is a schematic ("Illustration only — not to scale"): button arrangement inside an
-  accessory (two switches per column, fan and socket double width) is a drawing convention, not
-  taken from product drawings. Supply real artwork or layouts if it should match the product.
-- Colour swatch hex codes and the accessory catalogue are unchanged from before and unverified.
+- **The plate stylesheet rules** in `src/features/touchPlate/reference.css` were copied from
+  touch.feturtles.com (`/static/css/main.251d01ce.css`), each selector prefixed with `.tpd-ref`
+  so nothing leaks into the rest of the site, together with the images those rules point at
+  (`src/features/touchPlate/media/`: the dimmer dots, the 10 A and 16 A sockets, the curtain
+  graphic, the Snap On button mark; the `-dark` files are recoloured copies for light panels).
+- **The 209 icon files** in `public/plate-icons/` were copied from touch.feturtles.com
+  (`/assets/<Category>/…svg`), renamed to URL-safe names. Each file's `viewBox` was then squared
+  onto its artwork (the originals leave up to two thirds of the box empty and off-centre) so an
+  icon fills the box it is drawn in; the artwork itself is untouched.
+- **The catalogue** — models, materials, sizes, colours, every accessory with its node structure
+  and CSS classes (`src/data/plateCatalogue.js`), the Snap On plates in millimetres
+  (`src/data/plateSnapOn.js`) and the icon list (`src/data/plateIconLibrary.js`) — was taken
+  from the reference's JavaScript (its source map).
+
+How it is built:
+
+- **Config** (`src/lib/plateConfig.js`, pure and tested) is catalogue ids only:
+  `{ model, material, size, accessory, icons, panel, frame, remote }`. One accessory per plate,
+  as in the reference. `icons` maps a switch key to an icon id: `'<panel>.<node>.<sub-node>'`
+  (panel 1 = upper, 2 = lower on 12 module plates) or `'s<element index>'` on Snap On plates.
+  Nodes the reference flags `noIcon` (dimmer, sockets, the curtain graphic) get no key.
+  Switches are numbered in reading order for people ("Switch 3"), whatever their key.
+- **Rules ported:** steps Model → Material → Size → Accessories → Icons → Panel → Frame →
+  Summary; the Frame step and frame colour exist only for Full Glass Touch; Touch Plus has no
+  border, its own colours (Black / White / Gray) and only the accessories flagged for it; Snap On
+  has its own plates (none in 12 module); Next is blocked until a model, material and size are
+  chosen; a new size clears the accessory and icons; a second accessory is refused until the
+  first is removed with the bin under the plate (Snap On plates swap directly); logo upload with
+  four positions and the remote option sit on the last step; Reset selection clears everything.
+- **Drawing:** `Plate.jsx` renders the reference's markup and class names, so reference.css
+  draws it; the plate is laid out at the reference's full size and scaled as one piece
+  (`transform: scale`) to at most the reference's 75 %, less when the column is narrower.
+  Measured against the live reference element by element (see §13).
+- **`TouchPlateDesigner.css`** holds Aerlyn's chrome and, in its last block, everything the port
+  adds to or changes in the drawing. Deliberate differences from the reference:
+  - A placed icon fills the ring it replaces (the reference draws it at about a third of the
+    ring) and stays on its switch when you move between steps (the reference loses it on Back).
+  - Light panels (Space Grey, Titanium, White) get dark outlines, graphics and icons; the
+    reference draws them white on white. Gray keeps the reference's white and blue.
+  - 12 module plates: the reference has no rule for `.scene12`, so there twenty rings run down
+    one column and off the plate. Here the upper and lower panel each take half the plate.
+  - The reference's two curtain buttons have no size and cannot be seen or used; here they are
+    rings like the switches.
+  - No cart, prices, quantity, admin view, laser/DXF export or user icon. The last step is
+    "Summary": the plate, its specification, PDF and PNG download.
+- **Icons step:** native HTML5 drag-and-drop from the library onto one switch, or pick a switch
+  (click, or Tab + Enter) and then an icon (click, or arrow keys + Enter); Delete/Backspace on a
+  switch or "Remove icon" clears it. The library tiles are not `<button>`s — browsers will not
+  start a drag from one.
+- **Persistence:** the config is in home state, saved to localStorage and packed into `#plan=`
+  links as `['p3', model, material, size, accessory, panel, frame, remote, icons]`.
+  `cleanPlateConfig` runs on everything that comes in: unknown ids are dropped one by one, and
+  the two older shapes (emoji icons; home-made icon ids) load with their size, colour and — when
+  it was a single accessory the catalogue still has — accessory, without icons. The step is kept
+  in sessionStorage so a reload stays where it was. **The uploaded logo is component state only:
+  never stored, never in a link, never in a lead.** (It is on the plate in a PDF or PNG the visitor downloads.)
+- **Lead payload:** `plate` is `describePlate()` plus the room: `{ room, model, material, size,
+  panel, frame, remote, accessories: [{ name, modules: 'Modules 1–7', icons: ['Switch 3: Fan F7'] }] }`.
+- **PDF / PNG** (`src/lib/exportPlatePdf.js`): the plate element itself is rasterised with
+  html2canvas at 3× (loaded with `import()` on click, like jsPDF). html2canvas ignores
+  `object-fit` and CSS filters, so icons and the logo are first redrawn onto canvases
+  (`fitted`). Text passes through `pdfSafe` — Helvetica only encodes WinAnsi.
+
+**Open questions for the owner:**
+
+- Confirm the right to use the copied stylesheet rules, graphics, icon files and catalogue
+  (above). If the icons cannot be used, `plateIconLibrary.js` + `public/plate-icons/` are the
+  only things to replace.
+- Icon names are the reference's file names ("Fan F7", "Home Appliances 18"). They appear in
+  the summary, the lead and the PDF. Real names would need someone to name 209 icons.
+- Snap On: the reference skips the Frame step going forward but shows it on the way back and in
+  the stepper. Ported as "no Frame step, default silver border". Confirm.
+- Model, material and remote are recorded but change nothing in the drawing (same in the
+  reference). Should Acrylic or Snap On look different?
+- Several reference layouts overlap or run past the inner outline (e.g. 8 module "4 Switch
+  2 Fan 1 Socket", 6 module "… 1 Socket 1 Curtain"). They are ported as they are.
 
 ## 8. Analytics
 
@@ -234,10 +279,15 @@ landing pages.
 ## 13. Not verified
 
 - Lighthouse was not run (no CLI installed; not added as a dependency).
-- Plate designer (branch `feat/plate-designer-preview`): checked in Chrome at 1512 px and in
-  360 / 400 / 500 px iframes (no horizontal scroll on any step); Black, White, Titanium and Gray
-  plates; 2-, 8- and 12-module plates. PDFs for an 8- and a 12-module plate were generated and
-  read. Not checked: a physical phone, a screen reader, Safari/Firefox, or a printed PDF.
+- Plate designer (branch `feat/plate-designer-preview`): compared with the live reference in
+  Chrome at 1500 px by measuring every plate element's box on both sites — identical for 2
+  module "2 Switch", 4 module "2 Switch 1 Fan", 6 module "10 Switch" and "… 1 Curtain", 8 module
+  "8 Switch 1 Socket", Touch Plus and Snap On 4 module plates, panel/frame colours and the logo
+  in two corners. Checked in 360 / 414 / 768 / 1200 / 1667 px iframes on all eight steps (no
+  horizontal scroll, plate scaled inside its stage), real mouse drag-and-drop, a keyboard-only
+  run through every step, and PDFs for an 8- and a 12-module plate were generated and read.
+  Not checked: real browser zoom (only CSS zoom 90 % / 125 % and the equivalent viewport
+  widths), a physical phone, touch input, a screen reader, Safari/Firefox, or a printed PDF.
 - The PDF-failure message is unit-tested but was not reproduced offline in a browser.
 - Browser checks were at 500 px (the narrowest the Chrome window allows) plus 400 px and
   360 px iframes; not on a physical phone, and not with a screen reader.
