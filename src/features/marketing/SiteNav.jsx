@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { site } from '../../config/site.js';
 import { productPath } from '../../routes.js';
 import { useCart } from '../cart/CartContext.jsx';
@@ -19,6 +19,24 @@ export default function SiteNav() {
   const { cart, openCart } = useCart();
   const count = cartCount(cart);
   const close = () => setOpen(false);
+  const products = useRef(null);
+
+  // <details> stays open until its summary is clicked again; close it on outside click and Escape.
+  useEffect(() => {
+    const menu = products.current;
+    const onPointer = (e) => { if (!menu.contains(e.target)) menu.open = false; };
+    const onKey = (e) => {
+      if (e.key !== 'Escape' || !menu.open) return;
+      menu.open = false;
+      if (menu.contains(document.activeElement)) menu.querySelector('summary').focus();
+    };
+    document.addEventListener('pointerdown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, []);
   return (
     <header>
       <nav className="site-nav" aria-label="Main">
@@ -28,7 +46,7 @@ export default function SiteNav() {
             <li key={href}><a href={href}>{label}</a></li>
           ))}
           <li>
-            <details className="site-nav-products">
+            <details className="site-nav-products" ref={products}>
               <summary>Products</summary>
               <div className="site-nav-products-menu">
                 {site.products.map((p) => <a key={p.id} href={productPath(p)}>{shortName(p)}</a>)}

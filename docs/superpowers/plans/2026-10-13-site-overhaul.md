@@ -38,7 +38,7 @@
 
 - [x] **4.1 Checkout.** `submitLead('order')`, full validation, cart cleared only on success, retry on failure.
 - [x] **4.2 Policies.** Privacy policy website section; Terms, Refund, Shipping drafts; footer links.
-- [ ] **4.3 Nav + footer.** "Products" in nav; footer from config.
+- [x] **4.3 Nav + footer.** "Products" in nav; footer from config.
 - [ ] **4.4 Accessibility.** Buttons for all click targets; modal Escape + focus trap; inline confirms replace `window.confirm`.
 - [ ] **4.5 Docs.** Rewrite `docs/HANDOFF.md`; archive May redesign spec/plan; README update.
 - [ ] **4.6 Final verification.** Full test run, build, browser pass (plan → save → restore from link; add to cart → checkout; failure paths with network blocked), Lighthouse on prerendered output.
