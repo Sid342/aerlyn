@@ -39,7 +39,7 @@ export default function PlanBar() {
           <div className="plan-bar">
             <ul className="plan-bar-totals">
               {TOTALS.map(([key, one, many]) => (
-                <li key={key}><strong>{summary[key]}</strong>{summary[key] === 1 ? one : many}</li>
+                <li key={key}><strong>{summary[key]}</strong> {summary[key] === 1 ? one : many}</li>
               ))}
             </ul>
             <button type="button" className="plan-bar-save" onClick={() => setSaving(true)}>
