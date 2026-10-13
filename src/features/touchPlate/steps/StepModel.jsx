@@ -1,10 +1,4 @@
-export const MODULE_OPTIONS = [
-  { label: '2 module', maxSlots: 2 },
-  { label: '4 module', maxSlots: 4 },
-  { label: '6 module', maxSlots: 6 },
-  { label: '8 module', maxSlots: 8 },
-  { label: '12 module', maxSlots: 12 },
-];
+import { MODULE_OPTIONS } from '../../../data/plateAccessories.js';
 
 export default function StepModel({ config, onChange }) {
   return (

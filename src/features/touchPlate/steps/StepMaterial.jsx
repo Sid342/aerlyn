@@ -1,10 +1,4 @@
-export const MATERIAL_COLORS = [
-  { code: '#000000', label: 'Black' },
-  { code: '#bfc6cb', label: 'Space Grey' },
-  { code: '#f4debe', label: 'Titanium' },
-  { code: '#ffffff', label: 'White' },
-  { code: '#616161', label: 'Gray' },
-];
+import { MATERIAL_COLORS } from '../../../data/plateAccessories.js';
 
 export default function StepMaterial({ config, onChange }) {
   return (

@@ -1,6 +1,6 @@
 import { nextId, HOME_TYPES } from '../data/templates.js';
 import { getDevice } from '../data/devices.js';
-import { MODULE_OPTIONS } from '../features/touchPlate/steps/StepModel.jsx';
+import { MODULE_OPTIONS } from '../data/plateAccessories.js';
 
 const KEY = 'aerlyn_plan_v1';
 const VERSION = 1;
