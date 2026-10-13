@@ -39,7 +39,7 @@ Defined in `src/routes.js`; pages in `src/pages/`; `<head>` per route in `src/se
 | Path | Page | Notes |
 |---|---|---|
 | `/` | Landing + planner | FAQ, lead forms, plan bar |
-| `/products/retrofit-1-switch.html` | Product information | from `site.products`; "Book a free home visit" + "Plan your home" |
+| `/products/retrofit-1-switch.html` | Product information | from `site.products`; "Book an appointment" + "Plan your home" |
 | `/products/retrofit-2-switch.html` | Product information | same |
 | `/privacy-policy.html` | Privacy policy | app + website section |
 | `/terms.html` | Terms and Conditions | text from `src/data/policies.js` |
@@ -123,7 +123,7 @@ fallback if `whatsapp` is configured. Formspree emails the submission to the bus
 
 | Kind | Where | Fields |
 |---|---|---|
-| `visit` | "Book free visit" modal (`LeadModal.jsx`) on the landing page and on each product page; "Book a free home visit" after saving a plan | name, phone, city, property type, timeline, notes; from a product page also `Product` (the product name, repeated in the subject) |
+| `visit` | "Book an appointment" modal (`LeadModal.jsx`) on the landing page and on each product page; "Book an appointment" after saving a plan | name, phone, city, property type, timeline, notes; from a product page also `Product` (the product name, repeated in the subject) |
 | `plan` | "Save my plan & get a free quote" (`SavePlanModal.jsx`) | name, phone, city, plan link, full plan as JSON (full quantities and switch plan) |
 
 ## 7. Plans
