@@ -5,7 +5,6 @@ import { validateContact } from '../../lib/validate.js';
 import { downloadPdf } from '../../lib/exportPdf.js';
 import { planLink, whatsappShareUrl, planLeadFields, visitLeadFields } from '../../lib/planShare.js';
 import { whatsappUrl } from '../../config/site.js';
-import { track } from '../../lib/track.js';
 import { useDialog } from '../../lib/useDialog.js';
 import { useDownload, PDF_FAILED } from '../../lib/useDownload.js';
 import '../marketing/LeadModal.css';
@@ -38,7 +37,6 @@ export default function SavePlanModal({ onClose }) {
     const { ok } = await submitLead('plan', planLeadFields(home, details, link));
     setSubmitting(false);
     setStatus(ok ? 'ok' : 'failed');
-    if (ok) track('plan_saved', { homeType: home.homeType });
   }
 
   function handleSubmit(e) {
@@ -66,7 +64,6 @@ export default function SavePlanModal({ onClose }) {
     setVisit('sending');
     const { ok } = await submitLead('visit', visitLeadFields(contact, link));
     setVisit(ok ? 'ok' : 'failed');
-    if (ok) track('visit_booked', { source: 'saved_plan' });
   }
 
   const failed = status === 'failed';

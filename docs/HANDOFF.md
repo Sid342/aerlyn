@@ -18,7 +18,7 @@ be sold through the visit."
   action opens the visit form and sends the product name with the lead.
 - Terms rewritten for a site that sells nothing online; the privacy website section no longer
   mentions checkout or a cart.
-- `/products/checkout.html` now redirects permanently to `/#contact` (`vercel.json`).
+- `/products/checkout.html` now redirects permanently to `/#contact` (`public/_redirects`).
   `/refund-policy.html` and `/shipping-policy.html` were never deployed, so they have no redirect.
 - The plan bar shows "Your 2BHK plan · 6 rooms · N smart features" (distinct device types)
   instead of device-quantity and switch-plate totals.
@@ -30,7 +30,7 @@ The Aerlyn marketing site, a room-by-room smart-home planner that produces leads
 information pages for two retrofit switch modules. Nothing is sold on the site: products and
 installation are sold through the free home visit. React 18 + Vite 6, no router library, no
 backend, no login. Every route is prerendered to static HTML at build time and
-hydrated in the browser. Hosted on Vercel as static files.
+hydrated in the browser. Hosted on Netlify as static files.
 
 ## 2. Routes
 
@@ -70,8 +70,10 @@ Other commands: `npm run dev` (no prerender — renders from an empty root), `np
 Hydration rule: nothing in a first render may differ between server and browser. The stored
 plan is read in an effect after mount — see `HomeContext.jsx`.
 
-`vercel.json`: `www.aerlyn.in` → `aerlyn.in` redirect, `/products/checkout.html` → `/#contact`
-redirect, `/assets/*` cached immutably, HTML uncached.
+Netlify: `netlify.toml` holds the build command and publish dir; `public/_redirects` has
+`/products/checkout.html` → `/#contact`; `public/_headers` caches `/assets/*` immutably (HTML
+uses Netlify's default revalidation). Both files are copied into `dist/`, so drag-and-drop deploys
+of `dist` work too. The www → apex redirect is Netlify's own domain-alias behaviour.
 
 ## 4. Config — `src/config/site.js`
 
@@ -110,7 +112,7 @@ the 1 Year product warranty from the product specs; governing law India. Nothing
 installation warranty is stated, because none is defined.
 
 The privacy section states: what the two forms collect, Formspree as processor, the plan kept
-in the visitor's browser storage, plan links carrying plan data only, Vercel Web Analytics,
+in the visitor's browser storage, plan links carrying plan data only, Netlify hosting,
 Google Fonts, and deletion by email. Data retention for website submissions is not stated
 because none is defined.
 
@@ -265,15 +267,7 @@ How it is built:
 
 ## 8. Analytics
 
-Vercel Web Analytics, loaded from `/_vercel/insights/script.js` in `index.html` (no
-dependency). It 404s locally and until Web Analytics is enabled in Vercel — harmless.
-Custom events via `src/lib/track.js`, never with personal data:
-
-| Event | Fired | Props |
-|---|---|---|
-| `plan_started` | first home type picked | `homeType` |
-| `plan_saved` | plan lead sent | `homeType` |
-| `visit_booked` | visit lead sent | `source`: `contact`, `product` or `saved_plan` |
+No analytics is installed. Netlify Analytics is a paid dashboard add-on needing no code.
 
 ## 9. Accessibility conventions
 
@@ -298,10 +292,10 @@ Today `aerlyn.in` serves a **legacy single-file page from Netlify, with a missin
 certificate**. None of this work is live until these are done:
 
 1. Fill and confirm the config values in section 4; get the Terms and privacy pages reviewed (section 5).
-2. Vercel project: add `aerlyn.in` and `www.aerlyn.in` as domains.
-3. Vercel project: enable Web Analytics.
-4. DNS: move `aerlyn.in` from Netlify to Vercel; confirm the certificate is issued; retire the Netlify site.
-5. After go-live, check the three Play Store URLs load at their exact paths.
+2. GoDaddy: set the domain's nameservers to exactly the four listed in Netlify → Domains → aerlyn.in → Name servers. The registry currently delegates to dns1–4.p04.nsone.net while the Netlify zone's own NS records say dns1–4.p02.nsone.net; this mismatch is the likely reason Netlify's Let's Encrypt certificate fails.
+3. Netlify → site → Domain management → HTTPS → Verify DNS configuration → Provision certificate, then Force HTTPS.
+4. Deploy this repo to the existing Netlify site: either link the GitHub repo `Sid342/aerlyn` (branch `main`; build settings come from `netlify.toml`) or drag-and-drop the built `dist` folder.
+5. After go-live, check the three Play Store URLs load at their exact paths. The June version with the Play Store privacy page is still live at aerlyn.vercel.app: check which URL is registered in Play Console, switch it to https://aerlyn.in/privacy-policy.html once the new site is live, and only then retire that Vercel project.
 6. Google Search Console: verify the domain and submit `https://aerlyn.in/sitemap.xml`.
 7. Smoke-test one submission of each lead kind (visit, plan) and confirm it arrives by email;
    check that `/products/checkout.html` redirects to `/#contact`.

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { HOME_TYPES } from '../../data/templates.js';
 import { useHome } from '../../context/HomeContext.jsx';
-import { track } from '../../lib/track.js';
 import InlineConfirm from '../shared/InlineConfirm.jsx';
 import './HomeTypePicker.css';
 
@@ -16,7 +15,6 @@ export default function HomeTypePicker() {
       return;
     }
     setPending(null);
-    if (!home.homeType) track('plan_started', { homeType: type });
     dispatch(actions.setHomeType(type));
   }
 

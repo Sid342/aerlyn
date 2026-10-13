@@ -2,7 +2,7 @@
 
 Marketing site, room-by-room smart-home planner and product information pages for Aerlyn home
 automation. Nothing is sold online — the site produces leads for a free home visit. React 18 + Vite 6; every route is prerendered to static HTML at build time and
-deployed as static files on Vercel. No backend: leads are sent by Formspree.
+deployed as static files on Netlify (build, redirect and caching config in `netlify.toml`, `public/_redirects`, `public/_headers`). No backend: leads are sent by Formspree.
 
 ```
 npm install
