@@ -1,6 +1,8 @@
 import { nextId, HOME_TYPES } from '../data/templates.js';
 import { getDevice } from '../data/devices.js';
-import { MODULE_OPTIONS } from '../data/plateAccessories.js';
+import { ACCESSORIES, MATERIAL_COLORS, MODULE_OPTIONS } from '../data/plateAccessories.js';
+import { iconLabel } from '../data/plateIcons.js';
+import { parseAccessory } from './plateLayout.js';
 
 const KEY = 'aerlyn_plan_v1';
 const VERSION = 1;
@@ -67,6 +69,39 @@ function fromBase64Url(str) {
   return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
 }
 
+// Plate for a link: [modules, colour, profile, finish, frame, [[accessory, first module]…], icons].
+// Accessory ids are rebuilt as `a<first module>` on the way back in, so icon keys are rewritten to match.
+function encodePlate(c) {
+  const accessories = Array.isArray(c.accessories) ? c.accessories : [];
+  const shortId = new Map(accessories.map((a) => [a.id, `a${Math.min(...a.slots)}`]));
+  const icons = {};
+  for (const [key, icon] of Object.entries(c.icons || {})) {
+    const dot = key.lastIndexOf('.');
+    const id = shortId.get(key.slice(0, dot));
+    if (id && icon) icons[`${id}${key.slice(dot)}`] = icon;
+  }
+  return [
+    c.maxSlots, c.material ?? null, c.size ?? null, c.panel ?? null, c.frame ?? null,
+    accessories.map((a) => [a.name, Math.min(...a.slots)]), icons,
+  ];
+}
+
+function expandPlate([maxSlots, material, size, panel, frame, list, icons]) {
+  const option = MODULE_OPTIONS.find((o) => o.maxSlots === maxSlots);
+  if (!option || !Array.isArray(list)) return null;
+  const accessories = list.map((entry) => {
+    const [name, start] = Array.isArray(entry) ? entry : [];
+    const item = ACCESSORIES[option.label].find((a) => a.name === name);
+    if (!item || !Number.isInteger(start)) return null;
+    return { id: `a${start}`, name, nodeSize: item.nodeSize, slots: Array.from({ length: item.nodeSize }, (_, k) => start + k) };
+  });
+  if (accessories.includes(null)) return null;
+  return {
+    model: option.label, material, size, panel, frame, accessories, icons,
+    materialCode: MATERIAL_COLORS.find((c) => c.label === material)?.code ?? null,
+  };
+}
+
 export function encodePlan(home) {
   const compact = {
     v: VERSION,
@@ -83,7 +118,7 @@ export function encodePlan(home) {
     s: home.customScenes.map((s) => [s.name, s.icon, s.deviceStates]),
   };
   if (home.plateConfig && home.plateConfig.model) {
-    compact.p = home.plateConfig;
+    compact.p = encodePlate(home.plateConfig);
     compact.pr = home.rooms.findIndex((r) => r.id === home.plateRoomId);
   }
   return toBase64Url(JSON.stringify(compact));
@@ -129,9 +164,13 @@ function cleanPlate(p) {
   if (!Array.isArray(p.accessories) || p.accessories.length > option.maxSlots || !p.accessories.every(isAccessory)) return null;
 
   if (!p.icons || typeof p.icons !== 'object' || Array.isArray(p.icons)) return null;
-  const ids = new Set(p.accessories.map((a) => a.id));
-  const icons = Object.entries(p.icons).filter(([id]) => ids.has(id));
-  if (!icons.every(([, icon]) => icon == null || (typeof icon === 'string' && icon.length <= 8))) return null;
+  // an icon is kept only if it is a known icon id on a switch button that exists
+  const switches = new Map(p.accessories.map((a) => [a.id, parseAccessory(a.name).filter((k) => k === 'switch').length]));
+  const icons = Object.entries(p.icons).filter(([key, icon]) => {
+    const dot = key.lastIndexOf('.');
+    const index = Number(key.slice(dot + 1));
+    return typeof icon === 'string' && iconLabel(icon) && Number.isInteger(index) && index >= 0 && index < (switches.get(key.slice(0, dot)) ?? 0);
+  });
 
   return {
     model: option.label,
@@ -174,7 +213,7 @@ export function decodePlan(str) {
       })),
       plateRoomId: null,
     };
-    const plate = cleanPlate(c.p);
+    const plate = cleanPlate(Array.isArray(c.p) ? expandPlate(c.p) : c.p);
     if (plate) {
       plan.plateConfig = plate;
       plan.plateRoomId = rooms[c.pr] ? rooms[c.pr].id : null;

@@ -1,87 +1,65 @@
 import { ACCESSORIES } from '../../../data/plateAccessories.js';
+import { findStart, modulesLabel } from '../../../lib/plateLayout.js';
+
+const modules = (n) => `${n} module${n !== 1 ? 's' : ''}`;
 
 export default function StepAccessories({ config, onChange }) {
   const available = ACCESSORIES[config.model] || [];
-  const totalSlots = config.maxSlots;
-  const is12 = config.model === '12 module';
+  const free = config.maxSlots - new Set(config.accessories.flatMap((a) => a.slots)).size;
+  const placed = [...config.accessories].sort((a, b) => a.slots[0] - b.slots[0]);
 
-  const slotMap = Array(totalSlots).fill(null);
-  config.accessories.forEach((a) => {
-    a.slots.forEach((si) => { slotMap[si] = a; });
-  });
-
-  const usedSlots = config.accessories.reduce((sum, a) => sum + a.nodeSize, 0);
-  const freeSlots = totalSlots - usedSlots;
-
-  function addAccessory(acc) {
-    if (acc.nodeSize > freeSlots) return;
-    let startSlot = -1;
-    outer: for (let i = 0; i <= totalSlots - acc.nodeSize; i++) {
-      for (let j = 0; j < acc.nodeSize; j++) {
-        if (slotMap[i + j]) continue outer;
-      }
-      startSlot = i;
-      break;
-    }
-    if (startSlot === -1) return;
-    const newAcc = {
-      ...acc,
-      id: `${acc.name}-${Date.now()}`,
-      slots: Array.from({ length: acc.nodeSize }, (_, k) => startSlot + k),
-    };
-    onChange({ ...config, accessories: [...config.accessories, newAcc] });
+  function add(item) {
+    const start = findStart(config, item.nodeSize);
+    if (start < 0) return;
+    // the id is the first module — stable, short, and unique because modules never overlap
+    const placedItem = { ...item, id: `a${start}`, slots: Array.from({ length: item.nodeSize }, (_, k) => start + k) };
+    onChange({ ...config, accessories: [...config.accessories, placedItem] });
   }
 
-  function removeAccessory(id) {
-    onChange({ ...config, accessories: config.accessories.filter((a) => a.id !== id) });
+  function remove(id) {
+    onChange({
+      ...config,
+      accessories: config.accessories.filter((a) => a.id !== id),
+      icons: Object.fromEntries(Object.entries(config.icons).filter(([key]) => !key.startsWith(`${id}.`))),
+    });
   }
 
   return (
     <div>
-      <div className="tpd-section-label">
-        Place accessories ({freeSlots} slot{freeSlots !== 1 ? 's' : ''} free)
-      </div>
+      <div className="tpd-section-label">On this plate ({modules(free)} free)</div>
+      {placed.length === 0 ? (
+        <p className="tpd-hint">Nothing placed yet. Pick an accessory below and it appears on the plate.</p>
+      ) : (
+        <ul className="tpd-placed">
+          {placed.map((a) => (
+            <li key={a.id} className="tpd-placed-row">
+              <span>
+                <strong>{a.name}</strong>
+                <span className="tpd-placed-where">{modulesLabel(a.slots)}</span>
+              </span>
+              <button type="button" className="tpd-remove-acc" aria-label={`Remove ${a.name}, ${modulesLabel(a.slots)}`} onClick={() => remove(a.id)}>
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
 
-      <div className={`tpd-acc-plate${is12 ? ' two-row' : ''}`}>
-        {slotMap.map((slot, i) => (
-          <div key={i} className={`tpd-slot${slot ? ' occupied' : ' empty'}`}>
-            {slot ? slot.name.split(' ').slice(0, 2).join(' ') : '·'}
-          </div>
+      <div className="tpd-section-label">Add an accessory</div>
+      <div className="tpd-option-grid">
+        {available.map((item) => (
+          <button
+            type="button"
+            key={item.name}
+            className="tpd-option"
+            disabled={findStart(config, item.nodeSize) < 0}
+            onClick={() => add(item)}
+          >
+            <span className="tpd-option-label">{item.name}</span>
+            <span className="tpd-option-sub">{modules(item.nodeSize)}</span>
+          </button>
         ))}
       </div>
-
-      <div className="tpd-section-label" style={{ marginTop: 16 }}>Available</div>
-      <div className="tpd-option-grid">
-        {available.map((acc) => {
-          const disabled = acc.nodeSize > freeSlots;
-          return (
-            <button
-              type="button"
-              key={acc.name}
-              className="tpd-option"
-              disabled={disabled}
-              onClick={() => addAccessory(acc)}
-            >
-              <span className="tpd-option-label">{acc.name}</span>
-              <span className="tpd-option-sub">{acc.nodeSize} slot{acc.nodeSize !== 1 ? 's' : ''}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {config.accessories.length > 0 && (
-        <>
-          <div className="tpd-section-label" style={{ marginTop: 16 }}>Placed</div>
-          <div>
-            {config.accessories.map((a) => (
-              <div key={a.id} className="tpd-placed-row">
-                <span>{a.name}</span>
-                <button type="button" className="tpd-remove-acc" aria-label={`Remove ${a.name}`} onClick={() => removeAccessory(a.id)}>✕</button>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
     </div>
   );
 }

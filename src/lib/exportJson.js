@@ -1,5 +1,6 @@
 import { getDevice, sceneDevicesInHome } from '../data/devices.js';
 import { planRoom } from './switchPlanner.js';
+import { plateDetails } from './plateLayout.js';
 
 // null until a plate model has been chosen in the designer
 function platePayload(home) {
@@ -13,7 +14,8 @@ function platePayload(home) {
     size: c.size,
     panel: c.panel,
     frame: c.frame,
-    accessories: c.accessories.map((a) => ({ name: a.name, slots: a.slots, icon: c.icons[a.id] || null })),
+    // readable rows: { name, modules: 'Modules 1–4', icons: ['Switch 3: Fan'] }
+    accessories: plateDetails(c),
   };
 }
 

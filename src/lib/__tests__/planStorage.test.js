@@ -15,7 +15,11 @@ function sampleHome() {
     type: 'SET_SCENE_DEVICE_STATE',
     payload: { sceneId: s.customScenes[0].id, deviceId: 'rgbw-strip', on: true },
   });
-  s = homeReducer(s, actions.setPlateConfig({ ...emptyPlateConfig, model: '8 module', maxSlots: 8, material: 'Black' }));
+  s = homeReducer(s, actions.setPlateConfig({
+    ...emptyPlateConfig, model: '8 module', maxSlots: 8, material: 'Black', materialCode: '#000000', size: 'Slim', panel: 'Gloss', frame: 'Rounded',
+    accessories: [{ id: 'a0', name: '8 Switch 1 Socket', nodeSize: 7, slots: [0, 1, 2, 3, 4, 5, 6] }],
+    icons: { 'a0.0': 'light', 'a0.7': 'fan' },
+  }));
   s = homeReducer(s, actions.setFloorPlan('data:image/png;base64,SECRET'));
   return { ...s, plateRoomId: s.rooms[1].id };
 }
@@ -201,7 +205,7 @@ describe('decodePlan — untrusted links', () => {
   describe('plate', () => {
     const goodPlate = {
       model: '4 module', maxSlots: 4, material: 'Black', materialCode: '#000000', size: 'Standard', panel: 'Matte', frame: 'Square',
-      accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 1] }], icons: { a1: '💡' },
+      accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 1] }], icons: { 'a1.0': 'light' },
     };
     const decodeWithPlate = (p) => decodePlan(link({ r: [linkRoom([['camera', 1]])], p, pr: 0 }));
 
@@ -215,8 +219,36 @@ describe('decodePlan — untrusted links', () => {
       expect(decodeWithPlate({ ...goodPlate, maxSlots: 9999 }).plateConfig.maxSlots).toBe(4);
     });
 
-    it('drops icons that belong to no accessory', () => {
-      expect(decodeWithPlate({ ...goodPlate, icons: { a1: '💡', ghost: '🔒' } }).plateConfig.icons).toEqual({ a1: '💡' });
+    it('drops icons that are not icon ids or sit on no switch button — the plate survives', () => {
+      const icons = { 'a1.0': 'light', 'a1.3': 'fan', 'a1.4': 'tv', 'ghost.0': 'lock', a1: '💡', 'a1.1': '💡', 'a1.2': { html: '<b>' }, 'a1.x': 'tv' };
+      expect(decodeWithPlate({ ...goodPlate, icons }).plateConfig.icons).toEqual({ 'a1.0': 'light', 'a1.3': 'fan' });
+    });
+
+    it('loads a plate saved with the old emoji icons, without its icons', () => {
+      const plan = decodeWithPlate({ ...goodPlate, icons: { a1: '💡' } });
+      expect(plan.plateConfig).toEqual({ ...goodPlate, icons: {} });
+    });
+
+    it('writes the plate into a link compactly and rebuilds accessory ids', () => {
+      let home = homeReducer(initialHome, actions.setHomeType('1BHK'));
+      home = homeReducer(home, actions.setPlateConfig({
+        ...goodPlate, accessories: [{ id: '4 Switch-1760000000000', name: '4 Switch', nodeSize: 2, slots: [2, 3] }],
+        icons: { '4 Switch-1760000000000.1': 'ac' },
+      }));
+      const compact = JSON.parse(Buffer.from(encodePlan(home), 'base64url').toString());
+      expect(compact.p).toEqual([4, 'Black', 'Standard', 'Matte', 'Square', [['4 Switch', 2]], { 'a2.1': 'ac' }]);
+      expect(decodePlan(encodePlan(home)).plateConfig).toEqual({
+        ...goodPlate, accessories: [{ id: 'a2', name: '4 Switch', nodeSize: 2, slots: [2, 3] }], icons: { 'a2.1': 'ac' },
+      });
+    });
+
+    it.each([
+      ['unknown plate size', [5, 'Black', null, null, null, [], {}]],
+      ['accessory that is not in the catalogue', [4, 'Black', null, null, null, [['40 Switch', 0]], {}]],
+      ['accessory that runs off the plate', [4, 'Black', null, null, null, [['4 Switch', 3]], {}]],
+      ['accessories that are not a list', [4, 'Black', null, null, null, 'x', {}]],
+    ])('drops a compact plate: %s', (_, p) => {
+      expect('plateConfig' in decodeWithPlate(p)).toBe(false);
     });
 
     it.each([
@@ -233,7 +265,6 @@ describe('decodePlan — untrusted links', () => {
       ['more accessories than slots', { accessories: Array.from({ length: 5 }, (_, i) => ({ id: `a${i}`, name: 'Fan', nodeSize: 1, slots: [0] })) }],
       ['icons that are not an object', { icons: ['💡'] }],
       ['missing icons', { icons: undefined }],
-      ['icon of the wrong type', { icons: { a1: { html: '<b>' } } }],
     ])('drops the plate but keeps the rest: %s', (_, bad) => {
       const plan = decodeWithPlate({ ...goodPlate, ...bad });
       expect(plan).not.toBeNull();

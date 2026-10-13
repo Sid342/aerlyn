@@ -9,6 +9,7 @@ export const PAD = 3;
 const DEFAULT_FILL = '#d9dade'; // before a colour is chosen
 const WEIGHT = { fan: 2, socket: 2, curtain: 1 }; // relative width of one control; two switches share 1
 const MAX_CONTROLS = 24;
+const FRAME_RADIUS = { Square: 0, Rounded: 3.2, Minimal: 0.8 }; // corner radius of the plate outline
 
 // "8 Switch 1 Socket (1-10A)" -> ['switch' x 8, 'socket']
 export function parseAccessory(name) {
@@ -105,7 +106,20 @@ function controlsFor(acc, box, icons, nextSwitch) {
     }
     x += weight(g) * unit;
   }
-  return controls;
+  return controls.map(withButton);
+}
+
+// The touch button inside a control's cell, and where its symbol goes.
+function withButton(c) {
+  const inset = Math.min(0.9, c.w * 0.1);
+  const w = c.w - 2 * inset;
+  const h = c.h - 2 * inset;
+  const size = Math.min(w, h) * 0.56;
+  return {
+    ...c,
+    button: { x: c.x + inset, y: c.y + inset, w, h, r: Math.min(1.4, w * 0.2) },
+    symbol: { name: c.icon || c.kind, cx: c.x + c.w / 2, cy: c.y + c.h / 2, size, stroke: Math.max(0.28, Math.min(0.6, size / 11)) },
+  };
 }
 
 // Everything needed to draw a plate, in plate units. null until a plate size is chosen.
@@ -142,6 +156,8 @@ export function plateLayout(config) {
     accessories,
     controls: accessories.flatMap((a) => a.controls),
     switchCount,
+    radius: FRAME_RADIUS[config.frame] ?? 1.6,
+    bezel: config.frame !== 'Minimal', // Minimal is a thin flush edge with no inner frame line
     fill,
     ink,
     line: mix(fill, ink, 0.38),

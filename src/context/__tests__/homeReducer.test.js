@@ -397,8 +397,13 @@ describe('homeReducer', () => {
     });
 
     it('keeps a complete config as it is', () => {
-      const full = { ...emptyPlateConfig, model: '2 module', maxSlots: 2, icons: { a: '💡' } };
+      const full = { ...emptyPlateConfig, model: '2 module', maxSlots: 2, icons: { 'a0.1': 'fan' } };
       expect(fullPlateConfig(full)).toEqual(full);
+    });
+
+    it('drops icons that are not icon ids, such as the emoji older plans stored', () => {
+      const old = { ...emptyPlateConfig, model: '2 module', maxSlots: 2, icons: { a: '💡', 'a0.0': 'light', b: null, c: { x: 1 } } };
+      expect(fullPlateConfig(old).icons).toEqual({ 'a0.0': 'light' });
     });
   });
 });

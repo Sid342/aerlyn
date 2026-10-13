@@ -1,5 +1,6 @@
 import { cloneRoom, makeRoom, buildRooms } from '../data/templates.js';
 import { getDevice } from '../data/devices.js';
+import { iconLabel } from '../data/plateIcons.js';
 
 export const emptyPlateConfig = {
   model: null,
@@ -8,12 +9,13 @@ export const emptyPlateConfig = {
   materialCode: null,
   size: null,
   accessories: [],
-  icons: {},
+  icons: {}, // `${accessoryId}.${switchIndex}` -> icon id from data/plateIcons.js
   panel: null,
   frame: null,
 };
 
 // A stored or linked plate config may be partial — fill it out so the designer and exports can rely on the shape.
+// Icons that are not known icon ids (older plans stored emoji) are dropped.
 export function fullPlateConfig(config) {
   const c = config && typeof config === 'object' ? config : {};
   return {
@@ -21,7 +23,9 @@ export function fullPlateConfig(config) {
     ...c,
     accessories: (Array.isArray(c.accessories) ? c.accessories : [])
       .filter((a) => a && typeof a.name === 'string' && Array.isArray(a.slots)),
-    icons: c.icons && typeof c.icons === 'object' ? c.icons : {},
+    icons: Object.fromEntries(
+      Object.entries(c.icons && typeof c.icons === 'object' ? c.icons : {}).filter(([, id]) => typeof id === 'string' && iconLabel(id))
+    ),
   };
 }
 

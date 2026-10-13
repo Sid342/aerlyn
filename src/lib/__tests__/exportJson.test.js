@@ -90,12 +90,12 @@ describe('buildExportPayload', () => {
     home = homeReducer(home, actions.designPlate(home.rooms[1].id, 4));
     home = homeReducer(home, actions.setPlateConfig({
       ...home.plateConfig, material: 'Black', size: 'Standard', panel: 'Matte', frame: 'Square',
-      accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 1] }], icons: { a1: '💡' },
+      accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 1] }], icons: { 'a1.2': 'fan', a1: '💡' },
     }));
     expect(buildExportPayload(home).plate).toEqual({
       room: home.rooms[1].name,
       model: '4 module', material: 'Black', size: 'Standard', panel: 'Matte', frame: 'Square',
-      accessories: [{ name: '4 Switch', slots: [0, 1], icon: '💡' }],
+      accessories: [{ name: '4 Switch', modules: 'Modules 1–2', icons: ['Switch 3: Fan'] }],
     });
   });
   it('never includes the floor plan image', () => {

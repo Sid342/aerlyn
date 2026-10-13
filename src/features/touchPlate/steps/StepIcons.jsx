@@ -1,57 +1,50 @@
-const SWITCH_ICONS = ['💡', '🌡️', '🔌', '🎵', '📺', '❄️', '💧', '🔒', '🔆', '🌙', '⬆️', '⬇️', '🔁', '🌿'];
+import { PLATE_ICONS, iconLabel } from '../../../data/plateIcons.js';
+import { PlateIcon } from '../PlatePreview.jsx';
 
-export default function StepIcons({ config, onChange }) {
-  const switches = config.accessories.filter((a) =>
-    a.name.toLowerCase().includes('switch') || a.name.toLowerCase().includes('fan')
-  );
+// `switches` are the plate's switch buttons from plateLayout; `selected` is the key of the one being edited.
+export default function StepIcons({ config, onChange, switches, selected, onSelect }) {
+  const current = switches.find((c) => c.key === selected);
+  if (!current) return null;
 
-  if (switches.length === 0) {
-    return (
-      <div>
-        <div className="tpd-section-label">Icons</div>
-        <p style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>
-          No switch accessories placed — skip this step.
-        </p>
-      </div>
-    );
-  }
-
-  function setIcon(accId, icon) {
-    const current = config.icons[accId];
-    onChange({
-      ...config,
-      icons: { ...config.icons, [accId]: current === icon ? null : icon },
-    });
+  function setIcon(id) {
+    const icons = { ...config.icons };
+    if (id) icons[current.key] = id;
+    else delete icons[current.key];
+    onChange({ ...config, icons });
   }
 
   return (
     <div>
-      <div className="tpd-section-label">Assign icons to accessories</div>
-      {switches.map((sw) => (
-        <div key={sw.id} style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: '0.85rem', color: 'var(--fg)', marginBottom: 8 }}>{sw.name}</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            {SWITCH_ICONS.map((icon) => (
-              <button
-                type="button"
-                key={icon}
-                aria-pressed={config.icons[sw.id] === icon}
-                onClick={() => setIcon(sw.id, icon)}
-                style={{
-                  fontSize: '1.3rem',
-                  background: 'var(--card)',
-                  border: `2px solid ${config.icons[sw.id] === icon ? 'var(--teal)' : 'var(--border)'}`,
-                  borderRadius: 8,
-                  padding: '4px 8px',
-                  cursor: 'pointer',
-                }}
-              >
-                {icon}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
+      <div className="tpd-section-label">Pick a button</div>
+      <div className="tpd-chip-row">
+        {switches.map((c) => (
+          <button
+            type="button"
+            key={c.key}
+            className={`tpd-chip${c.key === current.key ? ' selected' : ''}`}
+            aria-pressed={c.key === current.key}
+            onClick={() => onSelect(c.key)}
+          >
+            Switch {c.n}{c.icon && <span className="tpd-chip-icon"> · {iconLabel(c.icon)}</span>}
+          </button>
+        ))}
+      </div>
+
+      <div className="tpd-section-label">Icon for Switch {current.n}</div>
+      <div className="tpd-icon-grid">
+        {[{ id: null, label: 'Default' }, ...PLATE_ICONS].map((icon) => (
+          <button
+            type="button"
+            key={icon.label}
+            className={`tpd-icon-btn${current.icon === icon.id ? ' selected' : ''}`}
+            aria-pressed={current.icon === icon.id}
+            onClick={() => setIcon(icon.id)}
+          >
+            <PlateIcon id={icon.id || 'switch'} />
+            <span>{icon.label}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

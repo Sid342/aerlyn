@@ -3,7 +3,7 @@ import { MATERIAL_COLORS } from '../../../data/plateAccessories.js';
 export default function StepMaterial({ config, onChange }) {
   return (
     <div>
-      <div className="tpd-section-label">Choose material / colour</div>
+      <div className="tpd-section-label">Choose colour</div>
       <div className="tpd-color-grid">
         {MATERIAL_COLORS.map((c) => (
           <div key={c.label} style={{ textAlign: 'center' }}>
