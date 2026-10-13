@@ -6,7 +6,8 @@ import { track } from '../../lib/track.js';
 import { useDialog } from '../../lib/useDialog.js';
 import './LeadModal.css';
 
-export default function LeadModal({ phone: initialPhone, onClose }) {
+// `product` is the product name when opened from a product page, so the lead says what the visitor was looking at.
+export default function LeadModal({ phone: initialPhone, product, onClose }) {
   const [form, setForm] = useState({ name: '', phone: initialPhone || '', city: '', propertyType: '', timeline: '', notes: '', _gotcha: '' });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -29,13 +30,13 @@ export default function LeadModal({ phone: initialPhone, onClose }) {
     setSubmitting(true);
     const name = form.name.trim();
     const { ok } = await submitLead('visit', {
-      Name: name, Phone: phone, City: form.city, 'Property Type': form.propertyType, Timeline: form.timeline, Notes: form.notes,
-      _subject: `New Home Visit Request — ${name} (${phone})`,
+      Name: name, Phone: phone, Product: product, City: form.city, 'Property Type': form.propertyType, Timeline: form.timeline, Notes: form.notes,
+      _subject: `New Home Visit Request — ${name} (${phone})${product ? ` — ${product}` : ''}`,
       _gotcha: form._gotcha,
     });
     setSubmitting(false);
     setStatus(ok ? 'ok' : 'failed');
-    if (ok) track('visit_booked', { source: 'contact' });
+    if (ok) track('visit_booked', { source: product ? 'product' : 'contact' });
   }
 
   const failed = status === 'failed';

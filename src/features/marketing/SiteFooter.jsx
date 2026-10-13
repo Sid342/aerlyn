@@ -12,8 +12,6 @@ export default function SiteFooter() {
         ))}
         <a href={PRIVACY_PATH}>Privacy Policy</a>
         <a href={POLICY_PATHS.terms}>Terms</a>
-        <a href={POLICY_PATHS.refund}>Refunds</a>
-        <a href={POLICY_PATHS.shipping}>Shipping</a>
       </nav>
       <p className="site-footer__legal">
         © {new Date().getFullYear()} {site.brand} · {site.legalName} · {site.address}

@@ -58,12 +58,11 @@ export default function PrivacyPage() {
         <ul>
           <li>Book a visit: your name and phone number, and — if you fill them in — your city or area, property type, timeline and notes.</li>
           <li>Save my plan: your name, phone number, city (optional) and the plan itself — the home type, rooms, devices, switch plan, custom scenes and plate design you built.</li>
-          <li>Checkout: your name, phone number, email, delivery address and the contents of your order. No payment details are collected on this website.</li>
         </ul>
-        <p>We use these details to contact you about your visit, quote or order. Form submissions are delivered to our email by Formspree, a third-party form processor that handles the data on our behalf.</p>
-        <p>The plan you build and your cart are stored in your own browser's storage, on your device, so they are still there when you come back. A floor plan image you upload stays in the page only — it is not stored and not sent to us. A plan link contains the plan data itself; it does not contain your name or phone number. Anyone you give the link to can open that plan.</p>
+        <p>We use these details to contact you about your visit or quote. Form submissions are delivered to our email by Formspree, a third-party form processor that handles the data on our behalf.</p>
+        <p>The plan you build is stored in your own browser's storage, on your device, so it is still there when you come back. A floor plan image you upload stays in the page only — it is not stored and not sent to us. A plan link contains the plan data itself; it does not contain your name or phone number. Anyone you give the link to can open that plan.</p>
         <p>We use Vercel Web Analytics, which collects anonymous usage events — such as a plan being started or saved — with no personal data. The fonts on this website are loaded from Google Fonts.</p>
-        <p>To ask us to delete details you sent through this website, {site.email ? <>email <a href={`mailto:${site.email}`}>{site.email}</a></> : 'contact us at the address above'}. You can remove the plan and cart kept in your browser at any time by clearing this site's data in your browser settings.</p>
+        <p>To ask us to delete details you sent through this website, {site.email ? <>email <a href={`mailto:${site.email}`}>{site.email}</a></> : 'contact us at the address above'}. You can remove the plan kept in your browser at any time by clearing this site's data in your browser settings.</p>
       </div>
     </Shell>
   );

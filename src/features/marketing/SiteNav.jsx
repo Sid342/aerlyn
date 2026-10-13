@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { site } from '../../config/site.js';
 import { productPath } from '../../routes.js';
-import { useCart } from '../cart/CartContext.jsx';
-import { cartCount } from '../../lib/cart.js';
 import './SiteNav.css';
 
 // Absolute "/#…" links so the same nav works on every page.
@@ -16,8 +14,6 @@ const shortName = (p) => p.name.replace(`${site.brand} `, '');
 
 export default function SiteNav() {
   const [open, setOpen] = useState(false);
-  const { cart, openCart } = useCart();
-  const count = cartCount(cart);
   const close = () => setOpen(false);
   const products = useRef(null);
 
@@ -58,10 +54,6 @@ export default function SiteNav() {
           ))}
         </ul>
         <div className="site-nav-right">
-          <button type="button" className="site-nav-cart" onClick={openCart} aria-label={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}>
-            <span aria-hidden="true">🛒</span>
-            <span className="site-nav-cart-count" aria-hidden="true">{count}</span>
-          </button>
           <a className="site-nav-cta" href="/#planner">Build My Plan</a>
           <button type="button" className="site-nav-hamburger" onClick={() => setOpen((o) => !o)} aria-label="Menu" aria-expanded={open}>
             {open ? '✕' : '☰'}

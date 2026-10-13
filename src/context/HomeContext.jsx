@@ -30,6 +30,7 @@ export function HomeProvider({ children }) {
       if (plan) showPlanner();
     }
     setRestore({ notice, pendingLink });
+    try { localStorage.removeItem('aerlyn_cart'); } catch { /* storage blocked */ } // left over from the removed cart
   }, []);
 
   // Not before the first load: that would overwrite the stored plan with the empty initial state.

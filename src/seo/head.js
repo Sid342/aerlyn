@@ -1,6 +1,5 @@
 import { site } from '../config/site.js';
 import { routes } from '../routes.js';
-import { inr } from '../lib/cart.js';
 import { FAQ } from '../data/faq.js';
 import { policyDoc } from '../data/policies.js';
 
@@ -78,7 +77,8 @@ function breadcrumbs(name, url) {
   };
 }
 
-function productLd(p, url) {
+// Information only — nothing is sold on the site, so no offers and no ratings.
+function productLd(p) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -87,13 +87,6 @@ function productLd(p, url) {
     description: p.tagline,
     image: abs(p.image),
     brand: { '@type': 'Brand', name: site.brand },
-    offers: {
-      '@type': 'Offer',
-      price: p.price,
-      priceCurrency: 'INR',
-      availability: 'https://schema.org/InStock',
-      url,
-    },
   };
 }
 
@@ -110,16 +103,10 @@ function pageHead(route, url) {
       const p = route.product;
       return {
         title: `${p.name} — Smart Wi-Fi Switch`,
-        description: `${p.name}: ${p.tagline} ${inr(p.price)}.`,
-        jsonLd: [productLd(p, url), breadcrumbs(p.name, url)],
+        description: `${p.name}: ${p.tagline}`,
+        jsonLd: [productLd(p), breadcrumbs(p.name, url)],
       };
     }
-    case 'checkout':
-      return {
-        title: `Checkout — ${site.brand}`,
-        description: `Complete your ${site.brand} order with delivery details.`,
-        jsonLd: [],
-      };
     case 'privacy':
       return {
         title: `Privacy Policy — ${site.brand}`,
@@ -147,7 +134,6 @@ export function headFor(route) {
     title,
     description,
     canonical,
-    robots: route.noindex ? 'noindex' : null,
     og: {
       'og:title': title,
       'og:description': description,
@@ -178,16 +164,15 @@ export function renderHead(head) {
     `<title>${esc(head.title)}</title>`,
     `<meta name="description" content="${esc(head.description)}" />`,
     `<link rel="canonical" href="${esc(head.canonical)}" />`,
-    head.robots && `<meta name="robots" content="${esc(head.robots)}" />`,
     ...Object.entries(head.og).map(([k, v]) => `<meta property="${k}" content="${esc(v)}" />`),
     ...Object.entries(head.twitter).map(([k, v]) => `<meta name="${k}" content="${esc(v)}" />`),
     // "<" escaped so text in the data can never close the script element
     ...head.jsonLd.map((ld) => `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>`),
-  ].filter(Boolean).join('\n    ');
+  ].join('\n    ');
 }
 
 export function sitemapXml() {
-  const urls = routes.filter((r) => !r.noindex).map((r) => `  <url><loc>${esc(abs(r.path))}</loc></url>`);
+  const urls = routes.map((r) => `  <url><loc>${esc(abs(r.path))}</loc></url>`);
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`;
 }
 

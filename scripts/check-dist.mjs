@@ -26,13 +26,12 @@ for (const route of routes) {
   if (count(html, /<main[\s>]/g) !== 1) fail('expected exactly one <main>');
   if (!html.includes(`<link rel="canonical" href="${head.canonical}" />`)) fail('canonical missing or wrong');
   if (!/<meta name="description" content="[^"]+"/.test(html)) fail('description missing');
-  if (html.includes('<meta name="robots" content="noindex"') !== !!route.noindex) fail('robots noindex does not match the route');
   if (/<img(?![^>]*\salt="[^"]+")[^>]*>/.test(html)) fail('<img> without alt text');
   if (/<img(?![^>]*\swidth=)[^>]*>/.test(html) || /<img(?![^>]*\sheight=)[^>]*>/.test(html)) fail('<img> without width/height');
 
   const blocks = [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)];
   if (blocks.length !== head.jsonLd.length) fail(`expected ${head.jsonLd.length} JSON-LD blocks, found ${blocks.length}`);
-  if (!route.noindex && blocks.length === 0) fail('no JSON-LD');
+  if (blocks.length === 0) fail('no JSON-LD');
   for (const [, json] of blocks) {
     try {
       if (!JSON.parse(json)['@type']) fail('JSON-LD without @type');

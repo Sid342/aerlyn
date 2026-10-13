@@ -51,11 +51,6 @@ describe('headFor', () => {
     }
   });
 
-  it('marks only the checkout noindex', () => {
-    expect(byPage('checkout').robots).toBe('noindex');
-    expect(heads.filter(({ head }) => head.robots).length).toBe(1);
-  });
-
   it('has no null, undefined or empty value anywhere in the JSON-LD', () => {
     for (const { head } of heads) {
       for (const leaf of head.jsonLd.flatMap(leaves)) {
@@ -88,31 +83,23 @@ describe('headFor', () => {
     }
   });
 
-  it('describes each product with an offer and breadcrumbs', () => {
+  it('describes each product without an offer, price or rating', () => {
     for (const { route, head } of heads.filter((h) => h.route.page === 'product')) {
       expect(types(head)).toEqual(['Product', 'BreadcrumbList']);
       const [product, crumbs] = head.jsonLd;
       expect(product.sku).toBe(route.product.id);
       expect(product.brand.name).toBe(site.brand);
       expect(product.image).toMatch(/^https:\/\/aerlyn\.in\//);
-      expect(product.offers).toEqual({
-        '@type': 'Offer',
-        price: route.product.price,
-        priceCurrency: 'INR',
-        availability: 'https://schema.org/InStock',
-        url: head.canonical,
-      });
+      expect(Object.keys(product).sort()).toEqual(['@context', '@type', 'brand', 'description', 'image', 'name', 'sku']);
+      expect(head.title + head.description + JSON.stringify(head.jsonLd)).not.toMatch(/₹|price|offer|rating|InStock/i);
       expect(crumbs.itemListElement.map((i) => i.item)).toEqual(['https://aerlyn.in/', head.canonical]);
     }
   });
 
-  it('gives policy pages breadcrumbs and the checkout no structured data', () => {
+  it('gives the privacy and terms pages breadcrumbs', () => {
     expect(types(byPage('privacy'))).toEqual(['BreadcrumbList']);
-    expect(byPage('checkout').jsonLd).toEqual([]);
-    const policies = heads.filter(({ route }) => route.page === 'policy');
-    expect(policies.map(({ route }) => route.path)).toEqual(['/terms.html', '/refund-policy.html', '/shipping-policy.html']);
-    for (const { head } of policies) expect(types(head)).toEqual(['BreadcrumbList']);
-    expect(policies[0].head.title).toBe('Terms and Conditions — Aerlyn');
+    expect(types(byPage('policy'))).toEqual(['BreadcrumbList']);
+    expect(byPage('policy').title).toBe('Terms and Conditions — Aerlyn');
   });
 });
 
@@ -152,7 +139,7 @@ describe('prune', () => {
 describe('renderHead', () => {
   it('escapes text and keeps JSON-LD parseable', () => {
     const html = renderHead({
-      title: 'A & B <x>', description: 'say "hi"', canonical: 'https://aerlyn.in/', robots: null,
+      title: 'A & B <x>', description: 'say "hi"', canonical: 'https://aerlyn.in/',
       og: { 'og:title': 'A & B' }, twitter: {}, jsonLd: [{ name: '</script><b>' }],
     });
     expect(html).toContain('<title>A &amp; B &lt;x&gt;</title>');
@@ -163,16 +150,16 @@ describe('renderHead', () => {
     expect(JSON.parse(json)).toEqual({ name: '</script><b>' });
   });
 
-  it('renders the robots tag for the checkout', () => {
-    expect(renderHead(headFor(routes.find((r) => r.noindex)))).toContain('<meta name="robots" content="noindex" />');
+  it('marks no page noindex', () => {
+    for (const { head } of heads) expect(renderHead(head)).not.toContain('robots');
   });
 });
 
 describe('sitemap and robots', () => {
-  it('lists every indexable route and leaves the checkout out', () => {
+  it('lists every route', () => {
     const xml = sitemapXml();
     for (const r of routes) {
-      expect(xml.includes(`<loc>${site.origin}${r.path}</loc>`)).toBe(!r.noindex);
+      expect(xml).toContain(`<loc>${site.origin}${r.path}</loc>`);
     }
   });
 

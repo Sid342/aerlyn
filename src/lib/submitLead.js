@@ -1,6 +1,6 @@
 import { formspreeUrl } from '../config/site.js';
 
-// Send a lead to the Formspree form for `kind` ('visit' | 'plan' | 'order').
+// Send a lead to the Formspree form for `kind` ('visit' | 'plan').
 // Resolves { ok: true } only on a 2xx response; never throws.
 // `_gotcha` is the honeypot: a bot that fills it gets a fake success and nothing is sent.
 export async function submitLead(kind, { _gotcha, ...fields }) {

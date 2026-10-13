@@ -13,9 +13,6 @@ const RETROFIT_FEATURES = [
 // One photo for both modules for now — the 2-switch photo is a placeholder until a real one exists.
 const RETROFIT_IMAGE = { image: '/products/assets/retrofit-switch.webp', imageWidth: 861, imageHeight: 465 };
 
-// Marketing badges on the product pages — owner to confirm. Empty values render nothing.
-const RETROFIT_BADGES = { ribbon: 'Best Seller', trust: ['1-Year Warranty', 'Easy Returns', 'Fast Shipping'] };
-
 function retrofitSpecs(model, load) {
   return [
     ['Model', model],
@@ -38,12 +35,11 @@ export const site = {
   serviceArea: null,
   origin: 'https://aerlyn.in',
 
-  // Formspree form IDs per form kind. All three share the legacy form for now —
+  // Formspree form IDs per form kind. Both share the legacy form for now —
   // owner replaces each with its production form ID.
   formspree: {
     visit: 'mykokrdw',
     plan: 'mykokrdw',
-    order: 'mykokrdw',
   },
 
   // Marketing claims — owner to confirm.
@@ -54,28 +50,15 @@ export const site = {
     { number: '₹0', label: 'Subscription fee, ever' },
   ],
 
-  // Commitments shown on product and policy pages. While a value is null the policy pages say
-  // that detail is confirmed with the customer before the order is finalised.
-  policy: {
-    dispatchText: 'In stock · ships in 2–3 days', // line under the buy button; null hides it
-    returnWindowDays: null, // number of days after delivery
-    returnShippingPaidBy: null, // 'customer' | 'seller'
-    refundDays: null, // working days to refund after a return is approved
-    shippingFee: null, // rupees per order; 0 = free delivery
-    serviceableLocations: null, // e.g. 'all pincodes in India'
-    installationWarranty: null, // e.g. 'a 1-year workmanship warranty'
-  },
-
+  // Nothing is sold on this website — products and installation are sold through the home
+  // visit. Product entries are information only; do not add amounts here.
   products: [
     {
       id: 'AER-SW1G-WiFi',
       slug: 'retrofit-1-switch',
       name: 'Aerlyn Retrofit 1-Switch',
       tagline: 'Smart Wi-Fi retrofit module — make one existing switch app & voice controlled.',
-      price: 2300,
-      mrp: 3286,
       ...RETROFIT_IMAGE,
-      badges: RETROFIT_BADGES,
       features: RETROFIT_FEATURES,
       specs: retrofitSpecs('AER-SW1G-WiFi', '800 W (1 gang)'),
     },
@@ -84,10 +67,7 @@ export const site = {
       slug: 'retrofit-2-switch',
       name: 'Aerlyn Retrofit 2-Switch',
       tagline: 'Smart Wi-Fi retrofit module — make two existing switches app & voice controlled.',
-      price: 2300,
-      mrp: 3286,
       ...RETROFIT_IMAGE,
-      badges: RETROFIT_BADGES,
       features: RETROFIT_FEATURES,
       specs: retrofitSpecs('AER-SW2G-WiFi', '800 W per gang (2 gang)'),
     },

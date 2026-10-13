@@ -32,7 +32,7 @@ describe('submitLead', () => {
 
   it('returns not ok on a network error instead of throwing', async () => {
     mockFetch(() => { throw new TypeError('Failed to fetch'); });
-    expect(await submitLead('order', { name: 'Asha' })).toEqual({ ok: false });
+    expect(await submitLead('visit', { name: 'Asha' })).toEqual({ ok: false });
   });
 
   it('pretends success without sending when the honeypot is filled', async () => {

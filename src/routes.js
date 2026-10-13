@@ -1,13 +1,10 @@
 import { site } from './config/site.js';
 
 export const productPath = (product) => `/products/${product.slug}.html`;
-export const CHECKOUT_PATH = '/products/checkout.html';
 export const PRIVACY_PATH = '/privacy-policy.html';
 // The policy key is also the id in data/policies.js.
 export const POLICY_PATHS = {
   terms: '/terms.html',
-  refund: '/refund-policy.html',
-  shipping: '/shipping-policy.html',
 };
 
 // Path → page map. The client picks from location.pathname; the prerender walks this list.
@@ -15,7 +12,6 @@ export const POLICY_PATHS = {
 export const routes = [
   { path: '/', page: 'landing' },
   ...site.products.map((product) => ({ path: productPath(product), page: 'product', product })),
-  { path: CHECKOUT_PATH, page: 'checkout', noindex: true },
   { path: PRIVACY_PATH, page: 'privacy' },
   ...Object.entries(POLICY_PATHS).map(([policy, path]) => ({ path, page: 'policy', policy })),
 ];
