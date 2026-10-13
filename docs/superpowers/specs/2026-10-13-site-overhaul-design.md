@@ -143,3 +143,33 @@ Vitest, existing style. New unit tests: `submitLead` (2xx, 4xx, network error, h
 3. DNS: point `aerlyn.in` at Vercel; retire the Netlify site.
 4. Review the three new policy drafts.
 5. Search Console + Business Profile.
+
+## Addendum — 2026-10-13: online selling removed
+
+**Decision (owner):** "Remove pricing from everywhere. We do not sell anything online. This will
+all be sold through the visit." Separately: the plan bar's device count ("100 devices" for a
+default 2BHK) puts customers off and must change.
+
+This addendum supersedes the following parts of the spec above; the original text is left as
+written for the record.
+
+- **Routes:** `/products/checkout.html`, `/refund-policy.html` and `/shipping-policy.html` no
+  longer exist. The site is five pages: landing, two product pages, privacy, terms.
+  `/products/checkout.html` redirects permanently to `/#contact`.
+- **Lead submission:** the form kinds are `visit` and `plan` only. There is no `order` kind, no
+  checkout form and no cart, so the "no order is silently lost" and "cart is cleared only after
+  a successful send" requirements no longer apply.
+- **Config:** no `price` / `mrp`, no sales badges, no `policy` block. The owner action "2-switch
+  price" is void.
+- **Product pages:** information pages, not a storefront. Actions are "Book a free home visit"
+  (visit lead carrying the product name) and "Plan your home". Product structured data has no
+  `offers`.
+- **Policies:** only Terms and Privacy remain. Terms are rewritten for a site that sells nothing
+  online; the privacy website section drops the checkout / order / cart text. "Review the three
+  new policy drafts" becomes "review the Terms and the privacy website section".
+- **Analytics:** the order event is removed; `visit_booked` gains `source: product`.
+- **Plan bar:** shows home type, room count and the number of distinct device types ("smart
+  features") instead of total device quantity and switch-plate count. The lead and the PDF
+  still carry full quantities and the switch plan.
+- **Out of scope** now also covers any price, cart or checkout on the site, not only a payment
+  gateway.
