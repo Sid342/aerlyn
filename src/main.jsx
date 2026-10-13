@@ -1,10 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import App from './App.jsx';
 import './styles/global.css';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const root = document.getElementById('root');
+const app = (
   <React.StrictMode>
-    <App />
+    <App path={window.location.pathname} />
   </React.StrictMode>
 );
+
+// Prerendered pages hydrate; `vite dev` serves an empty root and renders from scratch.
+if (root.hasChildNodes()) hydrateRoot(root, app);
+else createRoot(root).render(app);

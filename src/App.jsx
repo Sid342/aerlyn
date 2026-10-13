@@ -45,7 +45,8 @@ function AppInner() {
   );
 }
 
-export default function App() {
+// `path` is location.pathname on the client and the route path in the prerender.
+export default function App({ path }) {
   return (
     <HomeProvider>
       <SiteNav />
