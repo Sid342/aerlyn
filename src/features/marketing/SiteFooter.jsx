@@ -1,19 +1,28 @@
-import { site } from '../../config/site.js';
+import { site, whatsappUrl } from '../../config/site.js';
+import { productPath, PRIVACY_PATH } from '../../routes.js';
 import './SiteFooter.css';
 
 export default function SiteFooter() {
+  const whatsapp = whatsappUrl(`Hi ${site.brand}`);
   return (
     <footer className="site-footer">
-      <nav className="site-footer__links">
-        <a href="/privacy-policy.html">Privacy Policy</a>
+      <nav className="site-footer__links" aria-label="Footer">
         {site.products.map((p) => (
-          <a key={p.id} href={`/products/${p.slug}.html`}>{p.name.replace(`${site.brand} `, '')}</a>
+          <a key={p.id} href={productPath(p)}>{p.name.replace(`${site.brand} `, '')}</a>
         ))}
+        <a href={PRIVACY_PATH}>Privacy Policy</a>
       </nav>
       <p className="site-footer__legal">
-        © 2026 {site.legalName} · {site.address}
-        {site.email && <> · <a href={`mailto:${site.email}`}>{site.email}</a></>}
+        © {new Date().getFullYear()} {site.brand} · {site.legalName} · {site.address}
+        {site.gstin && <> · GSTIN {site.gstin}</>}
       </p>
+      {(site.email || site.phone || whatsapp) && (
+        <p className="site-footer__legal">
+          {site.email && <a href={`mailto:${site.email}`}>{site.email}</a>}
+          {site.phone && <a href={`tel:${site.phone}`}>{site.phone}</a>}
+          {whatsapp && <a href={whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp</a>}
+        </p>
+      )}
     </footer>
   );
 }

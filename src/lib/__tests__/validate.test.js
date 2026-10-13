@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalisePhone, isName, isPincode, validateContact } from '../validate.js';
+import { normalisePhone, isName, isPincode, validateContact, isEmail, validateOrder } from '../validate.js';
 
 describe('normalisePhone', () => {
   it('accepts a plain 10-digit mobile', () => {
@@ -54,5 +54,36 @@ describe('validateContact', () => {
     expect(errors.name).toBeTruthy();
     expect(errors.phone).toBeTruthy();
     expect(phone).toBeNull();
+  });
+});
+
+describe('isEmail', () => {
+  it('accepts a plain address', () => {
+    expect(isEmail('asha@example.com')).toBe(true);
+    expect(isEmail(' asha.k+home@mail.example.in ')).toBe(true);
+  });
+  it('rejects anything else', () => {
+    for (const bad of ['', 'asha', 'asha@', '@example.com', 'asha@example', 'a b@example.com', undefined]) {
+      expect(isEmail(bad)).toBe(false);
+    }
+  });
+});
+
+describe('validateOrder', () => {
+  const valid = {
+    name: 'Asha', phone: '98765 43210', email: 'asha@example.com',
+    address: '12 MG Road', city: 'Hisar', state: 'Haryana', pincode: '125001',
+  };
+  it('returns no errors and the normalised phone for valid input', () => {
+    expect(validateOrder(valid)).toEqual({ errors: {}, phone: '9876543210' });
+  });
+  it('reports every missing field', () => {
+    const { errors, phone } = validateOrder({});
+    expect(Object.keys(errors).sort()).toEqual(['address', 'city', 'email', 'name', 'phone', 'pincode', 'state']);
+    expect(phone).toBeNull();
+  });
+  it('reports only the field that is wrong', () => {
+    expect(Object.keys(validateOrder({ ...valid, email: 'asha@' }).errors)).toEqual(['email']);
+    expect(Object.keys(validateOrder({ ...valid, pincode: '1250' }).errors)).toEqual(['pincode']);
   });
 });

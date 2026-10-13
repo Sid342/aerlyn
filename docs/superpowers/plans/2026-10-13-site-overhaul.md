@@ -26,7 +26,7 @@
 
 ## Phase 3 — SEO
 
-- [ ] **3.1 Routes + pages.** `src/routes.js`; move product, checkout, privacy pages from `public/` into React pages using shared nav/footer/cart; cart prices from config; escaped output.
+- [x] **3.1 Routes + pages.** `src/routes.js`; move product, checkout, privacy pages from `public/` into React pages using shared nav/footer/cart; cart prices from config; escaped output.
 - [x] **3.2 Prerender.** `src/entry-server.jsx`, `scripts/prerender.mjs`, `build` script chain; client hydrates. Verify the three Play Store URLs resolve to the same paths.
 - [ ] **3.3 Head + structured data.** `src/seo/head.js` builds per-route title, description, canonical, OG/Twitter, JSON-LD (Organization/LocalBusiness, Product+Offer, FAQPage, BreadcrumbList). Test: every route file exists, one `<h1>`, canonical present, JSON-LD parses.
 - [ ] **3.4 FAQ section** on landing page (copy from existing claims only).
@@ -36,7 +36,7 @@
 
 ## Phase 4 — Storefront and cleanup
 
-- [ ] **4.1 Checkout.** `submitLead('order')`, full validation, cart cleared only on success, retry on failure.
+- [x] **4.1 Checkout.** `submitLead('order')`, full validation, cart cleared only on success, retry on failure.
 - [ ] **4.2 Policies.** Privacy policy website section; Terms, Refund, Shipping drafts; footer links.
 - [ ] **4.3 Nav + footer.** "Products" in nav; footer from config.
 - [ ] **4.4 Accessibility.** Buttons for all click targets; modal Escape + focus trap; inline confirms replace `window.confirm`.

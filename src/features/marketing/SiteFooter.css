@@ -4,3 +4,4 @@
 .site-footer__links a:hover { text-decoration:underline; }
 .site-footer__legal { color:#9aa0ad; font-size:.85rem; }
 .site-footer__legal a { color:#9aa0ad; }
+.site-footer__legal + .site-footer__legal { margin-top: 8px; display: flex; gap: 8px 20px; justify-content: center; flex-wrap: wrap; }
