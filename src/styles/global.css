@@ -62,3 +62,7 @@ button { font-family: var(--font-body); cursor: pointer; }
 @media (max-width: 360px) {
   .scene-btn { padding: 4px 8px; font-size: 11px; }
 }
+
+/* shared form bits */
+.field-error { color: var(--rose); font-size: 0.8rem; margin-top: 4px; }
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }

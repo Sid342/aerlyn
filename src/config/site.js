@@ -77,3 +77,8 @@ export const site = {
 export function formspreeUrl(kind) {
   return `https://formspree.io/f/${site.formspree[kind]}`;
 }
+
+// wa.me link to the business number with a prefilled message; null until whatsapp is configured.
+export function whatsappUrl(text) {
+  return site.whatsapp ? `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text)}` : null;
+}
