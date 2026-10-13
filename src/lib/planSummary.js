@@ -1,12 +1,15 @@
-import { planRoom } from './switchPlanner.js';
+import { devicesInHome } from '../data/devices.js';
 
-// Live totals for the plan bar: rooms, total device quantity, switch plates across all rooms.
+// What the plan bar shows: the room count and the number of distinct device types in the home.
+// Deliberately no quantity totals — the full quantities go in the lead and the PDF.
 export function planSummary(home) {
-  let devices = 0;
-  let plates = 0;
-  for (const room of home.rooms) {
-    for (const d of room.devices) devices += d.qty;
-    plates += planRoom(room).plates.length;
-  }
-  return { rooms: home.rooms.length, devices, plates };
+  return { rooms: home.rooms.length, features: devicesInHome(home.rooms).length };
+}
+
+const count = (n, one) => `${n} ${one}${n === 1 ? '' : 's'}`;
+
+// "Your 2BHK plan · 6 rooms · 14 smart features"
+export function planSummaryText(home) {
+  const { rooms, features } = planSummary(home);
+  return `Your ${home.homeType} plan · ${count(rooms, 'room')} · ${count(features, 'smart feature')}`;
 }

@@ -1,41 +1,43 @@
 import { describe, it, expect } from 'vitest';
-import { planSummary } from '../planSummary.js';
-import { planRoom } from '../switchPlanner.js';
+import { planSummary, planSummaryText } from '../planSummary.js';
 import { homeReducer, initialHome, actions } from '../../context/homeReducer.js';
 
-const room = (devices, switchOverrides) => ({ id: 'r', name: 'R', roomType: 'other', size: 'M', devices, switchOverrides });
+const room = (devices) => ({ id: 'r', name: 'R', roomType: 'other', size: 'M', devices });
 
 describe('planSummary', () => {
   it('is all zeros for an empty home', () => {
-    expect(planSummary(initialHome)).toEqual({ rooms: 0, devices: 0, plates: 0 });
+    expect(planSummary(initialHome)).toEqual({ rooms: 0, features: 0 });
   });
 
-  it('counts rooms, sums device quantities and switch plates', () => {
+  it('counts rooms and distinct device types, not quantities', () => {
     const home = {
       ...initialHome,
       rooms: [
-        // 3 gangs + 1 fan = 4 modules → one 4-module plate
         room([{ deviceId: 'cct-light', qty: 3 }, { deviceId: 'bldc-fan', qty: 1 }, { deviceId: 'camera', qty: 2 }]),
-        // 14 sockets → a 12-module and a 2-module plate
-        room([{ deviceId: 'power-socket', qty: 14 }]),
-        // nothing that needs a wall module → no plate
-        room([{ deviceId: 'geyser', qty: 1 }]),
+        room([{ deviceId: 'power-socket', qty: 14 }, { deviceId: 'cct-light', qty: 5 }]),
+        room([{ deviceId: 'geyser', qty: 1 }, { deviceId: 'not-a-device', qty: 9 }]),
       ],
     };
-    expect(planSummary(home)).toEqual({ rooms: 3, devices: 21, plates: 3 });
+    expect(planSummary(home)).toEqual({ rooms: 3, features: 5 });
   });
 
-  it('follows switch overrides', () => {
-    const home = { ...initialHome, rooms: [room([{ deviceId: 'cct-light', qty: 1 }], { gang: 13 })] };
-    expect(planSummary(home).plates).toBe(2);
+  it('stays well below the quantity total for a template home', () => {
+    const home = homeReducer(initialHome, actions.setHomeType('2BHK'));
+    const { rooms, features } = planSummary(home);
+    expect(rooms).toBe(6);
+    expect(features).toBe(new Set(home.rooms.flatMap((r) => r.devices.map((d) => d.deviceId))).size);
+    expect(features).toBeLessThan(home.rooms.flatMap((r) => r.devices).reduce((n, d) => n + d.qty, 0));
+  });
+});
+
+describe('planSummaryText', () => {
+  it('names the home type, rooms and smart features', () => {
+    const home = homeReducer(initialHome, actions.setHomeType('2BHK'));
+    expect(planSummaryText(home)).toBe(`Your 2BHK plan · 6 rooms · ${planSummary(home).features} smart features`);
   });
 
-  it('agrees with the switch planner for a template home', () => {
-    const home = homeReducer(initialHome, actions.setHomeType('3BHK'));
-    const s = planSummary(home);
-    expect(s.rooms).toBe(home.rooms.length);
-    expect(s.devices).toBe(home.rooms.flatMap((r) => r.devices).reduce((n, d) => n + d.qty, 0));
-    expect(s.plates).toBe(home.rooms.reduce((n, r) => n + planRoom(r).plates.length, 0));
-    expect(s.plates).toBeGreaterThan(0);
+  it('handles singular forms', () => {
+    const home = { ...initialHome, homeType: 'Villa', rooms: [room([{ deviceId: 'geyser', qty: 4 }])] };
+    expect(planSummaryText(home)).toBe('Your Villa plan · 1 room · 1 smart feature');
   });
 });
