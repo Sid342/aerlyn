@@ -1,3 +1,4 @@
+import { site } from '../../config/site.js';
 import './SiteFooter.css';
 
 export default function SiteFooter() {
@@ -5,12 +6,13 @@ export default function SiteFooter() {
     <footer className="site-footer">
       <nav className="site-footer__links">
         <a href="/privacy-policy.html">Privacy Policy</a>
-        <a href="/products/retrofit-1-switch.html">Retrofit 1-Switch</a>
-        <a href="/products/retrofit-2-switch.html">Retrofit 2-Switch</a>
+        {site.products.map((p) => (
+          <a key={p.id} href={`/products/${p.slug}.html`}>{p.name.replace(`${site.brand} `, '')}</a>
+        ))}
       </nav>
       <p className="site-footer__legal">
-        © 2026 Home Decor · 216, Green Square Market, Hisar – 125001 ·{' '}
-        <a href="mailto:shaurya.goel.34@gmail.com">shaurya.goel.34@gmail.com</a>
+        © 2026 {site.legalName} · {site.address}
+        {site.email && <> · <a href={`mailto:${site.email}`}>{site.email}</a></>}
       </p>
     </footer>
   );

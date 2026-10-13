@@ -7,7 +7,7 @@
 ## Phase 1 — Stop the leaks
 
 - [x] **1.0 Dependencies.** `npm audit` reports 3 production advisories (1 critical), all reached through `jspdf` (`dompurify`, `fflate`). Upgrade `jspdf` to the current major; re-run PDF export tests; confirm `npm audit --omit=dev` is clean.
-- [ ] **1.1 Config.** `src/config/site.js` with brand, legal, contact, origin, Formspree IDs per form kind, claims, product catalogue. Replace hardcoded values in `SiteFooter`, `Hero`, `LeadModal`, `sendFormspree`.
+- [x] **1.1 Config.** `src/config/site.js` with brand, legal, contact, origin, Formspree IDs per form kind, claims, product catalogue. Replace hardcoded values in `SiteFooter`, `Hero`, `LeadModal`, `sendFormspree`.
 - [ ] **1.2 Validation.** `src/lib/validate.js` + tests (`normalisePhone`, name, pincode).
 - [ ] **1.3 submitLead.** `src/lib/submitLead.js` + tests (2xx, 4xx, network error, honeypot). Delete `sendFormspree.js`.
 - [ ] **1.4 Lead modal.** Use `submitLead` + `validate`; inline errors; retry on failure; honeypot; `type="tel"`.

@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { formspreeUrl } from '../../config/site.js';
 import './LeadModal.css';
 
-const FORMSPREE = 'https://formspree.io/f/mykokrdw';
+const FORMSPREE = formspreeUrl('visit');
 
 export default function LeadModal({ phone: initialPhone, onClose }) {
   const [form, setForm] = useState({ name: '', phone: initialPhone || '', city: '', propertyType: '', timeline: '', notes: '' });

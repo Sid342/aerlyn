@@ -1,8 +1,7 @@
 import { buildExportPayload } from './exportJson.js';
+import { formspreeUrl } from '../config/site.js';
 
-// Formspree endpoint — reuses the same provider as the legacy Aerlyn site.
-// Replace with the production form id before launch.
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mykokrdw';
+const FORMSPREE_ENDPOINT = formspreeUrl('plan');
 
 // POST the export payload to Formspree. Resolves to true on success,
 // false on network failure or non-2xx response (never throws).

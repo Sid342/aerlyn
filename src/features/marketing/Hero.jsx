@@ -1,3 +1,4 @@
+import { site } from '../../config/site.js';
 import './Hero.css';
 
 export default function Hero() {
@@ -19,12 +20,7 @@ export default function Hero() {
         <a href="#why" className="hero-cta-secondary">Why do I need this?</a>
       </div>
       <div className="hero-proof">
-        {[
-          { number: '500+', label: 'Homes automated' },
-          { number: '<1 day', label: 'Full installation' },
-          { number: '40%', label: 'Avg. energy saved' },
-          { number: '₹0', label: 'Subscription fee, ever' },
-        ].map(({ number, label }) => (
+        {site.heroStats.map(({ number, label }) => (
           <div key={label} className="hero-proof-item">
             <div className="hero-proof-number">{number}</div>
             <div className="hero-proof-label">{label}</div>
