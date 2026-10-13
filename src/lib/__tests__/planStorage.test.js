@@ -299,6 +299,12 @@ describe('planOnLoad', () => {
     expect(planOnLoad('#planner', stored)).toEqual({ plan: stored, pendingLink: null, notice: 'restored', clearHash: false });
   });
 
+  it('keeps a plate that was designed without picking a home', () => {
+    const plateOnly = { ...initialHome, plateConfig: { ...emptyPlateConfig, model: 'full-glass', size: 4 } };
+    expect(planOnLoad('', plateOnly).plan).toBe(plateOnly);
+    expect(planOnLoad('', initialHome).plan).toBeNull();
+  });
+
   it('opens a link straight away when nothing is stored', () => {
     const r = planOnLoad(hashOf(other), null);
     expect(r).toMatchObject({ pendingLink: null, notice: 'restored', clearHash: true });

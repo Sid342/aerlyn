@@ -9,9 +9,10 @@ describe('routes', () => {
     expect(paths).toContain('/products/retrofit-2-switch.html');
   });
 
-  it('is exactly the landing page, two product pages, privacy and terms', () => {
+  it('is exactly the landing page, the plate designer, two product pages, privacy and terms', () => {
     expect(routes.map((r) => r.path)).toEqual([
       '/',
+      '/plate-designer.html',
       '/products/retrofit-1-switch.html',
       '/products/retrofit-2-switch.html',
       '/privacy-policy.html',
@@ -36,6 +37,9 @@ describe('routes', () => {
     expect(matchRoute('/products/retrofit-1-switch').product.id).toBe('AER-SW1G-WiFi');
     expect(matchRoute('/products/retrofit-2-switch/').product.id).toBe('AER-SW2G-WiFi');
     expect(matchRoute('/privacy-policy').page).toBe('privacy');
+    expect(matchRoute('/plate-designer.html').page).toBe('plate');
+    expect(matchRoute('/plate-designer').page).toBe('plate');
+    expect(matchRoute('/plate-designer/').page).toBe('plate');
     expect(matchRoute('/terms').policy).toBe('terms');
     expect(matchRoute('/').page).toBe('landing');
   });

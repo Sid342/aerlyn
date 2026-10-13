@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import RoomCard from './RoomCard.jsx';
+import SceneBuilder from '../sceneBuilder/SceneBuilder.jsx';
 import { useHome } from '../../context/HomeContext.jsx';
 import './RoomCard.css';
 
@@ -26,7 +27,7 @@ export default function RoomList() {
   return (
     <div className="editor">
       <p className="plan-hint">Open a room to change what goes in it.</p>
-      {home.rooms.map((room) => <RoomCard key={room.id} room={room} />)}
+      {home.rooms.map((room, i) => <RoomCard key={room.id} room={room} index={i} />)}
 
       <form className="add-room" onSubmit={addRoom}>
         <label className="lead-field">
@@ -38,6 +39,11 @@ export default function RoomList() {
         </select>
         <button type="submit" className="btn quiet">Add room</button>
       </form>
+
+      <details className="room-card">
+        <summary><span className="room-card-name">Your own scenes</span></summary>
+        <div className="room-card-body"><SceneBuilder /></div>
+      </details>
     </div>
   );
 }

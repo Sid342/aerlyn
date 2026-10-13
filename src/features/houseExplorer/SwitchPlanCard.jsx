@@ -1,5 +1,6 @@
 import { computeRoomPoints, applyOverrides, recommendPlates } from '../../lib/switchPlanner.js';
 import { useHome } from '../../context/HomeContext.jsx';
+import { PLATE_PATH } from '../../routes.js';
 import './SwitchPlanCard.css';
 
 const PLATE_LABELS = (plates) =>
@@ -20,17 +21,13 @@ const ROWS = [
 ];
 
 // For the installer: the wall modules the room's devices need, each count overridable.
-export default function SwitchPlanCard({ room }) {
+// `index` is the room's position in the plan; the plate designer page reads it from the link.
+export default function SwitchPlanCard({ room, index }) {
   const { dispatch, actions } = useHome();
   const auto = computeRoomPoints(room);
   const overrides = room.switchOverrides || {};
   const points = applyOverrides(auto, overrides);
   const plan = { ...points, ...recommendPlates(points.total) };
-
-  function designPlate() {
-    dispatch(actions.designPlate(room.id, Math.max(...plan.plates)));
-    document.getElementById('plate-designer')?.scrollIntoView();
-  }
 
   function handleOverride(key, raw) {
     const trimmed = raw.trim();
@@ -66,7 +63,7 @@ export default function SwitchPlanCard({ room }) {
         {plan.spareModules > 0 && <span className="spare"> (spare: {plan.spareModules})</span>}
       </div>
       {plan.plates.length > 0 && (
-        <button type="button" className="link-btn" onClick={designPlate}>Design this plate</button>
+        <a className="link-btn" href={`${PLATE_PATH}?room=${index}`}>Design this plate</a>
       )}
     </div>
   );

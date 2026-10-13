@@ -63,7 +63,7 @@ export function HomeProvider({ children }) {
   const mergedActions = { ...actions, addCustomScene, removeCustomScene, renameCustomScene, setSceneDeviceState };
   return (
     <HomeContext.Provider
-      value={{ home, plan, dispatch, actions: mergedActions, restore: restore || NOTHING_RESTORED, openLinkedPlan, dismissRestore, addCustomScene, removeCustomScene, renameCustomScene, setSceneDeviceState }}
+      value={{ home, plan, loaded, dispatch, actions: mergedActions, restore: restore || NOTHING_RESTORED, openLinkedPlan, dismissRestore, addCustomScene, removeCustomScene, renameCustomScene, setSceneDeviceState }}
     >
       {children}
     </HomeContext.Provider>

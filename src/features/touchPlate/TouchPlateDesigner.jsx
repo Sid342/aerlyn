@@ -3,6 +3,7 @@ import { useHome } from '../../context/HomeContext.jsx';
 import { PLATE_MODELS, PLATE_MATERIALS, PLATE_SIZES } from '../../data/plateCatalogue.js';
 import { emptyPlateConfig, cleanPlateConfig, plateSteps, accessoriesFor, coloursFor, plateButtons } from '../../lib/plateConfig.js';
 import { plateIcon } from '../../data/plateIconLibrary.js';
+import { planRoom } from '../../lib/switchPlanner.js';
 import Plate from './Plate.jsx';
 import IconPalette from './IconPalette.jsx';
 import PlateSummary from './PlateSummary.jsx';
@@ -53,24 +54,35 @@ function Swatches({ title, colours, value, onPick }) {
 }
 
 export default function TouchPlateDesigner() {
-  const { home, dispatch, actions } = useHome();
+  const { home, loaded, dispatch, actions } = useHome();
   const config = home.plateConfig;
   const steps = plateSteps(config);
-  const [step, setStep] = useState(storedStep);
+  const [step, setStep] = useState(0);
   const [selected, setSelected] = useState(null); // key of the switch being given an icon
   const [notice, setNotice] = useState(null);
   const [confirmReset, setConfirmReset] = useState(false);
   const [logo, setLogo] = useState(null); // { src, position } — kept in memory only
   const heading = useRef(null);
 
-  // opened from a room's switch plan: start at the first thing still to choose
+  // read after mount: the prerendered page always starts on the first step
+  useEffect(() => { setStep(storedStep()); }, []);
+
+  // opened for a room of the plan (?room=<its position>): preset the plate size its switch plan needs
+  useEffect(() => {
+    if (!loaded) return;
+    const room = home.rooms[new URLSearchParams(window.location.search).get('room') ?? -1];
+    if (!room) return;
+    window.history.replaceState(null, '', window.location.pathname); // a reload must not reset the plate again
+    const { plates } = planRoom(room);
+    if (plates.length) dispatch(actions.designPlate(room.id, Math.max(...plates)));
+  }, [loaded]);
+
+  // opened for a room: start at the first thing still to choose
   useEffect(() => {
     if (!home.plateOpens) return;
     const open = openStep(config, steps);
     setStep(open < 0 ? steps.findIndex((s) => s.id === 'accessories') : open);
   }, [home.plateOpens]);
-
-  if (!home.homeType) return null;
 
   const setConfig = (next) => dispatch(actions.setPlateConfig(cleanPlateConfig(next)));
   const plateRoom = home.rooms.find((r) => r.id === home.plateRoomId);
@@ -225,10 +237,10 @@ export default function TouchPlateDesigner() {
   }
 
   return (
-    <div className="tpd" id="plate-designer">
+    <div className="tpd">
       <div className="tpd-head">
         <div>
-          <h2>{plateRoom ? `Switch plate for your ${plateRoom.name}` : 'Design a switch plate'}</h2>
+          <h1>{plateRoom ? `Switch plate for your ${plateRoom.name}` : 'Design a switch plate'}</h1>
           <p className="tpd-sub">Choose the plate, its switches, icons and colours. This is optional.</p>
         </div>
         <div className="tpd-reset">

@@ -1,9 +1,33 @@
 # Handoff — Aerlyn website
 
-**Updated:** 2026-10-13
+**Updated:** 2026-10-14
 **Repo:** https://github.com/Sid342/aerlyn
-**Branch:** `overhaul/site-cleanup-leadgen-seo` (not pushed, not merged)
-**Spec / plan:** `docs/superpowers/specs/2026-10-13-site-overhaul-design.md`, `docs/superpowers/plans/2026-10-13-site-overhaul.md`
+**Branch:** `redesign/simple-guided` (not pushed, not merged)
+**Spec:** `docs/superpowers/specs/2026-10-14-simple-guided-site-design.md` (its addendum overrides section 2). Earlier: `docs/superpowers/specs/2026-10-13-site-overhaul-design.md`.
+
+## Change log — 2026-10-14: simpler, guided site
+
+Owner: "too wordy and too difficult to use", "looks too AI in terms of the text", "even planning
+is very long and tedious".
+
+- **Two actions, two wordings, everywhere:** "Plan my home" and "Book an appointment". Do not add a
+  third wording for either.
+- **Header on every page:** logo, Plan my home, How it works, Products, FAQ, and a "Book an
+  appointment" button. On phones the links are in the menu and one bar at the bottom of the screen
+  carries the next step (`features/savePlan/StickyAction.jsx`): "Plan my home" until a plan exists,
+  then "Book an appointment". There is no other bottom bar; wider screens have none.
+- **Home page:** hero, planner, "What it does for you", "How it works", "Aerlyn so far", FAQ,
+  appointment. About 410 words. `WhyAutomate` and `DayInLife` are deleted.
+- **Copy rules** (spec section 3) are enforced for the home page by the build: `src/lib/copyCheck.js`
+  runs from `scripts/check-dist.mjs` over `dist/index.html` and fails on more than 500 words before
+  interaction, more than 6 long dashes, a banned phrase or an emoji.
+- **One-tap planner:** "What's your home?" with four tiles; a tap shows the plan below (section 7).
+- **One appointment form** (`LeadModal.jsx`): name and phone, city and a note optional.
+- **Plate designer** moved to its own page, `/plate-designer.html`. The custom scene builder is
+  under Customise. The Build/Play toggle, the floor-plan upload and the room drawer are gone.
+- Device display names are plain words and there are no emoji icons (`src/data/devices.js`; ids
+  unchanged). Dropped until the owner confirms them: "certified technicians", "65% less power",
+  "India's Most Comprehensive", "4–8 hours".
 
 ## Change log — 2026-10-13: online selling removed
 
@@ -20,8 +44,7 @@ be sold through the visit."
   mentions checkout or a cart.
 - `/products/checkout.html` now redirects permanently to `/#contact` (`public/_redirects`).
   `/refund-policy.html` and `/shipping-policy.html` were never deployed, so they have no redirect.
-- The plan bar shows "Your 2BHK plan · 6 rooms · N smart features" (distinct device types)
-  instead of device-quantity and switch-plate totals.
+- (The plan bar this change introduced was removed on 2026-10-14; see above.)
 - Do not add prices, a cart or "buy" wording back. Amounts are given only in the written quote.
 
 ## 1. What the site is
@@ -38,8 +61,9 @@ Defined in `src/routes.js`; pages in `src/pages/`; `<head>` per route in `src/se
 
 | Path | Page | Notes |
 |---|---|---|
-| `/` | Landing + planner | FAQ, lead forms, plan bar |
-| `/products/retrofit-1-switch.html` | Product information | from `site.products`; "Book an appointment" + "Plan your home" |
+| `/` | Home + planner | FAQ, appointment form |
+| `/plate-designer.html` | Switch plate designer | optional; `?room=<position>` opens it for a room of the plan |
+| `/products/retrofit-1-switch.html` | Product information | from `site.products`; "Book an appointment" + "Plan my home" |
 | `/products/retrofit-2-switch.html` | Product information | same |
 | `/privacy-policy.html` | Privacy policy | app + website section |
 | `/terms.html` | Terms and Conditions | text from `src/data/policies.js` |
@@ -49,8 +73,14 @@ Defined in `src/routes.js`; pages in `src/pages/`; `<head>` per route in `src/se
 emitting at exactly those paths (a test in `src/__tests__/routes.test.js` guards this). The
 product paths come from each product's `slug` in config — do not rename the slugs.
 
-Five pages in all; every one is indexable and in the sitemap. Unknown paths fall back to the
-landing page on the client; there is no 404 page.
+Six pages in all; every one is indexable and in the sitemap. Unknown paths fall back to the
+landing page on the client; there is no 404 page. Every page is wrapped in `HomeProvider`
+(`App.jsx`), because the header button and the bottom bar depend on whether a plan exists.
+
+Paths also resolve without `.html` and with a trailing slash (`matchRoute`). The prerender stamps
+each page's root with `data-path`; `main.jsx` hydrates only when that matches the address, and
+renders from scratch otherwise (a host that answers an unknown address with the home page's HTML
+would cause a hydration mismatch).
 
 ## 3. Build pipeline
 
@@ -62,7 +92,7 @@ landing page on the client; there is no 404 page.
    and JSON-LD, and writes `sitemap.xml` and `robots.txt`.
 4. `node scripts/check-dist.mjs` — fails the build if a page is missing or malformed (one
    `<h1>`, one `<main>`, canonical, description, parseable JSON-LD, images with alt and size,
-   sitemap/robots up to date).
+   sitemap/robots up to date), or if the home page copy breaks its limits (`src/lib/copyCheck.js`).
 
 Other commands: `npm run dev` (no prerender — renders from an empty root), `npm test`
 (Vitest, node environment, logic only), `npx vite preview` to serve `dist/`.
@@ -91,12 +121,18 @@ structured data that depend on a null value do not render. Nothing in the site i
 | `serviceArea` | `null` | no place named in the landing description / structured data |
 | `legalName`, `address`, `email` | "Home Decor", Hisar address, a personal Gmail | confirm; a branded email is preferable |
 | `formspree.visit` / `.plan` | both are the legacy id `mykokrdw` | replace each with its production form id |
-| `heroStats` | 500+ homes, <1 day, 40% energy saved, ₹0 subscription | unverified marketing claims — confirm or remove. "₹0 — Subscription fee, ever" is the only rupee figure left on the site; it is a subscription claim, not a product price — keep or drop |
+| `heroStats` | 500+ homes, <1 day, 40% energy saved, ₹0 subscription | owner approved (2026-10-14); shown in "Aerlyn so far". "₹0 Subscription fee" is the only rupee figure on the site; it is a subscription claim, not a product price |
+| `photos` | `[]` | install photos `{ src, width, height, alt }`; no photo block while empty |
+| `brands` | `[]` | brand names fitted; no "We fit …" line while empty |
+| `testimonial` | `null` | real customer feedback `{ quote, name, place }`; no quote while null |
 
-Other claims that live in component copy rather than config, also unverified: the FAQ
-(`src/data/faq.js`, restates site claims only), "4–8 hours" installation and "certified
-technicians" (`HowItWorks.jsx`), "65% less power" (`WhyAutomate.jsx`), the hero eyebrow
-"India's Most Comprehensive Home Automation".
+`serviceArea`, `photos`, `brands` and `testimonial` all render in `features/marketing/Proof.jsx`,
+each only when filled. Do not put invented values in them.
+
+Claims that live in copy rather than config: the FAQ (`src/data/faq.js`) and `HowItWorks.jsx` say
+"less than a day" (from the approved stat), "no civil work", "free visit", and that the modules
+need no neutral wire (a product feature). The device blurbs in `src/data/devices.js` describe what
+each device does.
 
 ## 5. Policy pages — need legal review
 
@@ -125,25 +161,55 @@ fallback if `whatsapp` is configured. Formspree emails the submission to the bus
 
 | Kind | Where | Fields |
 |---|---|---|
-| `visit` | "Book an appointment" modal (`LeadModal.jsx`) on the landing page and on each product page; "Book an appointment" after saving a plan | name, phone, city, property type, timeline, notes; from a product page also `Product` (the product name, repeated in the subject) |
-| `plan` | "Save my plan & get a free quote" (`SavePlanModal.jsx`) | name, phone, city, plan link, full plan as JSON (full quantities and switch plan) |
+| `visit` | "Book an appointment" when there is no plan, and always on a product page | `visitLeadFields`: Name, Phone, City, Notes; on a product page also `Product` (repeated in the subject) |
+| `plan` | "Book an appointment" once a home has been picked | `planLeadFields`: customerName, customerPhone, customerCity, customerNotes, planLink, and `plan`: the full plan as JSON with quantities, the switch plan per room, `wants` (the goals left on), custom scenes and the plate |
 
-## 7. Plans
+There is one form, `features/marketing/LeadModal.jsx`, opened by every "Book an appointment"
+button through `Booking.jsx` (`BookingProvider` in `Shell`, `BookButton` wherever a button is
+needed). After a `plan` lead succeeds it says when we will call and offers the plan link, WhatsApp
+and the PDF (`features/savePlan/ShareOptions.jsx`). "Save or share" under the plan shows the same
+three options without any form; nothing is sent to Aerlyn from there.
 
+## 7. The planner and plans
+
+`features/houseExplorer/Planner.jsx`. One question, "What's your home?", four tiles. A tap builds
+the rooms from `data/templates.js` and shows the plan under the tiles: "Book an appointment", six
+goal chips, one plain line per room, and a row of links: Save or share, Customise, See it in
+action, Design a switch plate. Changing the home is one tap unless rooms were edited
+(`isCustomised`), in which case it asks first.
+
+- **Goals** (`src/lib/goals.js`, pure and tested): Lighting, Fans & AC, Curtains, Security,
+  Geyser & energy, Voice & music. `home.goals` is the list that is on. `applyGoals(rooms, goals)`
+  filters devices; power sockets and USB points have no goal and always stay. Nothing is deleted
+  when a chip is switched off: the reducer keeps every device, `HomeContext` exposes `home` (the
+  filtered view every component shows and edits) and `plan` (the full state, which is what is
+  stored and put in links). The lead and the PDF go through `buildExportPayload`, which applies the
+  goals itself.
+- **Room lines** come from `roomSentence` in `src/lib/planSummary.js`, using each device's `short`
+  word. No quantities or switch counts are shown to the customer; they are in the lead and PDF.
+- **Customise** (`RoomList`, `RoomCard`): a closed row per room; inside, the name, devices with
+  quantities (taking the last one away removes the device), add a device (only from goals that are
+  on), duplicate and remove. Room size, switch overrides, plates and "Design this plate" are under
+  the closed "Installer details". "Your own scenes" (`SceneBuilder`) is the last row.
+- **See it in action** (`Demo.jsx`): the three preset scenes, and any of the visitor's own, light
+  up the rooms of the house. There is no Build/Play mode.
 - Stored in the browser under `localStorage` key `aerlyn_plan_v1` (`src/lib/planStorage.js`),
-  written on every change, restored on load. The old cart key `aerlyn_cart` is no longer
-  read or written; it is removed on the next visit to the landing page.
-- **Plan link:** `https://aerlyn.in/#plan=<base64url>` — compact JSON of home type, rooms,
-  devices, overrides, custom scenes and plate config. No name or phone. Decoding is
-  size-limited and validated; a bad link shows a notice. A link that differs from the stored
-  plan asks before replacing it.
-- The uploaded floor-plan image stays in memory only; it is not stored and not sent.
+  written on every change, restored on load. A plate designed without picking a home is kept too.
+- **Plan link:** `https://aerlyn.in/#plan=<base64url>`: compact JSON of home type, rooms, devices,
+  overrides, custom scenes, plate config and, when not all are on, the goals as one number (`g`,
+  bit i = goal i). Links made before goals existed have no `g` and load with every goal on. No
+  name or phone. Decoding is size-limited and validated; a bad link shows a notice in the planner.
+  A link that differs from the stored plan asks before replacing it (`PlanNotice.jsx`).
 
 ## 7a. Touch plate designer
 
-Lives below the planner on the landing page (`src/features/touchPlate/`); opened for a room by
-"Design this plate" on its switch-plan card, which presets the plate size, puts the room's name
-in the heading and the PDF, and moves the designer to the first step still to do.
+Lives on its own page, `/plate-designer.html` (`pages/PlateDesignerPage.jsx`,
+`src/features/touchPlate/`), reached from "Design a switch plate" under the plan. "Design this
+plate" in a room's Installer details links to `/plate-designer.html?room=<position>`; the designer
+then presets the plate size that room needs, puts the room's name in the heading and the PDF,
+moves to the first step still to do, and drops the query so a reload does not reset the plate.
+It works without a plan too. The stored step is read after mount, because the page is prerendered
+on its first step.
 
 It is a **port of the configurator at https://touch.feturtles.com** (the "reference"): same
 steps, options, rules and plate drawing, in Aerlyn's own chrome and without anything to do with
@@ -227,7 +293,8 @@ How it is built:
 - **Checking the plate layouts:** `scripts/plate-layout-check.js` runs in the browser, not in
   the build. `npm run build`, copy it into `dist/`, `npx vite preview`, open the page, pick a
   home type so the designer shows, then in the console
-  `await import('/plate-layout-check.js'); await plateCheck.run()`. It places every accessory
+  `await import('/plate-layout-check.js'); await plateCheck.run()` (written when the designer was
+  on the home page: open `/plate-designer.html` instead). It places every accessory
   of every model and size through the UI (removing the last one with the bin first) and fails a
   plate when a control is under 4 px from the panel outline or two controls are under 1 px
   apart. `plateCheck.sheet('Full Glass Touch', 12)` shows every plate of a size on one screen —
@@ -271,9 +338,10 @@ No analytics is installed. Netlify Analytics is a paid dashboard add-on needing 
 
 ## 9. Accessibility conventions
 
-- Every click target is a `<button type="button">` or `<a>`; focus styling is global
-  (`src/styles/global.css`).
-- Dialogs (lead modal, save modal, room drawer) use `useDialog(open, onClose)`
+- Every click target is a `<button type="button">`, `<a>` or `<summary>`; focus styling is global
+  (`src/styles/global.css`). Buttons and fields are at least 44 px tall. Spacing uses the
+  `--s1`…`--s8` scale and `.btn` / `.btn.quiet` are the only button styles outside the designer.
+- The appointment dialog uses `useDialog(open, onClose)`
   from `src/lib/useDialog.js`: Escape closes, focus moves in, is trapped, and returns to the opener.
 - No `window.confirm` / `alert`. Destructive actions use `features/shared/InlineConfirm.jsx`.
 - PDF downloads load jsPDF on demand; `useDownload` (`src/lib/useDownload.js`) shows an
@@ -309,6 +377,13 @@ landing pages.
 
 ## 13. Not verified
 
+- 2026-10-14 redesign: checked in headless Chrome (puppeteer-core, outside the repo) at 360, 414
+  and 1280 px against the built site: two taps from landing to the appointment form, a booking
+  with the Formspree request stubbed (fail, retry, success), goals off and on, edits and goals
+  across a reload and a plan link, an old-format link, header, menu, bottom bar, product booking,
+  the plate page from both links and directly, a keyboard-only run, console and horizontal scroll
+  on every route. Not checked: a physical phone, Safari/Firefox, a screen reader, a real Formspree
+  submission, the plan PDF contents, Netlify's own handling of addresses without `.html`.
 - Lighthouse was not run (no CLI installed; not added as a dependency).
 - Plate designer (branch `feat/plate-designer-preview`): compared with the live reference in
   Chrome at 1500 px by measuring every plate element's box on both sites — identical for 2

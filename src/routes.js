@@ -2,6 +2,7 @@ import { site } from './config/site.js';
 
 export const productPath = (product) => `/products/${product.slug}.html`;
 export const PRIVACY_PATH = '/privacy-policy.html';
+export const PLATE_PATH = '/plate-designer.html';
 // The policy key is also the id in data/policies.js.
 export const POLICY_PATHS = {
   terms: '/terms.html',
@@ -11,6 +12,7 @@ export const POLICY_PATHS = {
 // The privacy and product paths are registered for Play Store verification — do not change them.
 export const routes = [
   { path: '/', page: 'landing' },
+  { path: PLATE_PATH, page: 'plate' },
   ...site.products.map((product) => ({ path: productPath(product), page: 'product', product })),
   { path: PRIVACY_PATH, page: 'privacy' },
   ...Object.entries(POLICY_PATHS).map(([policy, path]) => ({ path, page: 'policy', policy })),

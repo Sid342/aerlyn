@@ -96,9 +96,11 @@ describe('headFor', () => {
     }
   });
 
-  it('gives the privacy and terms pages breadcrumbs', () => {
+  it('gives the privacy, terms and plate designer pages breadcrumbs', () => {
     expect(types(byPage('privacy'))).toEqual(['BreadcrumbList']);
     expect(types(byPage('policy'))).toEqual(['BreadcrumbList']);
+    expect(types(byPage('plate'))).toEqual(['BreadcrumbList']);
+    expect(byPage('plate').canonical).toBe('https://aerlyn.in/plate-designer.html');
     expect(byPage('policy').title).toBe('Terms and Conditions — Aerlyn');
   });
 });

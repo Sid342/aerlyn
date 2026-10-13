@@ -169,7 +169,8 @@ export function decodePlan(str) {
 //   notice      — 'restored' | 'badlink' | null
 //   clearHash   — the link has been dealt with; take it out of the URL
 export function planOnLoad(hash, stored) {
-  const current = stored && stored.homeType ? stored : null;
+  // a plate designed without a home plan is worth keeping too
+  const current = stored && (stored.homeType || hasPlate(stored.plateConfig)) ? stored : null;
   const isLink = hash.startsWith('#plan=');
   const linked = isLink ? decodePlan(hash.slice('#plan='.length)) : null;
   if (linked && current && encodePlan(linked) !== encodePlan(current)) {

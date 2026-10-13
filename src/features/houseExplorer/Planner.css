@@ -55,5 +55,7 @@
   .plan-head { padding-bottom: var(--s4); margin-bottom: var(--s4); }
   .plan-lines li { grid-template-columns: minmax(0, 1fr); }
   .house-rooms { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .chip { padding-right: var(--s2); text-align: left; line-height: 1.2; }
   .demo-off { margin-left: 0; }
 }

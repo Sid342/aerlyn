@@ -99,6 +99,12 @@ function pageHead(route, url) {
         description: `${site.brand} fits smart switches, lights, fans, AC control, locks and cameras${area}. Pick your home to see a plan, then book a free visit.`,
         jsonLd: [business(), website(), faqPage()],
       };
+    case 'plate':
+      return {
+        title: `Switch Plate Designer — ${site.brand}`,
+        description: `Design a ${site.brand} touch switch plate: choose the size, switches, icons and colours, then download it or send it with your plan.`,
+        jsonLd: [breadcrumbs('Switch plate designer', url)],
+      };
     case 'product': {
       const p = route.product;
       return {

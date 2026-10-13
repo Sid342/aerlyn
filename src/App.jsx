@@ -1,12 +1,14 @@
 import { matchRoute } from './routes.js';
 import { HomeProvider } from './context/HomeContext.jsx';
 import LandingPage from './pages/LandingPage.jsx';
+import PlateDesignerPage from './pages/PlateDesignerPage.jsx';
 import ProductPage from './pages/ProductPage.jsx';
 import PrivacyPage from './pages/PrivacyPage.jsx';
 import PolicyPage from './pages/PolicyPage.jsx';
 
 const PAGES = {
   landing: LandingPage,
+  plate: PlateDesignerPage,
   product: ProductPage,
   privacy: PrivacyPage,
   policy: PolicyPage,

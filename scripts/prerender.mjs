@@ -17,7 +17,8 @@ for (const route of routes) {
   const file = dist + (route.path === '/' ? '/index.html' : route.path);
   const html = template
     .replace(TITLE, () => renderHead(headFor(route)))
-    .replace(ROOT, () => `<div id="root">${render(route.path)}</div>`);
+    // data-path lets the client check that this is the page it was asked for before it hydrates
+    .replace(ROOT, () => `<div id="root" data-path="${route.path}">${render(route.path)}</div>`);
   await mkdir(dirname(file), { recursive: true });
   await writeFile(file, html);
   console.log(`prerendered ${route.path}`);

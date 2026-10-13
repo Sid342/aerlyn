@@ -8,7 +8,7 @@ import InlineConfirm from '../shared/InlineConfirm.jsx';
 const SIZES = [['S', 'Small'], ['M', 'Medium'], ['L', 'Large']];
 const count = (n) => `${n} ${n === 1 ? 'device' : 'devices'}`;
 
-export default function RoomCard({ room }) {
+export default function RoomCard({ room, index }) {
   const { dispatch, actions } = useHome();
   const [removing, setRemoving] = useState(false);
 
@@ -53,7 +53,7 @@ export default function RoomCard({ room }) {
               <button key={s} type="button" aria-pressed={room.size === s} onClick={() => dispatch(actions.setRoomSize(room.id, s))}>{label}</button>
             ))}
           </div>
-          <SwitchPlanCard room={room} />
+          <SwitchPlanCard room={room} index={index} />
         </details>
       </div>
     </details>

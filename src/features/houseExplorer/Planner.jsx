@@ -5,8 +5,7 @@ import { roomSentence } from '../../lib/planSummary.js';
 import { BookButton } from '../marketing/Booking.jsx';
 import PlanNotice from '../savePlan/PlanNotice.jsx';
 import ShareOptions from '../savePlan/ShareOptions.jsx';
-import SceneBuilder from '../sceneBuilder/SceneBuilder.jsx';
-import TouchPlateDesigner from '../touchPlate/TouchPlateDesigner.jsx';
+import { PLATE_PATH } from '../../routes.js';
 import HomeTypePicker from './HomeTypePicker.jsx';
 import RoomList from './RoomList.jsx';
 import Demo from './Demo.jsx';
@@ -66,7 +65,7 @@ export default function Planner() {
             {PANELS.map(([id, label]) => (
               <button key={id} type="button" aria-expanded={panel === id} onClick={() => setPanel(panel === id ? null : id)}>{label}</button>
             ))}
-            <a href="#plate-designer">Design a switch plate</a>
+            <a href={PLATE_PATH}>Design a switch plate</a>
           </div>
 
           {panel === 'share' && <div className="plan-panel"><ShareOptions /></div>}
@@ -74,8 +73,6 @@ export default function Planner() {
           {panel === 'demo' && <div className="plan-panel"><Demo /></div>}
         </div>
       )}
-      <SceneBuilder />
-      <TouchPlateDesigner />
     </section>
   );
 }
