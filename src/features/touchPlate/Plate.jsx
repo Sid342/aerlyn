@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import { plateAccessory, platePanels, plateButtons, plateColour, hasFrame, hasBorder, isLightPanel } from '../../lib/plateConfig.js';
+import { plateAccessory, platePanels, plateButtons, plateColour, hasFrame, hasBorder, isLightPanel, isRelaid } from '../../lib/plateConfig.js';
 import { plateIcon, plateIconSrc } from '../../data/plateIconLibrary.js';
 
 const REFERENCE_SCALE = 0.75; // the reference always shows the plate at 75%
@@ -133,7 +133,7 @@ export default function Plate({ config, edit = null, logo = null, onRemove = nul
           {snapOn ? (
             accessory && <SnapOnSurface accessory={accessory} buttons={buttons} edit={edit} />
           ) : (
-            <div className={`sub-module-${config.size}`}>
+            <div className={`sub-module-${config.size}${isRelaid(config) ? ' tpd-relaid' : ''}`}>
               {accessory && (
                 <div style={{ position: 'relative' }}>
                   <div style={{ height: '100%' }}>

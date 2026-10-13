@@ -56,6 +56,17 @@ export const coloursFor = (config) => PLATE_COLOURS.filter((c) => (config.model 
 // The chosen accessory's catalogue entry, or null if the model and size do not offer it.
 export const plateAccessory = (config) => byId(accessoriesFor(config), config.accessory);
 
+// The reference's own positions put the sockets of these on top of other controls or outside the panel:
+// any 8 or 12 module accessory with a socket, and 6 module ones with two sockets or the curtain graphic.
+// They are laid out by the .tpd-relaid rules in TouchPlateDesigner.css instead.
+export function isRelaid(config) {
+  const accessory = plateAccessory(config);
+  if (!accessory || isSnapOn(config)) return false;
+  const count = (cls) => accessory.nodes.filter((node) => node.classes.some((c) => c.split(' ').includes(cls))).length;
+  const sockets = count('sixampImage');
+  return config.size === 6 ? sockets > 1 || count('curtainImage') > 0 : config.size >= 8 && sockets > 0;
+}
+
 // How the reference lays an accessory out: panels (two on a 12 module plate) of nodes (columns) of
 // sub-nodes (one button or graphic each). `key` is set on sub-nodes that take an icon.
 export function platePanels(config) {

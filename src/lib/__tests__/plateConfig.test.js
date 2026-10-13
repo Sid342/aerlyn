@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   emptyPlateConfig, cleanPlateConfig, hasPlate, plateSteps, accessoriesFor, coloursFor, plateAccessory, platePanels, plateButtons,
-  describePlate, encodePlate, decodePlate, hasFrame, hasBorder, isLightPanel,
+  describePlate, encodePlate, decodePlate, hasFrame, hasBorder, isLightPanel, isRelaid,
 } from '../plateConfig.js';
 
 const ACC = '8-switch-2-20a-1-socket-1-10a';
@@ -66,6 +66,31 @@ describe('buttons', () => {
     const config = { ...emptyPlateConfig, model: 'snap-on', size: 2, accessory: accessoriesFor({ model: 'snap-on', size: 2 })[0].id };
     expect(plateButtons(config).map((b) => b.key)).toEqual(['s0', 's1']);
     expect(platePanels(config)).toEqual([]);
+  });
+});
+
+describe('isRelaid', () => {
+  const relaid = (model, size) => accessoriesFor({ model, size }).filter((a) => isRelaid({ model, size, accessory: a.id })).map((a) => a.name);
+
+  it('leaves 2 and 4 module plates, and Snap On plates, on the reference\'s positions', () => {
+    for (const size of [2, 4]) expect(relaid('full-glass', size)).toEqual([]);
+    for (const size of [2, 4, 6, 8]) expect(relaid('snap-on', size)).toEqual([]);
+    expect(isRelaid(emptyPlateConfig)).toBe(false);
+  });
+
+  it('takes over 6 module plates with two sockets or the curtain graphic only', () => {
+    expect(relaid('full-glass', 6)).toEqual([
+      '2 Switch (1-25A) 2 Socket (2-10A)', '4 Switch 2 Socket (2-10A)', '6 Switch (1-25A) 1 Socket (1-10A) 1 Curtain',
+    ]);
+    expect(relaid('touch-plus', 6)).toEqual([]);
+  });
+
+  it('takes over every 8 and 12 module plate with a socket, and no other', () => {
+    for (const [model, size] of [['full-glass', 8], ['touch-plus', 8], ['full-glass', 12], ['touch-plus', 12]]) {
+      expect(relaid(model, size)).toEqual(accessoriesFor({ model, size }).map((a) => a.name).filter((name) => name.includes('Socket')));
+    }
+    expect(relaid('full-glass', 8)).toHaveLength(7);
+    expect(relaid('full-glass', 12)).toHaveLength(8);
   });
 });
 

@@ -136,6 +136,33 @@
 .tpd-ref .curtain1Image, .tpd-ref .curtain2Image { position: relative; width: 12mm; height: 12mm; border: 1px solid #fff; border-radius: 50%; }
 .tpd-ref .nodeSize > .curtain1Image, .tpd-ref .nodeSize > .curtain2Image { top: 0; left: 0; right: 0; }
 
+/* ---- accessories whose sockets the reference misplaces (isRelaid in plateConfig.js) ----
+   the socket stands in the row like any other column, clear of its neighbours, and the row is centred */
+.tpd-ref .tpd-relaid .nodeSize > .sixampImage { left: 0; }
+.tpd-ref .tpd-relaid .nodeSize:has(> .sixampImage) { flex: none; margin-inline: 10mm; }
+/* at the end of a row it keeps the blank a ring has beside it there, so the row stays centred */
+.tpd-ref .tpd-relaid .nodeSize:has(> .sixampImage):first-child { margin-left: 6.4mm; }
+.tpd-ref .tpd-relaid .nodeSize:has(> .sixampImage):last-child { margin-right: 6.4mm; }
+/* seven columns do not fit an 8 module panel at the reference's pitch */
+.tpd-ref .sub-module-8.tpd-relaid .scene6:has(> :nth-child(7)) .nodeSize:not(:has(> .sixampImage)) { width: 22mm; }
+/* the reference keeps 6 module accessories to the left */
+.tpd-ref .sub-module-6.tpd-relaid { justify-content: center; padding-left: 0; }
+
+/* the reference's curtain graphic is two small blue pictures; here it is two rings like the curtain buttons
+   (it still takes no icon, as in the reference) */
+.tpd-ref .curtainImage { width: 12mm; height: 32.32mm; background: none; }
+.tpd-ref .curtainImage::before, .tpd-ref .curtainImage::after { content: ''; position: absolute; left: 0; box-sizing: border-box; width: 12mm; height: 12mm; border: 1px solid #fff; border-radius: 50%; }
+.tpd-ref .curtainImage::before { top: 0; }
+.tpd-ref .curtainImage::after { bottom: 0; }
+
+/* socket-3pin-10a.svg now has 0.4mm clear around the pads (see the file), so its box grows by as much:
+   the pads are drawn exactly where and as large as before, with their strokes whole */
+.tpd-ref .sixampImage { width: 25.6mm; height: 27.3mm; }
+
+/* the reference's 16 A socket is a picture of filled, overlapping blobs; here it is drawn like the 10 A one,
+   with the larger pins and wider spacing of a 16 A socket */
+.tpd-ref .socket16amp { width: 30.3mm; height: 32.05mm; background-image: url(./media/socket-16a.svg); background-size: 100% 100%; }
+
 /* a placed icon takes the place of its ring: same centre, same box */
 .tpd-ref .tpd-has-icon { border-color: transparent; background-image: none; }
 .tpd-ref .tpd-icon { position: absolute; top: -1px; left: -1px; width: calc(100% + 2px); height: calc(100% + 2px); max-width: none; object-fit: contain; }
@@ -154,8 +181,8 @@
 .tpd-light .switch2Image:not(.tpd-has-icon), .tpd-light .switch2ImageFan:not(.tpd-has-icon), .tpd-light .curtain1Image:not(.tpd-has-icon), .tpd-light .curtain2Image:not(.tpd-has-icon),
 .tpd-light .snapon-static-circle, .tpd-light .snapon-earth-pin { border-color: #1c1c22; }
 .tpd-light .sixampImage { background-image: url(./media/socket-3pin-10a-dark.svg); }
-.tpd-light .socket16amp { background-image: url(./media/socket-16a-dark.png); }
+.tpd-light .socket16amp { background-image: url(./media/socket-16a-dark.svg); }
 .tpd-light .switch2ImageDimmer { background-image: url(./media/dimmer-dark.png); }
-.tpd-light .curtainImage { background-image: url(./media/curtain-dark.png); }
+.tpd-light .curtainImage::before, .tpd-light .curtainImage::after { border-color: #1c1c22; }
 .tpd-light .snapon-btn:not(.tpd-has-icon) { background-image: url(./media/vertical-line-dark.svg); }
 .tpd-light .tpd-icon { filter: brightness(0); }

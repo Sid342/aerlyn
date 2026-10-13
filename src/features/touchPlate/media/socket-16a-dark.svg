@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="303" height="320.5" viewBox="-0.4 -0.4 30.3 32.05">
+  <!-- 16 A 3-pin socket, drawn like socket-3pin-10a.svg (millimetres 1:1, the same 0.4 clear all round) with the
+       proportions of a 16 A socket: larger pads, pins 22 mm apart and 22.5 mm below the earth pad. -->
+  <circle cx="14.75" cy="5"    r="5"    fill="none" stroke="#1c1c22" stroke-width="0.2"/>
+  <circle cx="3.75"  cy="27.5" r="3.75" fill="none" stroke="#1c1c22" stroke-width="0.2"/>
+  <circle cx="25.75" cy="27.5" r="3.75" fill="none" stroke="#1c1c22" stroke-width="0.2"/>
+</svg>
