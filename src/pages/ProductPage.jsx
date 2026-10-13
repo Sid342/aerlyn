@@ -22,7 +22,7 @@ export default function ProductPage({ route }) {
         <Breadcrumb current={p.name} />
         <div className="product-photo">
           <span className="product-badge">Best Seller</span>
-          <img src={p.image} alt={`${p.name} smart Wi-Fi retrofit switch module`} />
+          <img src={p.image} width={p.imageWidth} height={p.imageHeight} alt={`${p.name} smart Wi-Fi retrofit switch module`} />
         </div>
 
         <h1>{p.name}</h1>

@@ -3,6 +3,7 @@ import { renderToString } from 'react-dom/server';
 import App from './App.jsx';
 
 export { routes } from './routes.js';
+export { headFor, renderHead, sitemapXml, robotsTxt } from './seo/head.js';
 
 export function render(path) {
   return renderToString(

@@ -28,7 +28,7 @@
 
 - [x] **3.1 Routes + pages.** `src/routes.js`; move product, checkout, privacy pages from `public/` into React pages using shared nav/footer/cart; cart prices from config; escaped output.
 - [x] **3.2 Prerender.** `src/entry-server.jsx`, `scripts/prerender.mjs`, `build` script chain; client hydrates. Verify the three Play Store URLs resolve to the same paths.
-- [ ] **3.3 Head + structured data.** `src/seo/head.js` builds per-route title, description, canonical, OG/Twitter, JSON-LD (Organization/LocalBusiness, Product+Offer, FAQPage, BreadcrumbList). Test: every route file exists, one `<h1>`, canonical present, JSON-LD parses.
+- [x] **3.3 Head + structured data.** `src/seo/head.js` builds per-route title, description, canonical, OG/Twitter, JSON-LD (Organization/LocalBusiness, Product+Offer, FAQPage, BreadcrumbList). Test: every route file exists, one `<h1>`, canonical present, JSON-LD parses.
 - [ ] **3.4 FAQ section** on landing page (copy from existing claims only).
 - [ ] **3.5 Sitemap, robots, redirects, caching.** Generated `sitemap.xml`/`robots.txt`; `vercel.json`: `www`→apex, immutable `/assets/*`, uncached HTML.
 - [ ] **3.6 Assets + speed.** Favicon + share image from logo; product photo → WebP with dimensions; dynamic-import jsPDF; trim font weights.
