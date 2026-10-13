@@ -30,7 +30,7 @@ button { font-family: var(--font-body); cursor: pointer; }
 .num { font-family: var(--font-mono); }
 .app { max-width: 1100px; margin: 0 auto; padding: 24px 20px 96px; }
 .app-header { padding: 12px 0 28px; }
-.app-header h1 { font-size: 2rem; color: var(--teal); }
+.app-header h2 { font-size: 2rem; color: var(--teal); }
 .app-header p { color: var(--text-dim); margin-top: 4px; }
 .card {
   background: var(--surface);
@@ -42,7 +42,7 @@ button { font-family: var(--font-body); cursor: pointer; }
 .section-num { color: var(--teal); font-family: var(--font-mono); margin-right: 6px; }
 @media (max-width: 600px) {
   .app { padding: 16px 14px 80px; }
-  .app-header h1 { font-size: 1.6rem; }
+  .app-header h2 { font-size: 1.6rem; }
   .room-card-head { gap: 8px; }
   .htp-btn { padding: 12px 16px; }
 }

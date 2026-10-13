@@ -14,7 +14,6 @@ import ModeToggle from './features/houseExplorer/ModeToggle.jsx';
 import ScenePresets from './features/houseExplorer/ScenePresets.jsx';
 import RoomList from './features/houseExplorer/RoomList.jsx';
 import RoomDrawer from './features/houseExplorer/RoomDrawer.jsx';
-import ExportPanel from './features/houseExplorer/ExportPanel.jsx';
 import SceneBuilder from './features/sceneBuilder/SceneBuilder.jsx';
 import TouchPlateDesigner from './features/touchPlate/TouchPlateDesigner.jsx';
 import PlanBar from './features/savePlan/PlanBar.jsx';
@@ -25,11 +24,10 @@ function AppInner() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Aerlyn Studio</h1>
-        <p>Interactive House Explorer</p>
+        <h2>Plan your smart home</h2>
         <p className="app-intro">
           Build your home room by room, see what automation feels like in Play mode,
-          and send the plan straight to Aerlyn — no guesswork.
+          then save your plan and get a free quote.
         </p>
       </header>
       <HomeTypePicker />
@@ -38,7 +36,6 @@ function AppInner() {
       <ModeToggle />
       <ScenePresets />
       <RoomList />
-      <ExportPanel />
       <SceneBuilder />
       <TouchPlateDesigner />
       {drawerRoomId && (

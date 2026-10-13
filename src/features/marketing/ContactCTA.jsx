@@ -17,7 +17,6 @@ export default function ContactCTA() {
             <button type="button" className="contact-submit" onClick={() => setModalOpen(true)}>Book free visit</button>
           </div>
         </div>
-        <footer className="site-footer">© {new Date().getFullYear()} Aerlyn. All rights reserved.</footer>
       </section>
       {modalOpen && <LeadModal phone={phone} onClose={() => setModalOpen(false)} />}
     </>
