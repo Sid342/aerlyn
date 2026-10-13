@@ -109,6 +109,10 @@ describe('headFor', () => {
   it('gives policy pages breadcrumbs and the checkout no structured data', () => {
     expect(types(byPage('privacy'))).toEqual(['BreadcrumbList']);
     expect(byPage('checkout').jsonLd).toEqual([]);
+    const policies = heads.filter(({ route }) => route.page === 'policy');
+    expect(policies.map(({ route }) => route.path)).toEqual(['/terms.html', '/refund-policy.html', '/shipping-policy.html']);
+    for (const { head } of policies) expect(types(head)).toEqual(['BreadcrumbList']);
+    expect(policies[0].head.title).toBe('Terms and Conditions — Aerlyn');
   });
 });
 

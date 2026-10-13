@@ -9,6 +9,12 @@ describe('routes', () => {
     expect(paths).toContain('/products/retrofit-2-switch.html');
   });
 
+  it('has the three policy pages', () => {
+    expect(matchRoute('/terms.html').policy).toBe('terms');
+    expect(matchRoute('/refund-policy.html').policy).toBe('refund');
+    expect(matchRoute('/shipping-policy.html').policy).toBe('shipping');
+  });
+
   it('has unique paths', () => {
     const paths = routes.map((r) => r.path);
     expect(new Set(paths).size).toBe(paths.length);

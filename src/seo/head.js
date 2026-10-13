@@ -2,6 +2,7 @@ import { site } from '../config/site.js';
 import { routes } from '../routes.js';
 import { inr } from '../lib/cart.js';
 import { FAQ } from '../data/faq.js';
+import { policyDoc } from '../data/policies.js';
 
 const OG_IMAGE = { path: '/og-image.png', width: 1200, height: 630 };
 const LOGO_PATH = '/favicon.png';
@@ -125,6 +126,14 @@ function pageHead(route, url) {
         description: `How ${site.legalName} collects, uses and protects your information in the ${site.brand} smart-home app and on this website.`,
         jsonLd: [breadcrumbs('Privacy Policy', url)],
       };
+    case 'policy': {
+      const doc = policyDoc(route.policy);
+      return {
+        title: `${doc.title} — ${site.brand}`,
+        description: doc.description,
+        jsonLd: [breadcrumbs(doc.title, url)],
+      };
+    }
     default:
       throw new Error(`head: no head for page "${route.page}"`);
   }

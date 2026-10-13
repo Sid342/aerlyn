@@ -4,12 +4,14 @@ import LandingPage from './pages/LandingPage.jsx';
 import ProductPage from './pages/ProductPage.jsx';
 import CheckoutPage from './pages/CheckoutPage.jsx';
 import PrivacyPage from './pages/PrivacyPage.jsx';
+import PolicyPage from './pages/PolicyPage.jsx';
 
 const PAGES = {
   landing: LandingPage,
   product: ProductPage,
   checkout: CheckoutPage,
   privacy: PrivacyPage,
+  policy: PolicyPage,
 };
 
 // `path` is location.pathname on the client and the route path in the prerender.

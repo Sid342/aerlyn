@@ -1,5 +1,5 @@
 import { site, whatsappUrl } from '../../config/site.js';
-import { productPath, PRIVACY_PATH } from '../../routes.js';
+import { productPath, PRIVACY_PATH, POLICY_PATHS } from '../../routes.js';
 import './SiteFooter.css';
 
 export default function SiteFooter() {
@@ -11,6 +11,9 @@ export default function SiteFooter() {
           <a key={p.id} href={productPath(p)}>{p.name.replace(`${site.brand} `, '')}</a>
         ))}
         <a href={PRIVACY_PATH}>Privacy Policy</a>
+        <a href={POLICY_PATHS.terms}>Terms</a>
+        <a href={POLICY_PATHS.refund}>Refunds</a>
+        <a href={POLICY_PATHS.shipping}>Shipping</a>
       </nav>
       <p className="site-footer__legal">
         © {new Date().getFullYear()} {site.brand} · {site.legalName} · {site.address}

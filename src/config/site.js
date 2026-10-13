@@ -13,6 +13,9 @@ const RETROFIT_FEATURES = [
 // One photo for both modules for now — the 2-switch photo is a placeholder until a real one exists.
 const RETROFIT_IMAGE = { image: '/products/assets/retrofit-switch.webp', imageWidth: 861, imageHeight: 465 };
 
+// Marketing badges on the product pages — owner to confirm. Empty values render nothing.
+const RETROFIT_BADGES = { ribbon: 'Best Seller', trust: ['1-Year Warranty', 'Easy Returns', 'Fast Shipping'] };
+
 function retrofitSpecs(model, load) {
   return [
     ['Model', model],
@@ -51,6 +54,18 @@ export const site = {
     { number: '₹0', label: 'Subscription fee, ever' },
   ],
 
+  // Commitments shown on product and policy pages. While a value is null the policy pages say
+  // that detail is confirmed with the customer before the order is finalised.
+  policy: {
+    dispatchText: 'In stock · ships in 2–3 days', // line under the buy button; null hides it
+    returnWindowDays: null, // number of days after delivery
+    returnShippingPaidBy: null, // 'customer' | 'seller'
+    refundDays: null, // working days to refund after a return is approved
+    shippingFee: null, // rupees per order; 0 = free delivery
+    serviceableLocations: null, // e.g. 'all pincodes in India'
+    installationWarranty: null, // e.g. 'a 1-year workmanship warranty'
+  },
+
   products: [
     {
       id: 'AER-SW1G-WiFi',
@@ -60,6 +75,7 @@ export const site = {
       price: 2300,
       mrp: 3286,
       ...RETROFIT_IMAGE,
+      badges: RETROFIT_BADGES,
       features: RETROFIT_FEATURES,
       specs: retrofitSpecs('AER-SW1G-WiFi', '800 W (1 gang)'),
     },
@@ -71,6 +87,7 @@ export const site = {
       price: 2300,
       mrp: 3286,
       ...RETROFIT_IMAGE,
+      badges: RETROFIT_BADGES,
       features: RETROFIT_FEATURES,
       specs: retrofitSpecs('AER-SW2G-WiFi', '800 W per gang (2 gang)'),
     },

@@ -21,7 +21,7 @@ export default function ProductPage({ route }) {
       <div className="page-wrap">
         <Breadcrumb current={p.name} />
         <div className="product-photo">
-          <span className="product-badge">Best Seller</span>
+          {p.badges?.ribbon && <span className="product-badge">{p.badges.ribbon}</span>}
           <img src={p.image} width={p.imageWidth} height={p.imageHeight} alt={`${p.name} smart Wi-Fi retrofit switch module`} />
         </div>
 
@@ -41,9 +41,11 @@ export default function ProductPage({ route }) {
             <a className="btn-cta secondary" href={`mailto:${site.email}?subject=${encodeURIComponent(`Order ${p.name}`)}`}>Contact to order</a>
           )}
         </div>
-        <p className="page-muted">In stock · ships in 2–3 days</p>
+        {site.policy.dispatchText && <p className="page-muted">{site.policy.dispatchText}</p>}
 
-        <div className="product-trust"><span>1-Year Warranty</span><span>Easy Returns</span><span>Fast Shipping</span></div>
+        {p.badges?.trust?.length > 0 && (
+          <div className="product-trust">{p.badges.trust.map((b) => <span key={b}>{b}</span>)}</div>
+        )}
 
         <h2>Key Features</h2>
         <ul>

@@ -9,7 +9,7 @@ export default function PrivacyPage() {
       <div className="page-wrap">
         <Breadcrumb current="Privacy Policy" />
         <h1>Privacy Policy</h1>
-        <p className="page-muted">Effective date: 6 June 2026</p>
+        <p className="page-muted">Effective date: 6 June 2026 · Last updated: 13 October 2026</p>
 
         <h2>1. Introduction</h2>
         <p>{site.legalName} ("we", "us", or "our") operates the {site.brand} smart-home app, which lets you control and automate compatible BLE and Wi-Fi smart switches in your home. This Privacy Policy explains what information we collect and how we use it. It covers the {site.brand} mobile app as well as these supporting web pages. By using the app, you agree to the practices described here.</p>
@@ -51,6 +51,19 @@ export default function PrivacyPage() {
           {site.legalName}<br />{site.address}
           {site.email && <><br /><a href={`mailto:${site.email}`}>{site.email}</a></>}
         </p>
+
+        <h2>11. This website</h2>
+        <p>This section covers what happens when you use this website ({site.origin.replace('https://', '')}) rather than the app.</p>
+        <p>We collect only what you type into a form and send to us:</p>
+        <ul>
+          <li>Book a visit: your name and phone number, and — if you fill them in — your city or area, property type, timeline and notes.</li>
+          <li>Save my plan: your name, phone number, city (optional) and the plan itself — the home type, rooms, devices, switch plan, custom scenes and plate design you built.</li>
+          <li>Checkout: your name, phone number, email, delivery address and the contents of your order. No payment details are collected on this website.</li>
+        </ul>
+        <p>We use these details to contact you about your visit, quote or order. Form submissions are delivered to our email by Formspree, a third-party form processor that handles the data on our behalf.</p>
+        <p>The plan you build and your cart are stored in your own browser's storage, on your device, so they are still there when you come back. A floor plan image you upload stays in the page only — it is not stored and not sent to us. A plan link contains the plan data itself; it does not contain your name or phone number. Anyone you give the link to can open that plan.</p>
+        <p>We use Vercel Web Analytics, which collects anonymous usage events — such as a plan being started or saved — with no personal data. The fonts on this website are loaded from Google Fonts.</p>
+        <p>To ask us to delete details you sent through this website, {site.email ? <>email <a href={`mailto:${site.email}`}>{site.email}</a></> : 'contact us at the address above'}. You can remove the plan and cart kept in your browser at any time by clearing this site's data in your browser settings.</p>
       </div>
     </Shell>
   );
