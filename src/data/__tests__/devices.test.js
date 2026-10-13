@@ -11,7 +11,8 @@ describe('device catalog', () => {
   });
   it('every device has required fields', () => {
     for (const d of DEVICES) {
-      expect(d.id && d.name && d.category && d.icon && d.blurb).toBeTruthy();
+      expect(d.id && d.name && d.short && d.category && d.blurb).toBeTruthy();
+      expect(d.name + d.blurb).not.toMatch(/—|\p{Emoji_Presentation}/u);
       expect(Array.isArray(d.defaultRooms)).toBe(true);
     }
   });
@@ -21,14 +22,14 @@ describe('device catalog', () => {
   it('getDevice resolves usb-charger', () => {
     const d = getDevice('usb-charger');
     expect(d).toBeDefined();
-    expect(d.name).toBe('USB Charging Socket');
+    expect(d.name).toBe('USB charging socket');
     expect(d.category).toBe('Power');
     expect(d.control).toEqual({ type: 'socket', count: 1 });
   });
   it('getDevice resolves power-socket', () => {
     const d = getDevice('power-socket');
     expect(d).toBeDefined();
-    expect(d.name).toBe('Power Socket');
+    expect(d.name).toBe('Power socket');
     expect(d.category).toBe('Power');
     expect(d.control).toEqual({ type: 'socket', count: 1 });
   });
@@ -36,7 +37,13 @@ describe('device catalog', () => {
     expect(getDevice('nope')).toBeUndefined();
     for (const inherited of ['constructor', '__proto__', 'toString']) expect(getDevice(inherited)).toBeUndefined();
   });
-  it('all T11.5 lighting ids resolve via getDevice', () => {
+  it('uses the plain names from the design', () => {
+    const name = (id) => getDevice(id).name;
+    expect(['bldc-fan', 'rgbw-strip', 'cob-downlight', 'ac-ir', 'cct-light'].map(name)).toEqual([
+      'Smart fan', 'Colour-changing strip', 'Ceiling spotlights', 'AC control', 'Colour-temperature lights',
+    ]);
+  });
+  it('all lighting ids resolve via getDevice', () => {
     const newIds = [
       'cob-downlight', 'track-light', 'surface-panel', 'pendant-light',
       'wall-sconce', 'profile-light', 'outdoor-light',

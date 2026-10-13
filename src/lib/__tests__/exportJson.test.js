@@ -69,7 +69,7 @@ describe('buildExportPayload', () => {
       payload: { sceneId: home.customScenes[0].id, deviceId: 'rgbw-strip', on: true },
     });
     expect(buildExportPayload(home).customScenes).toEqual([
-      { name: 'Dinner', devices: [{ deviceId: 'rgbw-strip', name: 'RGBW Strip Light', on: true }] },
+      { name: 'Dinner', devices: [{ deviceId: 'rgbw-strip', name: 'Colour-changing strip', on: true }] },
     ]);
   });
   it('leaves out scene entries for devices that are no longer in the home', () => {

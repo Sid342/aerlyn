@@ -1,16 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { site } from '../../config/site.js';
 import { productPath } from '../../routes.js';
+import { BookButton } from './Booking.jsx';
 import './SiteNav.css';
 
-// Absolute "/#…" links so the same nav works on every page.
-const LINKS = [
-  ['/#why', 'Why Automate'],
-  ['/#planner', 'Planner'],
-  ['/#how', 'How it Works'],
-  ['/#contact', 'Contact'],
-];
 const shortName = (p) => p.name.replace(`${site.brand} `, '');
+const ICON = { open: 'M4 7h16M4 12h16M4 17h16', close: 'M6 6l12 12M18 6L6 18' };
 
 export default function SiteNav() {
   const [open, setOpen] = useState(false);
@@ -22,7 +17,9 @@ export default function SiteNav() {
     const menu = products.current;
     const onPointer = (e) => { if (!menu.contains(e.target)) menu.open = false; };
     const onKey = (e) => {
-      if (e.key !== 'Escape' || !menu.open) return;
+      if (e.key !== 'Escape') return;
+      setOpen(false);
+      if (!menu.open) return;
       menu.open = false;
       if (menu.contains(document.activeElement)) menu.querySelector('summary').focus();
     };
@@ -33,14 +30,15 @@ export default function SiteNav() {
       document.removeEventListener('keydown', onKey);
     };
   }, []);
+
+  // Absolute "/#…" links so the same header works on every page.
   return (
     <header>
       <nav className="site-nav" aria-label="Main">
         <a className="site-nav-logo" href="/">{site.brand}</a>
         <ul className="site-nav-links">
-          {LINKS.slice(0, 3).map(([href, label]) => (
-            <li key={href}><a href={href}>{label}</a></li>
-          ))}
+          <li><a href="/#planner">Plan my home</a></li>
+          <li><a href="/#how">How it works</a></li>
           <li>
             <details className="site-nav-products" ref={products}>
               <summary>Products</summary>
@@ -49,22 +47,23 @@ export default function SiteNav() {
               </div>
             </details>
           </li>
-          {LINKS.slice(3).map(([href, label]) => (
-            <li key={href}><a href={href}>{label}</a></li>
-          ))}
+          <li><a href="/#faq">FAQ</a></li>
         </ul>
-        <div className="site-nav-right">
-          <a className="site-nav-cta" href="/#planner">Build My Plan</a>
-          <button type="button" className="site-nav-hamburger" onClick={() => setOpen((o) => !o)} aria-label="Menu" aria-expanded={open}>
-            {open ? '✕' : '☰'}
-          </button>
-        </div>
+        <BookButton className="btn site-nav-cta" />
+        <button type="button" className="site-nav-hamburger" onClick={() => setOpen((o) => !o)} aria-label={open ? 'Close menu' : 'Menu'} aria-expanded={open} aria-controls="site-menu">
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d={open ? ICON.close : ICON.open} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+        </button>
       </nav>
-      <div className={`site-nav-mobile${open ? ' open' : ''}`}>
-        {LINKS.slice(0, 3).map(([href, label]) => <a key={href} href={href} onClick={close}>{label}</a>)}
-        {site.products.map((p) => <a key={p.id} href={productPath(p)}>{shortName(p)}</a>)}
-        {LINKS.slice(3).map(([href, label]) => <a key={href} href={href} onClick={close}>{label}</a>)}
-      </div>
+      {open && (
+        <div id="site-menu" className="site-nav-mobile" onClick={close}>
+          <a href="/#planner">Plan my home</a>
+          <a href="/#how">How it works</a>
+          <span className="site-nav-mobile-label">Products</span>
+          {site.products.map((p) => <a key={p.id} className="sub" href={productPath(p)}>{shortName(p)}</a>)}
+          <a href="/#faq">FAQ</a>
+          <BookButton />
+        </div>
+      )}
     </header>
   );
 }

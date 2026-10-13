@@ -26,7 +26,6 @@ export default function RoomCard({ room }) {
             aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
           >
-            <span className="room-collapse-arrow">{open ? '▾' : '▸'}</span>
             {room.name}
             {!open && onCount > 0 && <span className="room-on-badge">{onCount} on</span>}
           </button>

@@ -2,7 +2,6 @@ export const SCENES = [
   {
     id: 'good-morning',
     name: 'Good Morning',
-    icon: '\u{1F305}',
     deviceStates: {
       'cct-light': true,
       'usb-charger': true,
@@ -16,7 +15,6 @@ export const SCENES = [
   {
     id: 'movie-night',
     name: 'Movie Night',
-    icon: '\u{1F37F}',
     deviceStates: {
       'cct-light': false,
       'power-socket': false,
@@ -30,7 +28,6 @@ export const SCENES = [
   {
     id: 'good-night',
     name: 'Good Night',
-    icon: '\u{1F634}',
     deviceStates: {
       'cct-light': false,
       'usb-charger': false,

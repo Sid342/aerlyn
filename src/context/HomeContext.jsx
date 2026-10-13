@@ -25,10 +25,8 @@ export function HomeProvider({ children }) {
     started.current = true;
     const { plan, pendingLink, notice, clearHash } = planOnLoad(window.location.hash, loadPlan());
     if (plan) dispatch(actions.hydrate(plan));
-    if (clearHash) {
-      dropPlanHash();
-      if (plan) showPlanner();
-    }
+    if (clearHash) dropPlanHash();
+    if (pendingLink || (clearHash && plan)) showPlanner();
     setRestore({ notice, pendingLink });
     try { localStorage.removeItem('aerlyn_cart'); } catch { /* storage blocked */ } // left over from the removed cart
   }, []);

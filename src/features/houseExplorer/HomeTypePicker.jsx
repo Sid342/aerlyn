@@ -24,11 +24,8 @@ export default function HomeTypePicker() {
   }
 
   return (
-    <div className="card">
-      <h3>1. Pick the home</h3>
-      <p className="htp-hint">
-        Start from the closest match — you can reshape every room next.
-      </p>
+    <div>
+      <p className="htp-hint">Tap the closest one. You can change the rooms after.</p>
       <div className="htp">
         {HOME_TYPES.map((t) => (
           <button

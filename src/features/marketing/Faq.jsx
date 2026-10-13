@@ -3,9 +3,8 @@ import './Faq.css';
 
 export default function Faq() {
   return (
-    <section id="faq" className="faq-section">
-      <div className="section-eyebrow" style={{ color: 'var(--teal)' }}>Before you decide</div>
-      <h2 className="section-title">Questions people ask<br />before automating.</h2>
+    <section id="faq" className="section">
+      <h2 className="section-title">Common questions</h2>
       <div className="faq-list">
         {FAQ.map(({ q, a }) => (
           <details key={q} className="faq-item">

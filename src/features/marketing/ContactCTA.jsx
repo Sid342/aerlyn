@@ -1,24 +1,14 @@
-import { useState } from 'react';
-import LeadModal from './LeadModal.jsx';
+import { BookButton } from './Booking.jsx';
 import './ContactCTA.css';
 
 export default function ContactCTA() {
-  const [phone, setPhone] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
   return (
-    <>
-      <section id="contact" className="contact-section">
-        <div className="contact-box">
-          <div className="contact-eyebrow">The first step is free</div>
-          <h2 className="contact-title">Your intelligent home<br />starts with <em>one visit.</em></h2>
-          <p className="contact-body-text">Book a free home consultation. Our expert comes to you, reviews your requirements, and designs a solution that fits your home, your lifestyle, and your budget. Completely free. Zero obligation.</p>
-          <div className="contact-form">
-            <input type="tel" inputMode="tel" autoComplete="tel" aria-label="Your phone number" className="contact-input" placeholder="Your phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
-            <button type="button" className="contact-submit" onClick={() => setModalOpen(true)}>Book an appointment</button>
-          </div>
-        </div>
-      </section>
-      {modalOpen && <LeadModal phone={phone} onClose={() => setModalOpen(false)} />}
-    </>
+    <section id="contact" className="section">
+      <div className="contact-box">
+        <h2 className="section-title">Want us to take a look?</h2>
+        <p>Book a free visit. We'll call you within a day to fix a time.</p>
+        <BookButton />
+      </div>
+    </section>
   );
 }

@@ -1,0 +1,14 @@
+/* Phones only: wider screens have the button in the header.
+   Sticky, in flow: it rides the bottom of the viewport and at the end of the page sits below the
+   footer, so it never covers the last content. Must stay a direct child of the page root. */
+.sticky-action { display: none; }
+@media (max-width: 760px) {
+  .sticky-action {
+    display: block; position: sticky; bottom: 0; z-index: 90;
+    background: rgba(8, 8, 16, 0.94); backdrop-filter: blur(12px); border-top: 1px solid var(--border);
+    padding: 10px var(--s4) calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+  .sticky-action .btn { width: 100%; }
+  /* not behind the appointment form */
+  body:has(.lead-modal-overlay) .sticky-action { display: none; }
+}

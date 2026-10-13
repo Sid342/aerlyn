@@ -16,7 +16,7 @@ export default function ScenePresets({ roomId = null }) {
 
   return (
     <div className="scene-strip">
-      {!roomId && <div className="scene-strip-label">Set whole home:</div>}
+      {!roomId && <div className="scene-strip-label">Try a scene</div>}
       <div className="scene-pills">
         {[...SCENES, ...home.customScenes].map((s) => (
           <button
@@ -25,7 +25,6 @@ export default function ScenePresets({ roomId = null }) {
             className="scene-btn"
             onClick={() => handleScene(s.deviceStates)}
           >
-            <span className="scene-icon">{s.icon}</span>
             {s.name}
           </button>
         ))}

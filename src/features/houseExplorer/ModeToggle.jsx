@@ -27,8 +27,8 @@ export default function ModeToggle() {
       </div>
       <div className="mode-hint">
         {home.mode === 'build'
-          ? 'Build mode — add, remove and count the devices in each room.'
-          : 'Play mode — tap devices on and off to see automation in action.'}
+          ? 'Add, remove and count the devices in each room.'
+          : 'Switch devices on and off to see how it works.'}
       </div>
     </div>
   );

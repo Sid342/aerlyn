@@ -1,0 +1,14 @@
+.proof-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s4); }
+.proof-stats div { display: flex; flex-direction: column-reverse; gap: var(--s1); padding: var(--s5); background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+.proof-stats dd { font-family: var(--font-head); font-size: clamp(1.7rem, 3.4vw, 2.3rem); color: var(--teal); line-height: 1.1; }
+.proof-stats dt { color: var(--text-dim); font-size: 0.92rem; line-height: 1.4; }
+.proof-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--s4); margin-top: var(--s5); }
+.proof-photos img { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--border); }
+.proof-facts { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s5); margin-top: var(--s5); color: var(--text-dim); line-height: 1.6; }
+.proof-quote { margin-top: var(--s5); padding-left: var(--s5); border-left: 2px solid var(--teal); }
+.proof-quote blockquote { font-size: 1.15rem; line-height: 1.6; }
+.proof-quote figcaption { color: var(--text-dim); margin-top: var(--s2); }
+@media (max-width: 760px) {
+  .proof-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); }
+  .proof-stats div { padding: var(--s4); }
+}

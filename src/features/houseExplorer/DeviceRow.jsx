@@ -10,7 +10,6 @@ export default function DeviceRow({ roomId, device }) {
   if (home.mode === 'play') {
     return (
       <div className="device-row">
-        <span className="device-icon">{meta.icon}</span>
         <span className="device-name">
           {meta.name} <span className="device-cat">×{device.qty}</span>
           {meta.blurb && <DeviceInfo blurb={meta.blurb} />}
@@ -28,7 +27,6 @@ export default function DeviceRow({ roomId, device }) {
 
   return (
     <div className="device-row">
-      <span className="device-icon">{meta.icon}</span>
       <span className="device-name">
         {meta.name}
         {meta.blurb && <DeviceInfo blurb={meta.blurb} />}

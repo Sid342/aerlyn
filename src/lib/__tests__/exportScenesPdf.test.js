@@ -26,8 +26,8 @@ describe('buildScenesPdfPayload', () => {
     const custom = [{ id: 'c1', name: 'Party', icon: '🎉', deviceStates: { 'rgbw-strip': true, 'bldc-fan': false } }];
     const result = buildScenesPdfPayload(custom, rooms);
     expect(result[result.length - 1].devices).toEqual([
-      { name: 'RGBW Strip Light', on: true },
-      { name: 'BLDC Smart Fan', on: false },
+      { name: 'Colour-changing strip', on: true },
+      { name: 'Smart fan', on: false },
     ]);
     expect(result[0].devices.every((d) => !/^[a-z]+(-[a-z]+)+$/.test(d.name))).toBe(true);
   });
@@ -35,7 +35,7 @@ describe('buildScenesPdfPayload', () => {
   it('drops custom-scene entries for devices that are no longer in the home', () => {
     const custom = [{ id: 'c1', name: 'X', deviceStates: { 'rgbw-strip': true, 'curtain': true, 'gone-device': true } }];
     const result = buildScenesPdfPayload(custom, rooms);
-    expect(result[result.length - 1].devices).toEqual([{ name: 'RGBW Strip Light', on: true }]);
+    expect(result[result.length - 1].devices).toEqual([{ name: 'Colour-changing strip', on: true }]);
     expect(buildScenesPdfPayload(custom, [])[SCENES.length].devices).toEqual([]);
   });
 

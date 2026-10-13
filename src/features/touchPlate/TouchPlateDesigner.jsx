@@ -97,7 +97,7 @@ export default function TouchPlateDesigner() {
     // the reference takes one accessory per plate and wants it removed before another is placed;
     // Snap On plates simply swap
     if (config.accessory && config.model !== 'snap-on') {
-      setNotice('A plate takes one accessory. Remove the one on the plate (the bin under it) to choose another.');
+      setNotice('A plate takes one accessory. To change it, first remove the one on the plate with the bin under it.');
       return;
     }
     setNotice(null);
@@ -157,7 +157,7 @@ export default function TouchPlateDesigner() {
           <div className="tpd-split">
             <div className="tpd-side">
               <h3 className="tpd-side-title">{config.size} module</h3>
-              {offered.length === 0 && <p className="tpd-hint">No accessories are offered for this model in this size. Go back and pick another size.</p>}
+              {offered.length === 0 && <p className="tpd-hint">This model has no accessories in this size. Go back and pick another size.</p>}
               <div className="tpd-accessories">
                 {offered.map((a) => (
                   <button type="button" key={a.id} className="tpd-accessory" aria-pressed={config.accessory === a.id} onClick={() => pickAccessory(a.id)}>
@@ -188,7 +188,7 @@ export default function TouchPlateDesigner() {
                 </>
               ) : (
                 <p className="tpd-hint">
-                  {config.accessory ? 'This accessory has no switches that take an icon.' : 'Place an accessory first — icons go on its switches.'}
+                  {config.accessory ? 'This accessory has no switches that take an icon.' : 'Go back and choose an accessory first. Icons go on its switches.'}
                 </p>
               )}
             </div>
@@ -228,22 +228,18 @@ export default function TouchPlateDesigner() {
     <div className="tpd" id="plate-designer">
       <div className="tpd-head">
         <div>
-          <h2>Touch Plate Designer{plateRoom && <> — {plateRoom.name}</>}</h2>
-          <p className="tpd-sub">
-            {plateRoom
-              ? <>Design the switch plate for your <strong>{plateRoom.name}</strong>, one step at a time.</>
-              : 'Design your Aerlyn touch switch plate, one step at a time.'}
-          </p>
+          <h2>{plateRoom ? `Switch plate for your ${plateRoom.name}` : 'Design a switch plate'}</h2>
+          <p className="tpd-sub">Choose the plate, its switches, icons and colours. This is optional.</p>
         </div>
         <div className="tpd-reset">
           {confirmReset ? (
             <>
-              <span role="status">Clear every choice?</span>
+              <span role="status">Clear all your choices?</span>
               <button type="button" className="tpd-btn danger" onClick={reset}>Yes, reset</button>
               <button type="button" className="tpd-btn" onClick={() => setConfirmReset(false)}>Cancel</button>
             </>
           ) : (
-            <button type="button" className="tpd-btn" onClick={() => setConfirmReset(true)}>Reset selection</button>
+            <button type="button" className="tpd-btn" onClick={() => setConfirmReset(true)}>Start again</button>
           )}
         </div>
       </div>

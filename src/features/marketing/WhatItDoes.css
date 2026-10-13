@@ -1,0 +1,9 @@
+.pairs { list-style: none; border-top: 1px solid var(--border); }
+.pairs li { display: grid; grid-template-columns: minmax(0, 5fr) 20px minmax(0, 8fr); align-items: center; gap: var(--s5); padding: var(--s5) 0; border-bottom: 1px solid var(--border); line-height: 1.5; }
+.pairs-problem { color: var(--text-dim); }
+.pairs-arrow { color: var(--teal); }
+.pairs-result { font-size: 1.1rem; }
+@media (max-width: 600px) {
+  .pairs li { grid-template-columns: minmax(0, 1fr); gap: var(--s1); padding: var(--s4) 0; }
+  .pairs-arrow { display: none; }
+}

@@ -38,7 +38,6 @@ export default function RoomDrawer({ roomId, onClose }) {
             if (!meta) return null;
             return (
               <div key={d.deviceId} className="drawer-device-row">
-                <span className="drawer-device-icon">{meta.icon}</span>
                 <span className="drawer-device-name">
                   {meta.name}
                   {d.qty > 1 && <span className="drawer-device-qty">×{d.qty}</span>}
@@ -61,7 +60,7 @@ export default function RoomDrawer({ roomId, onClose }) {
           )}
 
           <div className="drawer-scenes">
-            <div className="drawer-scenes-label">Quick scenes for this room:</div>
+            <div className="drawer-scenes-label">Scenes for this room</div>
             <ScenePresets roomId={room.id} />
           </div>
         </div>

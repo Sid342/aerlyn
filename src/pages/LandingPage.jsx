@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { HomeProvider } from '../context/HomeContext.jsx';
 import Shell from './Shell.jsx';
 import Hero from '../features/marketing/Hero.jsx';
-import WhyAutomate from '../features/marketing/WhyAutomate.jsx';
-import DayInLife from '../features/marketing/DayInLife.jsx';
+import WhatItDoes from '../features/marketing/WhatItDoes.jsx';
 import HowItWorks from '../features/marketing/HowItWorks.jsx';
+import Proof from '../features/marketing/Proof.jsx';
 import Faq from '../features/marketing/Faq.jsx';
 import ContactCTA from '../features/marketing/ContactCTA.jsx';
 import HomeTypePicker from '../features/houseExplorer/HomeTypePicker.jsx';
@@ -16,21 +15,16 @@ import RoomList from '../features/houseExplorer/RoomList.jsx';
 import RoomDrawer from '../features/houseExplorer/RoomDrawer.jsx';
 import SceneBuilder from '../features/sceneBuilder/SceneBuilder.jsx';
 import TouchPlateDesigner from '../features/touchPlate/TouchPlateDesigner.jsx';
-import PlanBar from '../features/savePlan/PlanBar.jsx';
+import PlanNotice from '../features/savePlan/PlanNotice.jsx';
 
 function Planner() {
   const [drawerRoomId, setDrawerRoomId] = useState(null);
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h2>Plan your smart home</h2>
-        <p className="app-intro">
-          Build your home room by room, see what automation feels like in Play mode,
-          then save your plan and get a free quote.
-        </p>
-      </header>
+    <section id="planner" className="section">
+      <h2 className="section-title">What's your home?</h2>
       <HomeTypePicker />
+      <PlanNotice />
       <HouseSvg onRoomClick={(id) => setDrawerRoomId(id)} />
       <FloorPlanUpload />
       <ModeToggle />
@@ -41,24 +35,20 @@ function Planner() {
       {drawerRoomId && (
         <RoomDrawer roomId={drawerRoomId} onClose={() => setDrawerRoomId(null)} />
       )}
-    </div>
+    </section>
   );
 }
 
 export default function LandingPage() {
   return (
-    <HomeProvider>
-      <Shell after={<PlanBar />}>
-        <Hero />
-        <WhyAutomate />
-        <DayInLife />
-        <section id="planner" style={{ padding: '80px 0 40px' }}>
-          <Planner />
-        </section>
-        <HowItWorks />
-        <Faq />
-        <ContactCTA />
-      </Shell>
-    </HomeProvider>
+    <Shell>
+      <Hero />
+      <Planner />
+      <WhatItDoes />
+      <HowItWorks />
+      <Proof />
+      <Faq />
+      <ContactCTA />
+    </Shell>
   );
 }

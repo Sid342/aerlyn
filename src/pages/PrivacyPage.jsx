@@ -9,7 +9,7 @@ export default function PrivacyPage() {
       <div className="page-wrap">
         <Breadcrumb current="Privacy Policy" />
         <h1>Privacy Policy</h1>
-        <p className="page-muted">Effective date: 6 June 2026 · Last updated: 13 October 2026</p>
+        <p className="page-muted">Effective date: 6 June 2026 · Last updated: 14 October 2026</p>
 
         <h2>1. Introduction</h2>
         <p>{site.legalName} ("we", "us", or "our") operates the {site.brand} smart-home app, which lets you control and automate compatible BLE and Wi-Fi smart switches in your home. This Privacy Policy explains what information we collect and how we use it. It covers the {site.brand} mobile app as well as these supporting web pages. By using the app, you agree to the practices described here.</p>
@@ -56,8 +56,8 @@ export default function PrivacyPage() {
         <p>This section covers what happens when you use this website ({site.origin.replace('https://', '')}) rather than the app.</p>
         <p>We collect only what you type into a form and send to us:</p>
         <ul>
-          <li>Book a visit: your name and phone number, and — if you fill them in — your city or area, property type, timeline and notes.</li>
-          <li>Save my plan: your name, phone number, city (optional) and the plan itself — the home type, rooms, devices, switch plan, custom scenes and plate design you built.</li>
+          <li>Book an appointment: your name and phone number and, if you fill them in, your city and a note.</li>
+          <li>If you have made a plan, it is sent with the appointment request: the home type, rooms, devices, switch plan, custom scenes and plate design.</li>
         </ul>
         <p>We use these details to contact you about your visit or quote. Form submissions are delivered to our email by Formspree, a third-party form processor that handles the data on our behalf.</p>
         <p>The plan you build is stored in your own browser's storage, on your device, so it is still there when you come back. A floor plan image you upload stays in the page only — it is not stored and not sent to us. A plan link contains the plan data itself; it does not contain your name or phone number. Anyone you give the link to can open that plan.</p>

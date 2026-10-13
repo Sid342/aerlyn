@@ -19,12 +19,12 @@ export default function FloorPlanUpload() {
     <div className="card floorplan">
       <h3>Floor plan (optional)</h3>
       <p style={{ color: 'var(--text-dim)', margin: '4px 0 10px' }}>
-        Upload the customer's floor plan as a reference while shaping the rooms.
+        Upload a picture of your floor plan to look at while you plan.
       </p>
 
       {!home.floorPlanImage && (
         <button type="button" className="floorplan-drop" onClick={() => inputRef.current.click()}>
-          Click to upload an image of the floor plan
+          Upload a floor plan image
         </button>
       )}
 

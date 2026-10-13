@@ -1,0 +1,7 @@
+.share { display: flex; flex-direction: column; gap: var(--s2); }
+.share-label { font-size: 0.85rem; color: var(--text-dim); line-height: 1.4; }
+.share-link { font-family: var(--font-mono); font-size: 0.8rem; }
+.share-actions { display: flex; gap: var(--s2); flex-wrap: wrap; }
+.share-actions .btn { flex: 1; padding: 0 var(--s3); font-size: 0.92rem; white-space: nowrap; }
+.share-hint { font-size: 0.8rem; color: var(--text-dim); }
+.share-hint:empty { display: none; }

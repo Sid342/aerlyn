@@ -3,11 +3,11 @@
 // Owner: fill the null values and confirm the rest before launch.
 
 const RETROFIT_FEATURES = [
-  'Capacitive touch controls',
-  'Scene & schedule automation',
-  'App + voice control (Alexa / Google Home)',
-  'No-neutral-wire installation',
-  'Child lock & overload protection',
+  'Touch controls',
+  'Scenes and schedules',
+  'App and voice control (Alexa, Google Home)',
+  'Works without a neutral wire',
+  'Child lock and overload protection',
 ];
 
 // One photo for both modules for now — the 2-switch photo is a placeholder until a real one exists.
@@ -32,8 +32,13 @@ export const site = {
   phone: null,
   whatsapp: null, // digits with country code, e.g. 9198XXXXXXXX
   gstin: null,
-  serviceArea: null,
+  serviceArea: null, // e.g. 'Hisar and nearby towns'
   origin: 'https://aerlyn.in',
+
+  // Shown in the "Aerlyn so far" section of the home page, each only when filled.
+  photos: [], // install photos: { src, width, height, alt }
+  brands: [], // brand names fitted, e.g. ['Brand A', 'Brand B']
+  testimonial: null, // real customer feedback: { quote, name, place }
 
   // Formspree form IDs per form kind. Both share the legacy form for now —
   // owner replaces each with its production form ID.
@@ -47,7 +52,7 @@ export const site = {
     { number: '500+', label: 'Homes automated' },
     { number: '<1 day', label: 'Full installation' },
     { number: '40%', label: 'Avg. energy saved' },
-    { number: '₹0', label: 'Subscription fee, ever' },
+    { number: '₹0', label: 'Subscription fee' },
   ],
 
   // Nothing is sold on this website — products and installation are sold through the home
@@ -57,7 +62,7 @@ export const site = {
       id: 'AER-SW1G-WiFi',
       slug: 'retrofit-1-switch',
       name: 'Aerlyn Retrofit 1-Switch',
-      tagline: 'Smart Wi-Fi retrofit module — make one existing switch app & voice controlled.',
+      tagline: 'Wi-Fi module that makes one existing switch work from the app and by voice.',
       ...RETROFIT_IMAGE,
       features: RETROFIT_FEATURES,
       specs: retrofitSpecs('AER-SW1G-WiFi', '800 W (1 gang)'),
@@ -66,7 +71,7 @@ export const site = {
       id: 'AER-SW2G-WiFi',
       slug: 'retrofit-2-switch',
       name: 'Aerlyn Retrofit 2-Switch',
-      tagline: 'Smart Wi-Fi retrofit module — make two existing switches app & voice controlled.',
+      tagline: 'Wi-Fi module that makes two existing switches work from the app and by voice.',
       ...RETROFIT_IMAGE,
       features: RETROFIT_FEATURES,
       specs: retrofitSpecs('AER-SW2G-WiFi', '800 W per gang (2 gang)'),

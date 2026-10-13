@@ -4,7 +4,7 @@ import './SwitchPlanCard.css';
 
 const PLATE_LABELS = (plates) =>
   plates.length === 0
-    ? '—'
+    ? 'none'
     : Object.entries(
         plates.reduce((acc, p) => ({ ...acc, [p]: (acc[p] || 0) + 1 }), {})
       )
@@ -79,7 +79,7 @@ export default function SwitchPlanCard({ room }) {
       </div>
       {plan.plates.length > 0 && (
         <button type="button" className="switch-plan-design" onClick={designPlate}>
-          Design this plate →
+          Design this plate
         </button>
       )}
     </div>

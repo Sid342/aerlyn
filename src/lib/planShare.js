@@ -11,28 +11,32 @@ export function whatsappShareUrl(link) {
   return `https://wa.me/?text=${encodeURIComponent(`My Aerlyn smart home plan: ${link}`)}`;
 }
 
-// Fields of the 'plan' lead. `contact` is already validated: { name, phone, city, _gotcha }.
+// Fields of the 'plan' lead: an appointment request that carries the whole plan.
+// `contact` is already validated: { name, phone, city, notes, _gotcha }.
 export function planLeadFields(home, contact, link) {
   const payload = buildExportPayload(home);
   return {
-    _subject: `Aerlyn plan — ${payload.homeType} — ${contact.name} (${contact.phone})`,
+    _subject: `Appointment request with ${payload.homeType} plan — ${contact.name} (${contact.phone})`,
     customerName: contact.name,
     customerPhone: contact.phone,
     customerCity: contact.city,
+    customerNotes: contact.notes,
     planLink: link,
     plan: JSON.stringify(payload, null, 2),
     _gotcha: contact._gotcha,
   };
 }
 
-// Short 'visit' lead sent from the saved-plan view, reusing the saved contact.
-export function visitLeadFields(contact, link) {
+// Fields of the 'visit' lead: an appointment request without a plan.
+// `product` is the product name when the form was opened on a product page.
+export function visitLeadFields(contact, product) {
   return {
-    _subject: `New Home Visit Request — ${contact.name} (${contact.phone})`,
+    _subject: `Appointment request — ${contact.name} (${contact.phone})${product ? ` — ${product}` : ''}`,
     Name: contact.name,
     Phone: contact.phone,
+    Product: product,
     City: contact.city,
-    Notes: `Requested after saving a plan: ${link}`,
+    Notes: contact.notes,
     _gotcha: contact._gotcha,
   };
 }

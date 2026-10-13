@@ -1,16 +1,5 @@
 import { useHome } from '../../context/HomeContext.jsx';
-import { getDevice } from '../../data/devices.js';
 import './HouseSvg.css';
-
-function activeIcons(devices) {
-  const on = devices.filter((d) => d.on);
-  const icons = on.slice(0, 3).map((d) => {
-    const meta = getDevice(d.deviceId);
-    return meta ? meta.icon : null;
-  }).filter(Boolean);
-  const overflow = on.length > 3 ? on.length - 3 : 0;
-  return { icons, overflow };
-}
 
 function layout(rooms) {
   const cols = rooms.length <= 4 ? 2 : 3;
@@ -49,7 +38,6 @@ export default function HouseSvg({ onRoomClick }) {
         {cells.map(({ room, x, y, w, h }) => {
           const onCount = room.devices.filter((d) => d.on).length;
           const isLit = isPlay && onCount > 0;
-          const { icons, overflow } = activeIcons(room.devices);
 
           // In Play mode a zone is a real link (to its room card) that opens the room's controls.
           const Zone = isPlay ? 'a' : 'g';
@@ -69,15 +57,8 @@ export default function HouseSvg({ onRoomClick }) {
               />
               <text className="house-zone-label" x={x + 8} y={y + 16}>{room.name}</text>
 
-              {isPlay && icons.length > 0 ? (
-                <>
-                  <text className="house-zone-icons" x={x + 8} y={y + 38}>
-                    {icons.join(' ')}{overflow > 0 ? ` +${overflow}` : ''}
-                  </text>
-                  <text className="house-zone-on-label" x={x + 8} y={y + 56}>
-                    {onCount} on — tap to control
-                  </text>
-                </>
+              {isLit ? (
+                <text className="house-zone-on-label" x={x + 8} y={y + 34}>{onCount} on. Tap to control.</text>
               ) : (
                 <text className="house-zone-label" x={x + 8} y={y + 34}>
                   {room.devices.length} devices

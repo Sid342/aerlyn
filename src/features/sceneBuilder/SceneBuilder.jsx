@@ -17,7 +17,6 @@ function PresetSceneCard({ scene }) {
   return (
     <div className="sb-card">
       <div className="sb-card-header">
-        <span className="sb-card-icon">{scene.icon}</span>
         <span className="sb-card-name">{scene.name}</span>
       </div>
       {entries.map(([deviceId, on]) => (
@@ -54,7 +53,6 @@ function CustomSceneCard({ scene }) {
   return (
     <div className="sb-card">
       <div className="sb-card-header">
-        <span className="sb-card-icon">{scene.icon}</span>
         <span className="sb-card-name">
           {editing ? (
             <input
@@ -79,7 +77,7 @@ function CustomSceneCard({ scene }) {
           )}
         </span>
       </div>
-      {devices.length === 0 && <p style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>No devices in your home yet</p>}
+      {devices.length === 0 && <p style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>No devices in your plan yet</p>}
       {devices.map((device) => {
         const on = scene.deviceStates[device.id] ?? false;
         return (
@@ -129,14 +127,14 @@ function AddSceneForm() {
       <input
         type="text"
         className="sb-add-input"
-        placeholder="Scene name (e.g. Dinner Party)"
+        placeholder="Scene name"
         aria-label="New scene name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
       />
       <button type="button" className="sb-add-btn" onClick={handleAdd}>
-        + Add Scene
+        Add scene
       </button>
     </div>
   );
@@ -149,17 +147,17 @@ export default function SceneBuilder() {
 
   return (
     <div className="scene-builder">
-      <h2>Scene Builder</h2>
-      <p className="sb-sub">View preset automations and create your own custom scenes.</p>
+      <h3>Scenes</h3>
+      <p className="sb-sub">A scene sets several devices with one tap. These three come ready. You can add your own.</p>
 
-      <div className="sb-section-label">Preset Scenes</div>
+      <div className="sb-section-label">Ready-made</div>
       <div className="sb-cards">
         {SCENES.map((scene) => (
           <PresetSceneCard key={scene.id} scene={scene} />
         ))}
       </div>
 
-      <div className="sb-section-label">Custom Scenes</div>
+      <div className="sb-section-label">Your own</div>
       <div className="sb-cards">
         {home.customScenes.map((scene) => (
           <CustomSceneCard key={scene.id} scene={scene} />
@@ -173,7 +171,7 @@ export default function SceneBuilder() {
           className="sb-export-btn"
           onClick={() => download(home.customScenes, home.rooms)}
         >
-          Download Scenes PDF
+          Download scenes PDF
         </button>
       </div>
       {pdfFailed && <div className="field-error sb-export-error" role="alert">{PDF_FAILED}</div>}

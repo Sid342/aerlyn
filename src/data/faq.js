@@ -10,27 +10,27 @@ const warranty = spec('Warranty');
 export const FAQ = [
   {
     q: 'Do I need to rewire my home or break walls?',
-    a: `No. Installation needs no civil work and does no damage to walls. ${site.brand} Retrofit modules make your existing switches app and voice controlled, and support no-neutral-wire installation.`,
+    a: `No. There is no civil work and no damage to walls. ${site.brand} Retrofit modules work with your existing switches and do not need a neutral wire.`,
   },
   {
     q: 'How long does installation take?',
-    a: 'A full home is typically complete in 4–8 hours — under a day — installed by certified technicians.',
+    a: 'Most homes are done in less than a day.',
   },
   {
     q: 'Is the home visit really free?',
-    a: 'Yes. The home consultation is completely free, with zero obligation. Our expert visits your home, assesses your wiring, confirms compatibility and designs a solution for your home.',
+    a: 'Yes. We check your wiring and suggest what fits your home. You decide after that.',
   },
   {
     q: 'What can I automate?',
-    a: 'Lights, fans, ACs with an IR remote, curtains, geysers, sockets, door locks, cameras, and motion and gas / smoke sensors — controlled from one app, by voice, or by scenes and schedules.',
+    a: 'Lights, fans, ACs that use a remote, curtains, geysers, sockets, door locks, cameras, and sensors for motion, gas and smoke.',
   },
   {
     q: 'Does it work with Alexa and Google Home?',
-    a: `Yes. ${site.brand} voice control works with Alexa, Google and Siri, and the Retrofit switch modules support app and voice control through Alexa and Google Home.`,
+    a: `Yes. ${site.brand} works with Alexa, Google Home and Siri.`,
   },
   {
     q: 'Can I control my home when I am away?',
-    a: 'Yes. From your phone you can lock the door remotely, see lock status in real time, get notified the moment your door opens, and check your cameras from anywhere.',
+    a: 'Yes. From your phone you can lock the door, get an alert when it opens and check your cameras.',
   },
   {
     q: 'Is there a monthly subscription?',

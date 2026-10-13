@@ -63,7 +63,7 @@ export default function PlateSummary({ config, roomName, logo, onLogo, onRemote 
           <h3 className="tpd-side-title">Specification</h3>
           <dl className="tpd-spec">
             {rows.map(([label, value]) => (
-              <div key={label}><dt>{label}</dt><dd>{value || '—'}</dd></div>
+              <div key={label}><dt>{label}</dt><dd>{value || 'Not chosen'}</dd></div>
             ))}
             <div>
               <dt><label htmlFor="tpd-remote">Remote</label></dt>
@@ -109,7 +109,7 @@ export default function PlateSummary({ config, roomName, logo, onLogo, onRemote 
       </div>
 
       <div className="tpd-downloads">
-        <p>Your plate design is included when you save your plan.</p>
+        <p>Your plate design is sent with your plan when you book an appointment.</p>
         <div className="tpd-actions">
           <button type="button" className="tpd-btn" disabled={busy} onClick={image}>Download image</button>
           <button type="button" className="tpd-btn primary" disabled={busy} onClick={pdf}>Download PDF</button>

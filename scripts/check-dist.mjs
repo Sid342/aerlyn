@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const dist = fileURLToPath(new URL('../dist', import.meta.url));
 const { routes, headFor, sitemapXml, robotsTxt } = await import('../dist-ssr/entry-server.js');
+const { copyProblems, copyStats } = await import('../src/lib/copyCheck.js');
 
 const problems = [];
 const count = (html, re) => (html.match(re) || []).length;
@@ -47,8 +48,13 @@ for (const [file, expected] of [['/sitemap.xml', sitemapXml()], ['/robots.txt', 
   if (actual !== expected) problems.push(`${file}: missing or stale`);
 }
 
+// The home page stays short and plain: see docs/superpowers/specs/2026-10-14-simple-guided-site-design.md, section 3.
+const home = await readFile(`${dist}/index.html`, 'utf8').catch(() => '');
+for (const problem of copyProblems(home)) problems.push(`/index.html copy: ${problem}`);
+
 if (problems.length) {
   console.error(`check-dist: ${problems.length} problem(s)\n  ${problems.join('\n  ')}`);
   process.exit(1);
 }
-console.log(`check-dist: ${routes.length} pages ok`);
+const { words, longDashes } = copyStats(home);
+console.log(`check-dist: ${routes.length} pages ok; home page ${words} words, ${longDashes} long dashes`);

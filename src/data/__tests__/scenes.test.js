@@ -6,9 +6,9 @@ describe('scene presets', () => {
   it('has at least three scenes', () => {
     expect(SCENES.length).toBeGreaterThanOrEqual(3);
   });
-  it('every scene has a name, icon and deviceStates map', () => {
+  it('every scene has a name and deviceStates map', () => {
     for (const s of SCENES) {
-      expect(s.name && s.icon).toBeTruthy();
+      expect(s.name).toBeTruthy();
       expect(typeof s.deviceStates).toBe('object');
     }
   });

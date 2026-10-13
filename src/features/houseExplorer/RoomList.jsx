@@ -21,10 +21,9 @@ export default function RoomList() {
 
   return (
     <div style={{ marginTop: 20 }}>
-      <h3>2. Shape the rooms</h3>
+      <h3>Your rooms</h3>
       <p style={{ color: 'var(--text-dim)', margin: '4px 0 8px' }}>
-        Rename, resize, add or remove rooms to match the real home. Each room is pre-filled
-        with the devices it usually needs — adjust freely.
+        Each room starts with the devices it usually needs. Change anything.
       </p>
 
       {home.rooms.map((room) => (
@@ -35,7 +34,7 @@ export default function RoomList() {
         <div className="card room-card" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <input
             className="room-name-input"
-            placeholder="New room name (e.g. Pooja Room)"
+            placeholder="New room name"
             aria-label="New room name"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}

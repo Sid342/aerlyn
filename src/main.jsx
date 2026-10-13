@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
+import './styles/global.css'; // first, so component styles can override it
 import App from './App.jsx';
-import './styles/global.css';
 
 const root = document.getElementById('root');
 const app = (

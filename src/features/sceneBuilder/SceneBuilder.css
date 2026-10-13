@@ -1,14 +1,13 @@
 .scene-builder { padding: 24px 0; }
-.scene-builder h2 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--fg); margin: 0 0 4px; }
+.scene-builder h3 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--fg); margin: 0 0 4px; }
 .scene-builder .sb-sub { font-size: 0.82rem; color: var(--muted); margin: 0 0 20px; }
 
-.sb-section-label { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--teal); font-weight: 600; margin: 24px 0 10px; }
+.sb-section-label { font-size: 0.9rem; color: var(--text-dim); font-weight: 500; margin: 24px 0 10px; }
 
 .sb-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 
 .sb-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
 .sb-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.sb-card-icon { font-size: 1.5rem; }
 .sb-card-name { font-weight: 600; font-size: 0.95rem; color: var(--fg); flex: 1; }
 .sb-card-name input { background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--fg); font-size: 0.95rem; font-weight: 600; width: 100%; outline: none; padding: 2px 0; }
 

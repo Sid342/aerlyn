@@ -95,8 +95,8 @@ function pageHead(route, url) {
   switch (route.page) {
     case 'landing':
       return {
-        title: `${site.brand} — Smart Home Automation, Planned Room by Room`,
-        description: `Plan your smart home room by room with ${site.brand}${area}: smart switches, lighting, locks, cameras and scenes. Save your plan and get a free quote.`,
+        title: `${site.brand} — Smart Home Automation`,
+        description: `${site.brand} fits smart switches, lights, fans, AC control, locks and cameras${area}. Pick your home to see a plan, then book a free visit.`,
         jsonLd: [business(), website(), faqPage()],
       };
     case 'product': {
