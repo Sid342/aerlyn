@@ -1,25 +1,26 @@
 import jsPDF from 'jspdf';
 import { SCENES } from '../data/scenes.js';
-import { getDevice } from '../data/devices.js';
+import { getDevice, sceneDevicesInHome } from '../data/devices.js';
 
-// each scene gains `devices: [{ name, on }]` with catalogue names for printing
-function withDeviceNames(scene, preset) {
-  const devices = Object.entries(scene.deviceStates).map(([deviceId, on]) => {
-    const meta = getDevice(deviceId);
-    return { name: meta ? meta.name : deviceId, on };
-  });
-  return { ...scene, preset, devices };
-}
-
-export function buildScenesPdfPayload(customScenes) {
+// Each scene gains `devices: [{ name, on }]` with catalogue names for printing.
+// Custom scenes list only devices that are still in the home.
+export function buildScenesPdfPayload(customScenes, rooms) {
   return [
-    ...SCENES.map((s) => withDeviceNames(s, true)),
-    ...customScenes.map((s) => withDeviceNames(s, false)),
+    ...SCENES.map((s) => ({
+      ...s,
+      preset: true,
+      devices: Object.entries(s.deviceStates).map(([id, on]) => ({ name: getDevice(id).name, on })),
+    })),
+    ...customScenes.map((s) => ({
+      ...s,
+      preset: false,
+      devices: sceneDevicesInHome(s, rooms).map(({ name, on }) => ({ name, on })),
+    })),
   ];
 }
 
-export function downloadScenesPdf(customScenes) {
-  const scenes = buildScenesPdfPayload(customScenes);
+export function downloadScenesPdf(customScenes, rooms) {
+  const scenes = buildScenesPdfPayload(customScenes, rooms);
   const pdf = new jsPDF('p', 'mm', 'a4');
   const left = 14;
   let y = 18;

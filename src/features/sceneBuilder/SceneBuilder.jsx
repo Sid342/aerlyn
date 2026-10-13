@@ -150,7 +150,7 @@ export default function SceneBuilder() {
         <button
           type="button"
           className="sb-export-btn"
-          onClick={() => downloadScenesPdf(home.customScenes)}
+          onClick={() => downloadScenesPdf(home.customScenes, home.rooms)}
         >
           Download Scenes PDF
         </button>

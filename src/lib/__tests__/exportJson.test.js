@@ -72,6 +72,15 @@ describe('buildExportPayload', () => {
       { name: 'Dinner', devices: [{ deviceId: 'rgbw-strip', name: 'RGBW Strip Light', on: true }] },
     ]);
   });
+  it('leaves out scene entries for devices that are no longer in the home', () => {
+    let home = homeReducer(sampleHome(), { type: 'ADD_CUSTOM_SCENE', payload: { name: 'Dinner' } });
+    const sceneId = home.customScenes[0].id;
+    for (const deviceId of ['rgbw-strip', 'geyser']) {
+      home = homeReducer(home, { type: 'SET_SCENE_DEVICE_STATE', payload: { sceneId, deviceId, on: true } });
+    }
+    for (const r of home.rooms) home = homeReducer(home, actions.removeDevice(r.id, 'geyser'));
+    expect(buildExportPayload(home).customScenes[0].devices.map((d) => d.deviceId)).toEqual(['rgbw-strip']);
+  });
   it('plate is null until a model is chosen', () => {
     expect(buildExportPayload(sampleHome()).plate).toBeNull();
     expect(buildExportPayload(initialHome).customScenes).toEqual([]);

@@ -61,7 +61,7 @@ export default function App() {
       <HowItWorks />
       <ContactCTA />
       <SiteFooter />
-      <PlanBar onSave={() => document.querySelector('.export-panel')?.scrollIntoView({ behavior: 'smooth' })} />
+      <PlanBar />
     </HomeProvider>
   );
 }

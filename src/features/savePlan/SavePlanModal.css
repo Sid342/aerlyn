@@ -1,0 +1,17 @@
+/* builds on LeadModal.css */
+.save-consent { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+.save-consent a, .lead-form .field-error a { color: var(--teal); }
+.save-ok { color: var(--teal); font-weight: 600; font-size: 0.92rem; line-height: 1.5; }
+.save-retry { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.save-label { font-size: 0.78rem; color: var(--text-dim); margin-top: 6px; }
+.save-link-row { display: flex; gap: 8px; }
+.save-link-row .lead-input { flex: 1; min-width: 0; font-family: var(--font-mono); font-size: 0.78rem; }
+.save-hint { font-size: 0.78rem; color: var(--text-dim); }
+.save-hint:empty { display: none; }
+.save-btn {
+  background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 10px;
+  padding: 11px 16px; font-size: 0.88rem; font-weight: 600; font-family: var(--font-body);
+  text-align: center; text-decoration: none; white-space: nowrap; cursor: pointer;
+}
+.save-btn:hover { border-color: var(--teal); }
+.save-btn:disabled { opacity: 0.5; cursor: not-allowed; }

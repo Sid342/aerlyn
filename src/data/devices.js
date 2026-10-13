@@ -114,3 +114,11 @@ export function devicesInHome(rooms) {
   const present = new Set(rooms.flatMap((r) => r.devices.map((d) => d.deviceId)));
   return DEVICES.filter((d) => present.has(d.id));
 }
+
+// a scene's on/off entries for devices that are still in the home, in catalogue order
+export function sceneDevicesInHome(scene, rooms) {
+  const states = scene.deviceStates || {};
+  return devicesInHome(rooms)
+    .filter((d) => d.id in states)
+    .map((d) => ({ deviceId: d.id, name: d.name, on: !!states[d.id] }));
+}
