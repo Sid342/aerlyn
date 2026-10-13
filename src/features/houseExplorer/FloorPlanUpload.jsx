@@ -23,15 +23,16 @@ export default function FloorPlanUpload() {
       </p>
 
       {!home.floorPlanImage && (
-        <div className="floorplan-drop" onClick={() => inputRef.current.click()}>
+        <button type="button" className="floorplan-drop" onClick={() => inputRef.current.click()}>
           Click to upload an image of the floor plan
-        </div>
+        </button>
       )}
 
       <input
         ref={inputRef}
         type="file"
         accept="image/*"
+        aria-label="Floor plan image"
         style={{ display: 'none' }}
         onChange={onFile}
       />

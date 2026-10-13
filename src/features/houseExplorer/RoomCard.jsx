@@ -3,6 +3,7 @@ import DeviceRow from './DeviceRow.jsx';
 import AddDeviceMenu from './AddDeviceMenu.jsx';
 import SwitchPlanCard from './SwitchPlanCard.jsx';
 import { useHome } from '../../context/HomeContext.jsx';
+import InlineConfirm from '../shared/InlineConfirm.jsx';
 import './RoomCard.css';
 
 const SIZES = ['S', 'M', 'L'];
@@ -11,6 +12,7 @@ export default function RoomCard({ room }) {
   const { home, dispatch, actions } = useHome();
   const isPlay = home.mode === 'play';
   const [open, setOpen] = useState(!isPlay);
+  const [removing, setRemoving] = useState(false);
   const presentIds = room.devices.map((d) => d.deviceId);
   const onCount = room.devices.filter((d) => d.on).length;
 
@@ -66,17 +68,22 @@ export default function RoomCard({ room }) {
               type="button"
               className="room-remove-btn"
               aria-label={`Remove ${room.name}`}
-              onClick={() => {
-                if (window.confirm(`Remove ${room.name}?`)) {
-                  dispatch(actions.removeRoom(room.id));
-                }
-              }}
+              onClick={() => setRemoving(true)}
             >
               Remove
             </button>
           </>
         )}
       </div>
+      {removing && !isPlay && (
+        <InlineConfirm
+          message={`Remove ${room.name} and its devices?`}
+          confirmLabel="Remove room"
+          cancelLabel="Keep it"
+          onConfirm={() => dispatch(actions.removeRoom(room.id))}
+          onCancel={() => setRemoving(false)}
+        />
+      )}
 
       {open && (
         <>

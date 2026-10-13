@@ -1,12 +1,14 @@
 import { useHome } from '../../context/HomeContext.jsx';
 import { getDevice } from '../../data/devices.js';
 import { planRoom } from '../../lib/switchPlanner.js';
+import { useDialog } from '../../lib/useDialog.js';
 import ScenePresets from './ScenePresets.jsx';
 import './RoomDrawer.css';
 
 export default function RoomDrawer({ roomId, onClose }) {
   const { home, dispatch, actions } = useHome();
   const room = home.rooms.find((r) => r.id === roomId);
+  const dialog = useDialog(!!room, onClose);
   if (!room) return null;
 
   const plan = planRoom(room);
@@ -21,10 +23,10 @@ export default function RoomDrawer({ roomId, onClose }) {
   return (
     <>
       <div className="drawer-backdrop" onClick={onClose} aria-hidden="true" />
-      <div className="drawer" role="dialog" aria-label={`${room.name} controls`}>
+      <div className="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" ref={dialog} tabIndex={-1}>
         <div className="drawer-handle" />
         <div className="drawer-header">
-          <span className="drawer-title">{room.name}</span>
+          <h3 className="drawer-title" id="drawer-title">{room.name}<span className="sr-only"> controls</span></h3>
           <button type="button" className="drawer-close" onClick={onClose} aria-label="Close">×</button>
         </div>
         <div className="drawer-body">

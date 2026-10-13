@@ -10,14 +10,16 @@ export default function StepFrame({ config, onChange }) {
       <div className="tpd-section-label">Frame style</div>
       <div className="tpd-option-grid">
         {FRAME_OPTIONS.map((f) => (
-          <div
+          <button
+            type="button"
+            aria-pressed={config.frame === f.label}
             key={f.label}
             className={`tpd-option${config.frame === f.label ? ' selected' : ''}`}
             onClick={() => onChange({ ...config, frame: f.label })}
           >
-            <div className="tpd-option-label">{f.label}</div>
-            <div className="tpd-option-sub">{f.sub}</div>
-          </div>
+            <span className="tpd-option-label">{f.label}</span>
+            <span className="tpd-option-sub">{f.sub}</span>
+          </button>
         ))}
       </div>
     </div>

@@ -13,13 +13,15 @@ export default function StepMaterial({ config, onChange }) {
       <div className="tpd-color-grid">
         {MATERIAL_COLORS.map((c) => (
           <div key={c.label} style={{ textAlign: 'center' }}>
-            <div
+            <button
+              type="button"
+              aria-label={c.label}
+              aria-pressed={config.material === c.label}
               className={`tpd-color-swatch${config.material === c.label ? ' selected' : ''}`}
               style={{ background: c.code, boxShadow: c.code === '#ffffff' ? '0 0 0 1px var(--border)' : 'none' }}
               onClick={() => onChange({ ...config, material: c.label, materialCode: c.code })}
-              title={c.label}
             />
-            <div className="tpd-color-label">{c.label}</div>
+            <div className="tpd-color-label" aria-hidden="true">{c.label}</div>
           </div>
         ))}
       </div>

@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SCENES } from '../../data/scenes.js';
 import { DEVICES, devicesInHome } from '../../data/devices.js';
 import { useHome } from '../../context/HomeContext.jsx';
 import { downloadScenesPdf } from '../../lib/exportScenesPdf.js';
+import { useDownload, PDF_FAILED } from '../../lib/useDownload.js';
+import InlineConfirm from '../shared/InlineConfirm.jsx';
 import './SceneBuilder.css';
 
 function deviceName(deviceId) {
@@ -34,16 +36,19 @@ function CustomSceneCard({ scene }) {
   const devices = devicesInHome(home.rooms);
   const [editing, setEditing] = useState(false);
   const [draftName, setDraftName] = useState(scene.name);
+  const [removing, setRemoving] = useState(false);
+  const renameBtn = useRef(null);
+  const wasEditing = useRef(false);
+
+  // After a rename, focus goes back to the name button instead of being dropped.
+  useEffect(() => {
+    if (wasEditing.current && !editing) renameBtn.current?.focus();
+    wasEditing.current = editing;
+  }, [editing]);
 
   function handleNameBlur() {
     if (draftName.trim()) actions.renameCustomScene(scene.id, draftName.trim());
     setEditing(false);
-  }
-
-  function handleRemove() {
-    if (window.confirm(`Remove scene "${scene.name}"?`)) {
-      actions.removeCustomScene(scene.id);
-    }
   }
 
   return (
@@ -54,19 +59,23 @@ function CustomSceneCard({ scene }) {
           {editing ? (
             <input
               autoFocus
+              aria-label="Scene name"
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
               onBlur={handleNameBlur}
               onKeyDown={(e) => e.key === 'Enter' && handleNameBlur()}
             />
           ) : (
-            <span
-              style={{ cursor: 'pointer' }}
+            <button
+              type="button"
+              ref={renameBtn}
+              className="sb-rename"
+              aria-label={`Rename scene ${scene.name}`}
+              title="Rename"
               onClick={() => setEditing(true)}
-              title="Click to rename"
             >
               {scene.name}
-            </span>
+            </button>
           )}
         </span>
       </div>
@@ -80,6 +89,7 @@ function CustomSceneCard({ scene }) {
               type="button"
               className="sb-device-toggle"
               aria-pressed={on}
+              aria-label={device.name}
               onClick={() => actions.setSceneDeviceState(scene.id, device.id, !on)}
             >
               {on ? 'ON' : 'OFF'}
@@ -87,9 +97,18 @@ function CustomSceneCard({ scene }) {
           </div>
         );
       })}
-      <button type="button" className="sb-remove-btn" onClick={handleRemove}>
+      <button type="button" className="sb-remove-btn" onClick={() => setRemoving(true)}>
         Remove scene
       </button>
+      {removing && (
+        <InlineConfirm
+          message={`Remove scene “${scene.name}”?`}
+          confirmLabel="Remove scene"
+          cancelLabel="Keep it"
+          onConfirm={() => actions.removeCustomScene(scene.id)}
+          onCancel={() => setRemoving(false)}
+        />
+      )}
     </div>
   );
 }
@@ -111,6 +130,7 @@ function AddSceneForm() {
         type="text"
         className="sb-add-input"
         placeholder="Scene name (e.g. Dinner Party)"
+        aria-label="New scene name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
@@ -124,6 +144,7 @@ function AddSceneForm() {
 
 export default function SceneBuilder() {
   const { home } = useHome();
+  const [download, pdfFailed] = useDownload(downloadScenesPdf);
   if (!home.homeType) return null;
 
   return (
@@ -150,11 +171,12 @@ export default function SceneBuilder() {
         <button
           type="button"
           className="sb-export-btn"
-          onClick={() => downloadScenesPdf(home.customScenes, home.rooms)}
+          onClick={() => download(home.customScenes, home.rooms)}
         >
           Download Scenes PDF
         </button>
       </div>
+      {pdfFailed && <div className="field-error sb-export-error" role="alert">{PDF_FAILED}</div>}
     </div>
   );
 }

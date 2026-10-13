@@ -1,6 +1,8 @@
 import { downloadPlatePdf } from '../../../lib/exportPlatePdf.js';
+import { useDownload, PDF_FAILED } from '../../../lib/useDownload.js';
 
 export default function StepExport({ config }) {
+  const [download, pdfFailed] = useDownload(downloadPlatePdf);
   const specs = [
     ['Model', config.model || '—'],
     ['Material', config.material || '—'],
@@ -22,10 +24,11 @@ export default function StepExport({ config }) {
         ))}
       </div>
       <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end' }}>
-        <button type="button" className="tpd-nav-btn primary" onClick={() => downloadPlatePdf(config)}>
+        <button type="button" className="tpd-nav-btn primary" onClick={() => download(config)}>
           Download PDF
         </button>
       </div>
+      {pdfFailed && <div className="field-error" role="alert" style={{ textAlign: 'right' }}>{PDF_FAILED}</div>}
     </div>
   );
 }

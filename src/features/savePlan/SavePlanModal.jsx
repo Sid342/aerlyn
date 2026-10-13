@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useHome } from '../../context/HomeContext.jsx';
 import { submitLead } from '../../lib/submitLead.js';
 import { validateContact } from '../../lib/validate.js';
@@ -6,6 +6,8 @@ import { downloadPdf } from '../../lib/exportPdf.js';
 import { planLink, whatsappShareUrl, planLeadFields, visitLeadFields } from '../../lib/planShare.js';
 import { whatsappUrl } from '../../config/site.js';
 import { track } from '../../lib/track.js';
+import { useDialog } from '../../lib/useDialog.js';
+import { useDownload, PDF_FAILED } from '../../lib/useDownload.js';
 import '../marketing/LeadModal.css';
 import './SavePlanModal.css';
 
@@ -19,6 +21,13 @@ export default function SavePlanModal({ onClose }) {
   const [copied, setCopied] = useState(null); // null | 'copied' | 'selected'
   const [visit, setVisit] = useState(null); // null | 'sending' | 'ok' | 'failed'
   const linkInput = useRef(null);
+  const dialog = useDialog(true, onClose);
+  const [download, pdfFailed] = useDownload(downloadPdf);
+
+  // The form and the saved view replace each other; keep focus inside the dialog.
+  useEffect(() => {
+    if (status) dialog.current.focus();
+  }, [status]);
 
   const link = planLink(window.location.origin, home);
 
@@ -66,15 +75,15 @@ export default function SavePlanModal({ onClose }) {
 
   return (
     <div className="lead-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="lead-modal" role="dialog" aria-modal="true" aria-labelledby="save-plan-title">
+      <div className="lead-modal" role="dialog" aria-modal="true" aria-labelledby="save-plan-title" ref={dialog} tabIndex={-1}>
         <h3 id="save-plan-title">Save my plan &amp; get a free quote</h3>
         {status === null ? (
           <form className="lead-form" onSubmit={handleSubmit} noValidate>
             <p className="lead-modal-sub">Get a link that reopens this plan on any device, and a free quote from Aerlyn. No obligation.</p>
-            <input type="text" className="lead-input" placeholder="Your name *" aria-label="Your name" autoComplete="name" aria-invalid={!!errors.name} value={form.name} onChange={(e) => set('name', e.target.value)} />
-            {errors.name && <div className="field-error" role="alert">{errors.name}</div>}
-            <input type="tel" inputMode="tel" className="lead-input" placeholder="Phone number *" aria-label="Phone number" autoComplete="tel" aria-invalid={!!errors.phone} value={form.phone} onChange={(e) => set('phone', e.target.value)} />
-            {errors.phone && <div className="field-error" role="alert">{errors.phone}</div>}
+            <input type="text" className="lead-input" placeholder="Your name *" aria-label="Your name" autoComplete="name" aria-invalid={!!errors.name} aria-describedby={errors.name ? 'save-name-error' : undefined} value={form.name} onChange={(e) => set('name', e.target.value)} />
+            {errors.name && <div id="save-name-error" className="field-error" role="alert">{errors.name}</div>}
+            <input type="tel" inputMode="tel" className="lead-input" placeholder="Phone number *" aria-label="Phone number" autoComplete="tel" aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'save-phone-error' : undefined} value={form.phone} onChange={(e) => set('phone', e.target.value)} />
+            {errors.phone && <div id="save-phone-error" className="field-error" role="alert">{errors.phone}</div>}
             <input type="text" className="lead-input" placeholder="City (optional)" aria-label="City" autoComplete="address-level2" value={form.city} onChange={(e) => set('city', e.target.value)} />
             <input className="hp-field" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden="true" value={form._gotcha} onChange={(e) => set('_gotcha', e.target.value)} />
             <p className="save-consent">
@@ -110,7 +119,8 @@ export default function SavePlanModal({ onClose }) {
             </div>
 
             <a className="save-btn" href={whatsappShareUrl(link)} target="_blank" rel="noopener noreferrer">Send to my WhatsApp</a>
-            <button type="button" className="save-btn" onClick={() => downloadPdf(home)}>Download PDF</button>
+            <button type="button" className="save-btn" onClick={() => download(home)}>Download PDF</button>
+            {pdfFailed && <div className="field-error" role="alert">{PDF_FAILED}</div>}
 
             {status === 'ok' && (visit === 'ok' ? (
               <p className="save-ok" role="status">✓ Home visit requested. We'll call you to schedule.</p>

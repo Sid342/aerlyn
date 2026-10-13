@@ -117,14 +117,16 @@ export default function StepAccessories({ config, onChange }) {
         {available.map((acc) => {
           const disabled = acc.nodeSize > freeSlots;
           return (
-            <div
+            <button
+              type="button"
               key={acc.name}
-              className={`tpd-option${disabled ? ' disabled' : ''}`}
-              onClick={() => !disabled && addAccessory(acc)}
+              className="tpd-option"
+              disabled={disabled}
+              onClick={() => addAccessory(acc)}
             >
-              <div className="tpd-option-label">{acc.name}</div>
-              <div className="tpd-option-sub">{acc.nodeSize} slot{acc.nodeSize !== 1 ? 's' : ''}</div>
-            </div>
+              <span className="tpd-option-label">{acc.name}</span>
+              <span className="tpd-option-sub">{acc.nodeSize} slot{acc.nodeSize !== 1 ? 's' : ''}</span>
+            </button>
           );
         })}
       </div>
@@ -136,7 +138,7 @@ export default function StepAccessories({ config, onChange }) {
             {config.accessories.map((a) => (
               <div key={a.id} className="tpd-placed-row">
                 <span>{a.name}</span>
-                <button type="button" className="tpd-remove-acc" onClick={() => removeAccessory(a.id)}>✕</button>
+                <button type="button" className="tpd-remove-acc" aria-label={`Remove ${a.name}`} onClick={() => removeAccessory(a.id)}>✕</button>
               </div>
             ))}
           </div>

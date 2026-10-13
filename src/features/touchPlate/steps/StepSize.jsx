@@ -9,14 +9,16 @@ export default function StepSize({ config, onChange }) {
       <div className="tpd-section-label">Choose plate profile</div>
       <div className="tpd-option-grid">
         {SIZE_OPTIONS.map((s) => (
-          <div
+          <button
+            type="button"
+            aria-pressed={config.size === s.label}
             key={s.label}
             className={`tpd-option${config.size === s.label ? ' selected' : ''}`}
             onClick={() => onChange({ ...config, size: s.label })}
           >
-            <div className="tpd-option-label">{s.label}</div>
-            <div className="tpd-option-sub">{s.sub}</div>
-          </div>
+            <span className="tpd-option-label">{s.label}</span>
+            <span className="tpd-option-sub">{s.sub}</span>
+          </button>
         ))}
       </div>
     </div>

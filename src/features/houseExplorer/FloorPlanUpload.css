@@ -1,7 +1,8 @@
 .floorplan { margin-top: 16px; }
 .floorplan-drop {
   border: 1px dashed var(--border); border-radius: 10px; padding: 20px;
-  text-align: center; color: var(--text-dim); cursor: pointer;
+  display: block; width: 100%; background: none; font-size: 1rem;
+  text-align: center; color: var(--text-dim);
 }
 .floorplan-drop:hover { border-color: var(--teal); color: var(--text); }
 .floorplan-preview { margin-top: 12px; position: relative; }

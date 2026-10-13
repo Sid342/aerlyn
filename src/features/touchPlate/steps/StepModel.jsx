@@ -12,14 +12,16 @@ export default function StepModel({ config, onChange }) {
       <div className="tpd-section-label">Choose plate size</div>
       <div className="tpd-option-grid">
         {MODULE_OPTIONS.map((opt) => (
-          <div
+          <button
+            type="button"
+            aria-pressed={config.model === opt.label}
             key={opt.label}
             className={`tpd-option${config.model === opt.label ? ' selected' : ''}`}
             onClick={() => onChange({ ...config, model: opt.label, maxSlots: opt.maxSlots, accessories: [], icons: {} })}
           >
-            <div className="tpd-option-label">{opt.label}</div>
-            <div className="tpd-option-sub">{opt.maxSlots} slots</div>
-          </div>
+            <span className="tpd-option-label">{opt.label}</span>
+            <span className="tpd-option-sub">{opt.maxSlots} slots</span>
+          </button>
         ))}
       </div>
     </div>

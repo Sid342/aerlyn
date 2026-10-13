@@ -1,27 +1,21 @@
-import { useEffect } from 'react';
 import { useCart } from './CartContext.jsx';
 import { cartLines, cartTotal, inr } from '../../lib/cart.js';
 import { CHECKOUT_PATH } from '../../routes.js';
+import { useDialog } from '../../lib/useDialog.js';
 import './Cart.css';
 
 export default function CartDrawer() {
   const { cart, open, closeCart, remove, clear } = useCart();
-
-  useEffect(() => {
-    if (!open) return undefined;
-    const onKey = (e) => e.key === 'Escape' && closeCart();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
+  const dialog = useDialog(open, closeCart);
 
   if (!open) return null;
   const lines = cartLines(cart);
 
   return (
     <div className="cart-overlay" onClick={(e) => e.target === e.currentTarget && closeCart()}>
-      <aside className="cart-drawer" role="dialog" aria-modal="true" aria-label="Shopping cart">
+      <aside className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title" ref={dialog} tabIndex={-1}>
         <div className="cart-head">
-          <strong>Your Cart</strong>
+          <h2 id="cart-title" className="cart-title">Your Cart</h2>
           <button type="button" aria-label="Close cart" onClick={closeCart}>✕</button>
         </div>
         <div className="cart-items">

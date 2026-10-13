@@ -30,7 +30,7 @@
   padding: 12px 16px 8px;
   border-bottom: 1px solid var(--border);
 }
-.drawer-title { font-size: 16px; font-weight: 600; color: var(--text); }
+.drawer-title { font-family: var(--font-body); font-size: 16px; font-weight: 600; color: var(--text); }
 .drawer-close {
   background: none; border: none; color: var(--text-dim);
   font-size: 20px; cursor: pointer; padding: 4px 8px; line-height: 1;

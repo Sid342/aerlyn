@@ -10,14 +10,16 @@ export default function StepPanel({ config, onChange }) {
       <div className="tpd-section-label">Panel finish</div>
       <div className="tpd-option-grid">
         {PANEL_OPTIONS.map((p) => (
-          <div
+          <button
+            type="button"
+            aria-pressed={config.panel === p.label}
             key={p.label}
             className={`tpd-option${config.panel === p.label ? ' selected' : ''}`}
             onClick={() => onChange({ ...config, panel: p.label })}
           >
-            <div className="tpd-option-label">{p.label}</div>
-            <div className="tpd-option-sub">{p.sub}</div>
-          </div>
+            <span className="tpd-option-label">{p.label}</span>
+            <span className="tpd-option-sub">{p.sub}</span>
+          </button>
         ))}
       </div>
     </div>

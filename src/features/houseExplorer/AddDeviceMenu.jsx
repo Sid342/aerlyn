@@ -20,7 +20,7 @@ export default function AddDeviceMenu({ roomId, presentIds }) {
 
   return (
     <div className="add-device">
-      <select value={value} onChange={onChange}>
+      <select value={value} onChange={onChange} aria-label="Add a device">
         <option value="">+ Add a device…</option>
         {available.map((d) => (
           <option key={d.id} value={d.id}>

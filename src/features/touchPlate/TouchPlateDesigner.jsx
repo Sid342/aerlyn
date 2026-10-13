@@ -53,13 +53,16 @@ export default function TouchPlateDesigner() {
 
       <div className="tpd-stepper">
         {STEP_LABELS.map((label, i) => (
-          <div
+          <button
+            type="button"
             key={label}
             className={`tpd-step${i === step ? ' active' : ''}${i < step ? ' done' : ''}`}
-            onClick={() => i < step && setStep(i)}
+            aria-current={i === step ? 'step' : undefined}
+            disabled={i >= step}
+            onClick={() => setStep(i)}
           >
             {i < step ? '✓ ' : ''}{label}
-          </div>
+          </button>
         ))}
       </div>
 

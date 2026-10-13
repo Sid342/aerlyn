@@ -42,7 +42,7 @@ export default function HouseSvg({ onRoomClick }) {
       <svg
         className="house-svg"
         viewBox={`0 0 ${width} ${height}`}
-        role="img"
+        role={isPlay ? 'group' : 'img'}
         aria-label="Your home overview"
       >
         <polyline className="house-roof" points={`10,60 ${width / 2},15 ${width - 10},60`} />
@@ -51,14 +51,18 @@ export default function HouseSvg({ onRoomClick }) {
           const isLit = isPlay && onCount > 0;
           const { icons, overflow } = activeIcons(room.devices);
 
+          // In Play mode a zone is a real link (to its room card) that opens the room's controls.
+          const Zone = isPlay ? 'a' : 'g';
+          const zoneProps = isPlay
+            ? {
+                href: `#room-${room.id}`,
+                'aria-label': `Control ${room.name}`,
+                onClick: (e) => { e.preventDefault(); onRoomClick?.(room.id); },
+              }
+            : {};
+
           return (
-            <g
-              key={room.id}
-              className="house-zone"
-              onClick={() => isPlay && onRoomClick && onRoomClick(room.id)}
-              style={{ cursor: isPlay ? 'pointer' : 'default' }}
-              {...(isPlay ? { role: 'button', 'aria-label': `Control ${room.name}` } : {})}
-            >
+            <Zone key={room.id} className="house-zone" {...zoneProps}>
               <rect
                 className={`house-zone-rect${isLit ? ' active' : ''}`}
                 x={x} y={y} width={w} height={h} rx="6"
@@ -86,7 +90,7 @@ export default function HouseSvg({ onRoomClick }) {
                 cy={y + 14}
                 r="4"
               />
-            </g>
+            </Zone>
           );
         })}
       </svg>

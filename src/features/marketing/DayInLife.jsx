@@ -22,13 +22,13 @@ export default function DayInLife() {
               <div className="dil-time">{item.time}</div>
               {i < TIMELINE.length - 1 && <div className="dil-line" />}
             </div>
-            <div className={`dil-card${openIndex === i ? ' open' : ''}`} onClick={() => toggle(i)}>
-              <div className="dil-card-header">
-                <span className="dil-card-icon">{item.icon}</span>
-                <div><div className="dil-moment">{item.moment}</div><div className="dil-tagline">{item.tagline}</div></div>
-                <span className="dil-chevron">▾</span>
-              </div>
-              <div className="dil-body">
+            <div className={`dil-card${openIndex === i ? ' open' : ''}`}>
+              <button type="button" className="dil-card-header" aria-expanded={openIndex === i} aria-controls={`dil-body-${i}`} onClick={() => toggle(i)}>
+                <span className="dil-card-icon" aria-hidden="true">{item.icon}</span>
+                <span><span className="dil-moment">{item.moment}</span><span className="dil-tagline">{item.tagline}</span></span>
+                <span className="dil-chevron" aria-hidden="true">▾</span>
+              </button>
+              <div className="dil-body" id={`dil-body-${i}`}>
                 <div className="dil-before-after">
                   <div><div className="dil-ba-label before">Without Aerlyn</div><p>{item.before}</p></div>
                   <div><div className="dil-ba-label after">With Aerlyn</div><p>{item.after}</p></div>

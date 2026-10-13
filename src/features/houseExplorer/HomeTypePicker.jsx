@@ -1,21 +1,28 @@
+import { useState } from 'react';
 import { HOME_TYPES } from '../../data/templates.js';
 import { useHome } from '../../context/HomeContext.jsx';
 import { track } from '../../lib/track.js';
+import InlineConfirm from '../shared/InlineConfirm.jsx';
 import './HomeTypePicker.css';
 
 export default function HomeTypePicker() {
   const { home, dispatch, actions } = useHome();
 
+  const [pending, setPending] = useState(null); // home type waiting for a confirm
+
   function pick(type) {
-    if (
-      home.homeType &&
-      home.homeType !== type &&
-      !window.confirm('Switching home type rebuilds the room list. Continue?')
-    ) {
+    if (home.homeType && home.homeType !== type) {
+      setPending(type);
       return;
     }
+    setPending(null);
     if (!home.homeType) track('plan_started', { homeType: type });
     dispatch(actions.setHomeType(type));
+  }
+
+  function confirmSwitch() {
+    dispatch(actions.setHomeType(pending));
+    setPending(null);
   }
 
   return (
@@ -37,6 +44,15 @@ export default function HomeTypePicker() {
           </button>
         ))}
       </div>
+      {pending && (
+        <InlineConfirm
+          message={`Switching to ${pending} rebuilds the room list.`}
+          confirmLabel={`Switch to ${pending}`}
+          cancelLabel="Keep my rooms"
+          onConfirm={confirmSwitch}
+          onCancel={() => setPending(null)}
+        />
+      )}
     </div>
   );
 }

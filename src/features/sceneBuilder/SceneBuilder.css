@@ -22,6 +22,9 @@
 .sb-device-toggle { background: none; border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; cursor: pointer; color: var(--muted); transition: all 0.15s; }
 .sb-device-toggle[aria-pressed="true"] { background: var(--teal); border-color: var(--teal); color: #000; }
 
+.sb-rename { background: none; border: none; color: inherit; font: inherit; text-align: left; padding: 0; }
+.sb-export-error { text-align: right; }
+.sb-card .inline-confirm { margin-top: 8px; }
 .sb-remove-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.8rem; padding: 4px 8px; border-radius: 8px; margin-top: 10px; }
 .sb-remove-btn:hover { color: var(--rose, #F43F5E); }
 
