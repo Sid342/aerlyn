@@ -1,6 +1,7 @@
 import { getDevice, sceneDevicesInHome } from '../data/devices.js';
 import { planRoom } from './switchPlanner.js';
 import { hasPlate, describePlate } from './plateConfig.js';
+import { GOALS, applyGoals, cleanGoals } from './goals.js';
 
 // null until something has been chosen in the plate designer
 function platePayload(home) {
@@ -11,12 +12,15 @@ function platePayload(home) {
 }
 
 // Convert the live Home state into the canonical, B-compatible export payload.
-// This is what a lead carries — the floor plan image is deliberately not part of it.
-export function buildExportPayload(home) {
+// This is what a lead and the PDF carry: only the devices of the chosen goals.
+export function buildExportPayload(plan) {
+  const goals = cleanGoals(plan.goals);
+  const home = { ...plan, rooms: applyGoals(plan.rooms, goals) };
   return {
     schemaVersion: 1,
     exportedAt: new Date().toISOString(),
     homeType: home.homeType,
+    wants: GOALS.filter((g) => goals.includes(g.id)).map((g) => g.label),
     rooms: home.rooms.map((room) => {
       const { gang, fan, curtain, socket, total, plates, spareModules } = planRoom(room);
       return {

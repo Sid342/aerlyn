@@ -1,13 +1,13 @@
 import { cloneRoom, makeRoom, buildRooms } from '../data/templates.js';
 import { getDevice } from '../data/devices.js';
 import { emptyPlateConfig, cleanPlateConfig } from '../lib/plateConfig.js';
+import { ALL_GOALS, cleanGoals } from '../lib/goals.js';
 
 export const initialHome = {
   homeType: null,
-  mode: 'build', // 'build' | 'play'
+  goals: ALL_GOALS, // chosen goal ids; rooms keep every device, see lib/goals.js
   rooms: [],
   customScenes: [],
-  floorPlanImage: null, // data URL, in memory only — never persisted or sent
   plateConfig: emptyPlateConfig,
   plateRoomId: null, // room the plate designer was opened from
   plateOpens: 0, // "Design this plate" clicks this session; each one moves the designer to the right step
@@ -15,6 +15,7 @@ export const initialHome = {
 
 export const actions = {
   setHomeType: (homeType) => ({ type: 'SET_HOME_TYPE', homeType }),
+  toggleGoal: (goal) => ({ type: 'TOGGLE_GOAL', goal }),
   addRoom: (name, roomType, size) => ({ type: 'ADD_ROOM', name, roomType, size }),
   removeRoom: (roomId) => ({ type: 'REMOVE_ROOM', roomId }),
   renameRoom: (roomId, name) => ({ type: 'RENAME_ROOM', roomId, name }),
@@ -22,14 +23,10 @@ export const actions = {
   addDevice: (roomId, deviceId) => ({ type: 'ADD_DEVICE', roomId, deviceId }),
   removeDevice: (roomId, deviceId) => ({ type: 'REMOVE_DEVICE', roomId, deviceId }),
   setDeviceQty: (roomId, deviceId, qty) => ({ type: 'SET_DEVICE_QTY', roomId, deviceId, qty }),
-  toggleDevice: (roomId, deviceId) => ({ type: 'TOGGLE_DEVICE', roomId, deviceId }),
   setSwitchOverride: (roomId, overrideType, value) => ({ type: 'SET_SWITCH_OVERRIDE', roomId, overrideType, value }),
-  setMode: (mode) => ({ type: 'SET_MODE', mode }),
   applyScene: (deviceStates) => ({ type: 'APPLY_SCENE', deviceStates }),
-  applySceneToRoom: (roomId, deviceStates) => ({ type: 'APPLY_SCENE_TO_ROOM', roomId, deviceStates }),
   reset: () => ({ type: 'RESET' }),
   duplicateRoom: (roomId) => ({ type: 'DUPLICATE_ROOM', roomId }),
-  setFloorPlan: (image) => ({ type: 'SET_FLOOR_PLAN', image }),
   setPlateConfig: (config) => ({ type: 'SET_PLATE_CONFIG', config }),
   designPlate: (roomId, slots) => ({ type: 'DESIGN_PLATE', roomId, slots }),
   hydrate: (home) => ({ type: 'HYDRATE', home }),
@@ -44,6 +41,9 @@ export function homeReducer(state, action) {
   switch (action.type) {
     case 'SET_HOME_TYPE':
       return { ...state, homeType: action.homeType, rooms: buildRooms(action.homeType) };
+
+    case 'TOGGLE_GOAL':
+      return { ...state, goals: ALL_GOALS.filter((g) => (g === action.goal) !== state.goals.includes(g)) };
 
     case 'ADD_ROOM':
       return { ...state, rooms: [...state.rooms, makeRoom(action.name, action.roomType, action.size)] };
@@ -103,22 +103,11 @@ export function homeReducer(state, action) {
         ),
       }));
 
-    case 'TOGGLE_DEVICE':
-      return mapRoom(state, action.roomId, (r) => ({
-        ...r,
-        devices: r.devices.map((d) =>
-          d.deviceId === action.deviceId ? { ...d, on: !d.on } : d
-        ),
-      }));
-
     case 'SET_SWITCH_OVERRIDE':
       return mapRoom(state, action.roomId, (r) => ({
         ...r,
         switchOverrides: { ...r.switchOverrides, [action.overrideType]: action.value },
       }));
-
-    case 'SET_MODE':
-      return { ...state, mode: action.mode };
 
     case 'APPLY_SCENE': {
       // deviceStates: { [deviceId]: boolean } applied to every room
@@ -135,16 +124,6 @@ export function homeReducer(state, action) {
           ),
         })),
       };
-    }
-
-    case 'APPLY_SCENE_TO_ROOM': {
-      const deviceStates = action.deviceStates || {};
-      return mapRoom(state, action.roomId, (r) => ({
-        ...r,
-        devices: r.devices.map((d) =>
-          deviceStates[d.deviceId] === undefined ? d : { ...d, on: deviceStates[d.deviceId] }
-        ),
-      }));
     }
 
     case 'ADD_CUSTOM_SCENE': {
@@ -184,9 +163,6 @@ export function homeReducer(state, action) {
         ),
       };
 
-    case 'SET_FLOOR_PLAN':
-      return { ...state, floorPlanImage: action.image || null };
-
     case 'SET_PLATE_CONFIG':
       return { ...state, plateConfig: action.config };
 
@@ -201,7 +177,7 @@ export function homeReducer(state, action) {
 
     // replace the plan with a saved one (browser storage or a plan link)
     case 'HYDRATE':
-      return { ...initialHome, ...action.home, plateConfig: cleanPlateConfig(action.home.plateConfig) };
+      return { ...initialHome, ...action.home, goals: cleanGoals(action.home.goals), plateConfig: cleanPlateConfig(action.home.plateConfig) };
 
     case 'RESET':
       return initialHome;

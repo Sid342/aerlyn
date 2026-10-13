@@ -1,13 +1,10 @@
 .device-info { position: relative; display: inline-flex; }
-.device-info-btn {
-  background: transparent; border: 1px solid var(--border); color: var(--text-dim);
-  width: 20px; height: 20px; border-radius: 50%; font-size: 0.7rem; line-height: 1;
-  cursor: pointer; padding: 0; flex-shrink: 0;
-}
-.device-info-btn:hover { border-color: var(--teal); color: var(--teal); }
+/* a 44px target around a small "i" */
+.device-info-btn { display: grid; place-items: center; width: 36px; height: 44px; background: none; border: none; padding: 0; }
+.device-info-btn span { display: grid; place-items: center; width: 20px; height: 20px; border: 1px solid var(--border); border-radius: 50%; color: var(--text-dim); font-size: 0.72rem; line-height: 1; }
+.device-info-btn:hover span, .device-info-btn[aria-expanded='true'] span { border-color: var(--teal); color: var(--teal); }
 .device-info-pop {
-  position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
-  width: 220px; background: var(--surface-2); border: 1px solid var(--teal);
-  border-radius: 8px; padding: 10px; font-size: 0.8rem; color: var(--text);
-  z-index: 10; box-shadow: 0 8px 24px rgba(0,0,0,0.5); pointer-events: none;
+  position: absolute; bottom: 100%; right: -8px; width: min(240px, 70vw);
+  background: var(--surface-2); border: 1px solid var(--teal); border-radius: 10px; padding: var(--s3);
+  font-size: 0.88rem; line-height: 1.45; color: var(--text); z-index: 10; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); pointer-events: none;
 }

@@ -7,11 +7,11 @@ import './ShareOptions.css';
 
 // The plan link with copy, WhatsApp and PDF. No form: nothing here is sent to Aerlyn.
 export default function ShareOptions() {
-  const { home } = useHome();
+  const { plan } = useHome();
   const [copied, setCopied] = useState(null); // null | 'copied' | 'selected'
   const linkInput = useRef(null);
   const [download, pdfFailed] = useDownload(downloadPdf);
-  const link = planLink(window.location.origin, home);
+  const link = planLink(window.location.origin, plan);
 
   async function copyLink() {
     try {
@@ -31,7 +31,7 @@ export default function ShareOptions() {
       <div className="share-actions">
         <button type="button" className="btn quiet" onClick={copyLink}>{copied === 'copied' ? 'Copied' : 'Copy link'}</button>
         <a className="btn quiet" href={whatsappShareUrl(link)} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-        <button type="button" className="btn quiet" onClick={() => download(home)}>Download PDF</button>
+        <button type="button" className="btn quiet" onClick={() => download(plan)}>Download PDF</button>
       </div>
       <div className="share-hint" role="status">
         {copied === 'selected' && 'The link is selected. Copy it with Ctrl+C or ⌘C, or press and hold on a phone.'}

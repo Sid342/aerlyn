@@ -1,46 +1,12 @@
-.switch-plan {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin-top: 10px;
-  font-size: 0.85rem;
-}
-.switch-plan-title {
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: var(--text);
-}
-.switch-plan-breakdown {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 6px;
-}
-.switch-plan-breakdown li {
-  display: flex;
-  justify-content: space-between;
-  padding: 2px 0;
-  color: var(--text-dim);
-}
-.switch-plan-breakdown li .num { font-variant-numeric: tabular-nums; color: var(--text); }
-.switch-plan-total {
-  border-top: 1px solid var(--border);
-  margin-top: 4px;
-  padding-top: 4px;
-  font-weight: 600;
-}
+.switch-plan { font-size: 0.92rem; }
+.switch-plan-breakdown { list-style: none; }
+.switch-plan-breakdown li { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); min-height: 48px; color: var(--text-dim); }
+.switch-plan-total { border-top: 1px solid var(--border); color: var(--text); }
 .switch-plan-total span { color: var(--text); }
-.switch-plan-rec { color: var(--text-dim); font-size: 0.85rem; }
-.switch-plan-rec strong { color: var(--teal); font-weight: 600; }
-.switch-plan-rec .spare { color: var(--amber); margin-left: 6px; }
-.switch-override-input {
-  width: 44px; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 4px; color: var(--text); font-size: 0.85rem;
-  text-align: center; padding: 1px 4px;
-}
-.switch-override-input:focus { border-color: var(--teal); outline: none; }
+.switch-plan-total .num { width: 64px; text-align: center; }
+.switch-plan-rec { color: var(--text-dim); padding: var(--s2) 0; }
+.switch-plan-rec strong { color: var(--text); font-weight: 600; }
+.switch-plan-rec .spare { color: var(--amber); }
+.switch-override-input { width: 64px; height: 44px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 1rem; text-align: center; }
+.switch-override-input:focus { border-color: var(--teal); }
 .switch-override-input::placeholder { color: var(--text-dim); }
-.switch-plan-design {
-  margin-top: 8px; background: none; border: 1px solid var(--teal); color: var(--teal);
-  border-radius: 6px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer;
-}

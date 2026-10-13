@@ -1,6 +1,7 @@
 import { nextId, HOME_TYPES } from '../data/templates.js';
 import { getDevice } from '../data/devices.js';
 import { hasPlate, encodePlate, decodePlate } from './plateConfig.js';
+import { ALL_GOALS, cleanGoals, goalsToBits, bitsToGoals } from './goals.js';
 
 const KEY = 'aerlyn_plan_v1';
 const VERSION = 1;
@@ -20,10 +21,11 @@ function isPlan(h) {
     && Array.isArray(h.customScenes);
 }
 
-// The part of home state that is a "plan". Deliberately leaves out floorPlanImage and mode.
+// The part of home state that is a "plan". Rooms are stored whole; `goals` says which devices show.
 function planOf(home) {
   const plan = {
     homeType: home.homeType,
+    goals: cleanGoals(home.goals),
     rooms: home.rooms,
     customScenes: home.customScenes,
     plateRoomId: home.plateRoomId ?? null,
@@ -82,6 +84,9 @@ export function encodePlan(home) {
     }),
     s: home.customScenes.map((s) => [s.name, s.icon, s.deviceStates]),
   };
+  // left out while every goal is chosen, which is also how links made before goals existed read
+  const goals = cleanGoals(home.goals);
+  if (goals.length < ALL_GOALS.length) compact.g = goalsToBits(goals);
   if (hasPlate(home.plateConfig)) {
     compact.p = encodePlate(home.plateConfig);
     compact.pr = home.rooms.findIndex((r) => r.id === home.plateRoomId);
@@ -133,6 +138,7 @@ export function decodePlan(str) {
     }));
     const plan = {
       homeType: c.t,
+      goals: c.g == null ? ALL_GOALS : bitsToGoals(c.g),
       rooms,
       customScenes: c.s.filter(Array.isArray).slice(0, MAX_SCENES).map(([name, icon, deviceStates], i) => ({
         id: `scene-link-${i}-${Math.random().toString(36).slice(2, 6)}`,

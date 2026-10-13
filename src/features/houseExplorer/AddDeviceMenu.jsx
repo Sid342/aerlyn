@@ -1,33 +1,21 @@
-import { useState } from 'react';
 import { DEVICES } from '../../data/devices.js';
 import { useHome } from '../../context/HomeContext.jsx';
+import { goalOf } from '../../lib/goals.js';
 
+// Offers what the room does not have yet, from the goals that are switched on above the plan.
 export default function AddDeviceMenu({ roomId, presentIds }) {
-  const { dispatch, actions } = useHome();
-  const [value, setValue] = useState('');
-  const available = DEVICES.filter((d) => !presentIds.includes(d.id));
+  const { home, dispatch, actions } = useHome();
+  const available = DEVICES.filter((d) => !presentIds.includes(d.id) && (goalOf(d.id) === null || home.goals.includes(goalOf(d.id))));
+  if (available.length === 0) return null;
 
   function onChange(e) {
-    const id = e.target.value;
-    if (!id) return;
-    dispatch(actions.addDevice(roomId, id));
-    setValue('');
-  }
-
-  if (available.length === 0) {
-    return <div className="add-device device-cat">All devices added.</div>;
+    if (e.target.value) dispatch(actions.addDevice(roomId, e.target.value));
   }
 
   return (
-    <div className="add-device">
-      <select value={value} onChange={onChange} aria-label="Add a device">
-        <option value="">Add a device…</option>
-        {available.map((d) => (
-          <option key={d.id} value={d.id}>
-            {d.name}
-          </option>
-        ))}
-      </select>
-    </div>
+    <select className="lead-input add-device" value="" onChange={onChange} aria-label="Add a device">
+      <option value="">Add a device…</option>
+      {available.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+    </select>
   );
 }

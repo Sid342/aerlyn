@@ -4,102 +4,58 @@ import AddDeviceMenu from './AddDeviceMenu.jsx';
 import SwitchPlanCard from './SwitchPlanCard.jsx';
 import { useHome } from '../../context/HomeContext.jsx';
 import InlineConfirm from '../shared/InlineConfirm.jsx';
-import './RoomCard.css';
 
-const SIZES = ['S', 'M', 'L'];
+const SIZES = [['S', 'Small'], ['M', 'Medium'], ['L', 'Large']];
+const count = (n) => `${n} ${n === 1 ? 'device' : 'devices'}`;
 
 export default function RoomCard({ room }) {
-  const { home, dispatch, actions } = useHome();
-  const isPlay = home.mode === 'play';
-  const [open, setOpen] = useState(!isPlay);
+  const { dispatch, actions } = useHome();
   const [removing, setRemoving] = useState(false);
-  const presentIds = room.devices.map((d) => d.deviceId);
-  const onCount = room.devices.filter((d) => d.on).length;
 
   return (
-    <div className="card room-card" id={`room-${room.id}`}>
-      <div className="room-card-head">
-        {isPlay ? (
-          <button
-            type="button"
-            className="room-name-collapse"
-            aria-expanded={open}
-            onClick={() => setOpen((o) => !o)}
-          >
-            {room.name}
-            {!open && onCount > 0 && <span className="room-on-badge">{onCount} on</span>}
-          </button>
-        ) : (
-          <input
-            className="room-name-input"
-            value={room.name}
-            onChange={(e) => dispatch(actions.renameRoom(room.id, e.target.value))}
-            aria-label="Room name"
+    <details className="room-card" id={`room-${room.id}`}>
+      <summary>
+        <span className="room-card-name">{room.name}</span>
+        <span className="room-card-count">{count(room.devices.length)}</span>
+      </summary>
+
+      <div className="room-card-body">
+        <label className="lead-field">
+          Room name
+          <input className="lead-input" value={room.name} onChange={(e) => dispatch(actions.renameRoom(room.id, e.target.value))} />
+        </label>
+
+        <div className="device-rows">
+          {room.devices.length === 0 && <p className="plan-hint">Nothing in this room yet.</p>}
+          {room.devices.map((d) => <DeviceRow key={d.deviceId} roomId={room.id} device={d} />)}
+        </div>
+        <AddDeviceMenu roomId={room.id} presentIds={room.devices.map((d) => d.deviceId)} />
+
+        <div className="room-card-actions">
+          <button type="button" className="link-btn" onClick={() => dispatch(actions.duplicateRoom(room.id))}>Duplicate room</button>
+          <button type="button" className="link-btn danger" onClick={() => setRemoving(true)}>Remove room</button>
+        </div>
+        {removing && (
+          <InlineConfirm
+            message={`Remove ${room.name} and everything in it?`}
+            confirmLabel="Remove room"
+            cancelLabel="Keep it"
+            onConfirm={() => dispatch(actions.removeRoom(room.id))}
+            onCancel={() => setRemoving(false)}
           />
         )}
-        {!isPlay && (
-          <div className="room-size-group">
-            {SIZES.map((s) => (
-              <button
-                key={s}
-                type="button"
-                className={room.size === s ? 'active' : ''}
-                aria-pressed={room.size === s}
-                onClick={() => dispatch(actions.setRoomSize(room.id, s))}
-                aria-label={`Size ${s}`}
-              >
-                {s}
-              </button>
+
+        <details className="installer">
+          <summary>Installer details</summary>
+          <div className="installer-size" role="group" aria-label="Room size">
+            <span>Room size</span>
+            {SIZES.map(([s, label]) => (
+              <button key={s} type="button" aria-pressed={room.size === s} onClick={() => dispatch(actions.setRoomSize(room.id, s))}>{label}</button>
             ))}
           </div>
-        )}
-        {!isPlay && (
-          <>
-            <button
-              type="button"
-              className="room-dup-btn"
-              aria-label={`Duplicate ${room.name}`}
-              onClick={() => dispatch(actions.duplicateRoom(room.id))}
-            >
-              Duplicate
-            </button>
-            <button
-              type="button"
-              className="room-remove-btn"
-              aria-label={`Remove ${room.name}`}
-              onClick={() => setRemoving(true)}
-            >
-              Remove
-            </button>
-          </>
-        )}
-      </div>
-      {removing && !isPlay && (
-        <InlineConfirm
-          message={`Remove ${room.name} and its devices?`}
-          confirmLabel="Remove room"
-          cancelLabel="Keep it"
-          onConfirm={() => dispatch(actions.removeRoom(room.id))}
-          onCancel={() => setRemoving(false)}
-        />
-      )}
-
-      {open && (
-        <>
           <SwitchPlanCard room={room} />
-
-          <div style={{ marginTop: 10 }}>
-            {room.devices.length === 0 && (
-              <div className="device-cat">No devices in this room yet.</div>
-            )}
-            {room.devices.map((d) => (
-              <DeviceRow key={d.deviceId} roomId={room.id} device={d} />
-            ))}
-          </div>
-
-          {!isPlay && <AddDeviceMenu roomId={room.id} presentIds={presentIds} />}
-        </>
-      )}
-    </div>
+        </details>
+      </div>
+    </details>
   );
 }

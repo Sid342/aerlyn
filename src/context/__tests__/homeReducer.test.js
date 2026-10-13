@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { homeReducer, initialHome, actions } from '../homeReducer.js';
 import { emptyPlateConfig } from '../../lib/plateConfig.js';
+import { ALL_GOALS } from '../../lib/goals.js';
 
 function withHome(type = '2BHK') {
   return homeReducer(initialHome, actions.setHomeType(type));
@@ -10,7 +11,7 @@ describe('homeReducer', () => {
   it('starts with no home type and no rooms', () => {
     expect(initialHome.homeType).toBe(null);
     expect(initialHome.rooms).toEqual([]);
-    expect(initialHome.mode).toBe('build');
+    expect(initialHome.goals).toEqual(ALL_GOALS);
   });
   it('setHomeType loads the template rooms', () => {
     const s = withHome('1BHK');
@@ -62,16 +63,16 @@ describe('homeReducer', () => {
     const s1 = homeReducer(s0, actions.removeDevice(id, dId));
     expect(s1.rooms.find((r) => r.id === id).devices.find((d) => d.deviceId === dId)).toBeUndefined();
   });
-  it('toggleDevice flips the on flag', () => {
+  it('toggleGoal switches one goal off and on again, keeping chip order and every device', () => {
     const s0 = withHome();
-    const id = s0.rooms[0].id;
-    const dId = s0.rooms[0].devices[0].deviceId;
-    const s1 = homeReducer(s0, actions.toggleDevice(id, dId));
-    expect(s1.rooms.find((r) => r.id === id).devices.find((d) => d.deviceId === dId).on).toBe(true);
+    const s1 = homeReducer(s0, actions.toggleGoal('curtains'));
+    expect(s1.goals).toEqual(ALL_GOALS.filter((g) => g !== 'curtains'));
+    expect(s1.rooms).toBe(s0.rooms);
+    expect(homeReducer(s1, actions.toggleGoal('curtains')).goals).toEqual(ALL_GOALS);
   });
-  it('setMode switches mode', () => {
-    const s1 = homeReducer(withHome(), actions.setMode('play'));
-    expect(s1.mode).toBe('play');
+  it('keeps the chosen goals when the home type changes', () => {
+    const s1 = homeReducer(homeReducer(withHome(), actions.toggleGoal('voice')), actions.setHomeType('3BHK'));
+    expect(s1.goals).not.toContain('voice');
   });
   it('reset returns to initialHome', () => {
     const s1 = homeReducer(withHome(), actions.reset());
@@ -262,37 +263,6 @@ describe('homeReducer', () => {
     });
   });
 
-  describe('APPLY_SCENE_TO_ROOM', () => {
-    it('applies scene only to specified room', () => {
-      const state = {
-        ...initialHome,
-        rooms: [
-          { id: 'r1', name: 'Living', roomType: 'living', size: 'M',
-            devices: [{ deviceId: 'cct-light', qty: 1, on: false }],
-            switchOverrides: { gang: null, fan: null, curtain: null, socket: null } },
-          { id: 'r2', name: 'Bedroom', roomType: 'bedroom', size: 'M',
-            devices: [{ deviceId: 'cct-light', qty: 1, on: false }],
-            switchOverrides: { gang: null, fan: null, curtain: null, socket: null } },
-        ],
-      };
-      const next = homeReducer(state, actions.applySceneToRoom('r1', { 'cct-light': true }));
-      expect(next.rooms[0].devices[0].on).toBe(true);
-      expect(next.rooms[1].devices[0].on).toBe(false);
-    });
-  });
-
-  describe('SET_FLOOR_PLAN', () => {
-    it('starts with no floor plan image', () => {
-      expect(initialHome.floorPlanImage).toBeNull();
-    });
-    it('stores the image and clears it with null', () => {
-      const s1 = homeReducer(withHome(), actions.setFloorPlan('data:image/png;base64,AAAA'));
-      expect(s1.floorPlanImage).toBe('data:image/png;base64,AAAA');
-      const s2 = homeReducer(s1, actions.setFloorPlan(null));
-      expect(s2.floorPlanImage).toBeNull();
-    });
-  });
-
   describe('SET_ROOM_SIZE keeps edited quantities', () => {
     // 2BHK living room (L) seeds cob-downlight ×6 and power-socket ×4
     it('re-seeds quantities the user has not touched', () => {
@@ -371,12 +341,12 @@ describe('homeReducer', () => {
       expect(s1.rooms).toBe(saved.rooms);
     });
     it('fills anything missing from the saved plan with defaults', () => {
-      const dirty = homeReducer(homeReducer(withHome(), actions.setMode('play')), actions.setFloorPlan('data:x'));
+      const dirty = homeReducer(withHome(), actions.toggleGoal('security'));
       const s1 = homeReducer(dirty, actions.hydrate({ homeType: '1BHK', rooms: [] }));
-      expect(s1.mode).toBe('build');
+      expect(s1.goals).toEqual(ALL_GOALS);
       expect(s1.customScenes).toEqual([]);
       expect(s1.plateConfig).toEqual(emptyPlateConfig);
-      expect(s1.floorPlanImage).toBeNull();
+      expect(homeReducer(dirty, actions.hydrate({ homeType: '1BHK', rooms: [], goals: ['voice', 'nope', 'lighting'] })).goals).toEqual(['lighting', 'voice']);
     });
 
     it('cleans the saved plate config, whatever shape it is in', () => {

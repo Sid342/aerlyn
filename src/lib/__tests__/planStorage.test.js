@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { savePlan, loadPlan, encodePlan, decodePlan, planOnLoad } from '../planStorage.js';
 import { homeReducer, initialHome, actions } from '../../context/homeReducer.js';
 import { emptyPlateConfig } from '../plateConfig.js';
+import { ALL_GOALS } from '../goals.js';
 
 const KEY = 'aerlyn_plan_v1';
 
@@ -20,7 +21,6 @@ function sampleHome() {
     ...emptyPlateConfig, model: 'full-glass', material: 'glass', size: 8, accessory: '8-switch-2-20a-1-socket-1-10a',
     icons: { '1.0.0': 'li-l1', '1.3.1': 'fa-f7' }, panel: 'black', frame: 'titanium', remote: true,
   }));
-  s = homeReducer(s, actions.setFloorPlan('data:image/png;base64,SECRET'));
   return { ...s, plateRoomId: s.rooms[1].id };
 }
 
@@ -46,13 +46,16 @@ describe('savePlan / loadPlan', () => {
     expect(loaded.plateRoomId).toBe(home.plateRoomId);
   });
 
-  it('never stores the floor plan image or the mode', () => {
-    savePlan({ ...sampleHome(), mode: 'play' });
-    expect(store[KEY]).not.toContain('SECRET');
-    expect(store[KEY]).not.toContain('floorPlanImage');
+  it('stores the chosen goals with every device, and reads a plan saved before goals existed as all goals', () => {
+    const home = homeReducer(sampleHome(), actions.toggleGoal('lighting'));
+    savePlan(home);
     const loaded = loadPlan();
-    expect('floorPlanImage' in loaded).toBe(false);
-    expect('mode' in loaded).toBe(false);
+    expect(loaded.goals).toEqual(ALL_GOALS.filter((g) => g !== 'lighting'));
+    expect(loaded.rooms).toEqual(home.rooms);
+
+    const { goals, ...old } = loaded;
+    store[KEY] = JSON.stringify({ v: 1, home: old });
+    expect(loadPlan().goals).toEqual(ALL_GOALS);
   });
 
   it('returns null when nothing is stored', () => {
@@ -113,12 +116,40 @@ describe('encodePlan / decodePlan', () => {
     expect(plan.plateRoomId).toBe(plan.rooms[1].id);
   });
 
-  it('resets device on-state and leaves out the floor plan image', () => {
-    let home = sampleHome();
-    home = homeReducer(home, actions.toggleDevice(home.rooms[0].id, home.rooms[0].devices[0].deviceId));
+  it('resets device on-state', () => {
+    const home = homeReducer(sampleHome(), actions.applyScene({ 'cct-light': true }));
+    expect(home.rooms.flatMap((r) => r.devices).some((d) => d.on)).toBe(true);
     const plan = decodePlan(encodePlan(home));
     expect(plan.rooms.flatMap((r) => r.devices).every((d) => d.on === false)).toBe(true);
-    expect('floorPlanImage' in plan).toBe(false);
+  });
+
+  it('carries the chosen goals as one small number, and every device so a goal can come back', () => {
+    const home = homeReducer(homeReducer(sampleHome(), actions.toggleGoal('curtains')), actions.toggleGoal('voice'));
+    const compact = JSON.parse(Buffer.from(encodePlan(home), 'base64url').toString());
+    expect(compact.g).toBe(0b011011);
+    const plan = decodePlan(encodePlan(home));
+    expect(plan.goals).toEqual(['lighting', 'climate', 'security', 'energy']);
+    expect(plan.rooms[0].devices.map((d) => d.deviceId)).toEqual(home.rooms[0].devices.map((d) => d.deviceId));
+    expect(decodePlan(encodePlan(plan)).goals).toEqual(plan.goals);
+  });
+
+  it('writes no goals while all are chosen, so the link is the same as before goals existed', () => {
+    const compact = JSON.parse(Buffer.from(encodePlan(sampleHome()), 'base64url').toString());
+    expect('g' in compact).toBe(false);
+  });
+
+  it('loads a link made before goals existed with every goal chosen', () => {
+    const old = Buffer.from(JSON.stringify({ v: 1, t: '2BHK', r: [['Living Room', 'living', 'L', [['cct-light', 2], ['curtain', 2, 1]]]], s: [] })).toString('base64url');
+    const plan = decodePlan(old);
+    expect(plan.goals).toEqual(ALL_GOALS);
+    expect(plan.rooms[0].devices).toEqual([{ deviceId: 'cct-light', qty: 2, on: false }, { deviceId: 'curtain', qty: 2, on: false, edited: true }]);
+  });
+
+  it('drops goal bits it does not know', () => {
+    const link = Buffer.from(JSON.stringify({ v: 1, t: '1BHK', r: [], s: [], g: 0b11000001 })).toString('base64url');
+    expect(decodePlan(link).goals).toEqual(['lighting']);
+    const junk = Buffer.from(JSON.stringify({ v: 1, t: '1BHK', r: [], s: [], g: 'x' })).toString('base64url');
+    expect(decodePlan(junk).goals).toEqual([]);
   });
 
   it('omits the plate when none has been designed', () => {
@@ -130,8 +161,7 @@ describe('encodePlan / decodePlan', () => {
   it('the decoded plan hydrates the reducer', () => {
     const s = homeReducer(initialHome, actions.hydrate(decodePlan(encodePlan(sampleHome()))));
     expect(s.homeType).toBe('1BHK');
-    expect(s.mode).toBe('build');
-    expect(s.floorPlanImage).toBeNull();
+    expect(s.goals).toEqual(ALL_GOALS);
   });
 
   it('returns null for garbage or another version', () => {

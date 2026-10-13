@@ -11,7 +11,7 @@ import './LeadModal.css';
 
 // The appointment form. With a plan it sends the whole plan; from a product page it sends the product name.
 export default function LeadModal({ product, onClose }) {
-  const { home } = useHome();
+  const { home, plan } = useHome();
   const withPlan = !product && !!home.homeType;
   const [form, setForm] = useState({ name: '', phone: '', city: '', notes: '', _gotcha: '' });
   const [errors, setErrors] = useState({});
@@ -26,7 +26,7 @@ export default function LeadModal({ product, onClose }) {
   }, [sent]);
 
   function set(field, value) { setForm((f) => ({ ...f, [field]: value })); }
-  const link = () => planLink(window.location.origin, home);
+  const link = () => planLink(window.location.origin, plan);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -36,7 +36,7 @@ export default function LeadModal({ product, onClose }) {
     const contact = { name: form.name.trim(), phone, city: form.city.trim(), notes: form.notes.trim(), _gotcha: form._gotcha };
     setSubmitting(true);
     const { ok } = withPlan
-      ? await submitLead('plan', planLeadFields(home, contact, link()))
+      ? await submitLead('plan', planLeadFields(plan, contact, link()))
       : await submitLead('visit', visitLeadFields(contact, product));
     setSubmitting(false);
     setStatus(ok ? contact : 'failed');

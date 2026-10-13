@@ -51,32 +51,6 @@ button { font-family: var(--font-body); cursor: pointer; }
 .btn.quiet { background: transparent; color: var(--text); border-color: var(--border); font-weight: 500; }
 .btn.quiet:hover:not(:disabled) { background: transparent; border-color: var(--teal); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 18px;
-}
-@media (max-width: 600px) {
-  .room-card-head { gap: 8px; }
-  .htp-btn { padding: 12px 16px; }
-}
-@media (max-width: 420px) {
-  .htp { flex-direction: column; }
-  .htp-btn { width: 100%; }
-}
-
-/* Mobile — drawer + SVG + scene strip */
-@media (max-width: 480px) {
-  .house-svg-wrap { margin: 8px 0 4px; }
-  .scene-pills { gap: 6px; }
-  .scene-btn { padding: 5px 10px; font-size: 12px; }
-  .drawer { max-height: 72vh; }
-}
-@media (max-width: 360px) {
-  .scene-btn { padding: 4px 8px; font-size: 11px; }
-}
-
 /* Visible keyboard focus on every control, including ones that reset `outline`. */
 a:focus-visible, button:focus-visible, summary:focus-visible, select:focus-visible,
 input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {

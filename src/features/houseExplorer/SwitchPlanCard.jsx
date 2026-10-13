@@ -19,18 +19,17 @@ const ROWS = [
   { key: 'socket', label: 'Charging sockets' },
 ];
 
+// For the installer: the wall modules the room's devices need, each count overridable.
 export default function SwitchPlanCard({ room }) {
-  const { home, dispatch, actions } = useHome();
+  const { dispatch, actions } = useHome();
   const auto = computeRoomPoints(room);
   const overrides = room.switchOverrides || {};
-  const plan = { ...applyOverrides(auto, overrides), ...recommendPlates(applyOverrides(auto, overrides).total) };
-  if (auto.total === 0 && Object.values(overrides).every((v) => v == null)) return null;
-
-  const isBuild = home.mode === 'build';
+  const points = applyOverrides(auto, overrides);
+  const plan = { ...points, ...recommendPlates(points.total) };
 
   function designPlate() {
     dispatch(actions.designPlate(room.id, Math.max(...plan.plates)));
-    document.getElementById('plate-designer')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('plate-designer')?.scrollIntoView();
   }
 
   function handleOverride(key, raw) {
@@ -41,33 +40,22 @@ export default function SwitchPlanCard({ room }) {
 
   return (
     <div className="switch-plan">
-      <div className="switch-plan-title">Switch plan</div>
       <ul className="switch-plan-breakdown">
-        {ROWS.map(({ key, label }) => {
-          const autoVal = auto[key];
-          const overVal = overrides[key];
-          const displayVal = overVal != null ? overVal : autoVal;
-          if (displayVal === 0 && !isBuild) return null;
-          if (!isBuild && autoVal === 0 && overVal == null) return null;
-          return (
-            <li key={key}>
-              <span>{label}</span>
-              {isBuild ? (
-                <input
-                  className="switch-override-input"
-                  type="number"
-                  min="0"
-                  placeholder={autoVal}
-                  value={overVal != null ? overVal : ''}
-                  onChange={(e) => handleOverride(key, e.target.value)}
-                  aria-label={`Override ${label}`}
-                />
-              ) : (
-                <span className="num">{displayVal}</span>
-              )}
-            </li>
-          );
-        })}
+        {ROWS.map(({ key, label }) => (
+          <li key={key}>
+            <label htmlFor={`${room.id}-${key}`}>{label}</label>
+            <input
+              id={`${room.id}-${key}`}
+              className="switch-override-input"
+              type="number"
+              inputMode="numeric"
+              min="0"
+              placeholder={auto[key]}
+              value={overrides[key] != null ? overrides[key] : ''}
+              onChange={(e) => handleOverride(key, e.target.value)}
+            />
+          </li>
+        ))}
         <li className="switch-plan-total">
           <span>Total modules</span>
           <span className="num">{plan.total}</span>
@@ -78,9 +66,7 @@ export default function SwitchPlanCard({ room }) {
         {plan.spareModules > 0 && <span className="spare"> (spare: {plan.spareModules})</span>}
       </div>
       {plan.plates.length > 0 && (
-        <button type="button" className="switch-plan-design" onClick={designPlate}>
-          Design this plate
-        </button>
+        <button type="button" className="link-btn" onClick={designPlate}>Design this plate</button>
       )}
     </div>
   );

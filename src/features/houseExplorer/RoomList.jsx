@@ -1,17 +1,21 @@
 import { useState } from 'react';
 import RoomCard from './RoomCard.jsx';
 import { useHome } from '../../context/HomeContext.jsx';
+import './RoomCard.css';
 
-const ROOM_TYPES = ['living', 'bedroom', 'kitchen', 'bath', 'entrance', 'balcony', 'other'];
+const ROOM_TYPES = [
+  ['living', 'Living room'], ['bedroom', 'Bedroom'], ['kitchen', 'Kitchen'], ['bath', 'Bathroom'],
+  ['entrance', 'Entrance'], ['balcony', 'Balcony'], ['other', 'Other'],
+];
 
+// The detailed editor behind "Customise": open a room to change what is in it.
 export default function RoomList() {
   const { home, dispatch, actions } = useHome();
   const [newName, setNewName] = useState('');
   const [newType, setNewType] = useState('other');
 
-  if (!home.homeType) return null;
-
-  function addRoom() {
+  function addRoom(e) {
+    e.preventDefault();
     const name = newName.trim();
     if (!name) return;
     dispatch(actions.addRoom(name, newType));
@@ -20,49 +24,20 @@ export default function RoomList() {
   }
 
   return (
-    <div style={{ marginTop: 20 }}>
-      <h3>Your rooms</h3>
-      <p style={{ color: 'var(--text-dim)', margin: '4px 0 8px' }}>
-        Each room starts with the devices it usually needs. Change anything.
-      </p>
+    <div className="editor">
+      <p className="plan-hint">Open a room to change what goes in it.</p>
+      {home.rooms.map((room) => <RoomCard key={room.id} room={room} />)}
 
-      {home.rooms.map((room) => (
-        <RoomCard key={`${room.id}-${home.mode}`} room={room} />
-      ))}
-
-      {home.mode === 'build' && (
-        <div className="card room-card" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <input
-            className="room-name-input"
-            placeholder="New room name"
-            aria-label="New room name"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && addRoom()}
-          />
-          <select
-            value={newType}
-            onChange={(e) => setNewType(e.target.value)}
-            aria-label="Room type"
-            style={{
-              background: 'var(--surface-2)',
-              border: '1px solid var(--border)',
-              color: 'var(--text)',
-              borderRadius: 8,
-              padding: '0 10px',
-            }}
-          >
-            {ROOM_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-          <button type="button" className="htp-btn" onClick={addRoom}>
-            Add room
-          </button>
-        </div>
-      )}
+      <form className="add-room" onSubmit={addRoom}>
+        <label className="lead-field">
+          Add a room
+          <input className="lead-input" placeholder="Room name" value={newName} onChange={(e) => setNewName(e.target.value)} />
+        </label>
+        <select className="lead-input" value={newType} onChange={(e) => setNewType(e.target.value)} aria-label="Kind of room">
+          {ROOM_TYPES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+        </select>
+        <button type="submit" className="btn quiet">Add room</button>
+      </form>
     </div>
   );
 }

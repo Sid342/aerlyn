@@ -1,53 +1,45 @@
 import { useState } from 'react';
-import { HOME_TYPES } from '../../data/templates.js';
+import { HOME_TYPES, TEMPLATES } from '../../data/templates.js';
 import { useHome } from '../../context/HomeContext.jsx';
+import { isCustomised } from '../../lib/planSummary.js';
 import InlineConfirm from '../shared/InlineConfirm.jsx';
-import './HomeTypePicker.css';
 
 export default function HomeTypePicker() {
-  const { home, dispatch, actions } = useHome();
-
+  const { home, plan, dispatch, actions } = useHome();
   const [pending, setPending] = useState(null); // home type waiting for a confirm
 
-  function pick(type) {
-    if (home.homeType && home.homeType !== type) {
-      setPending(type);
-      return;
-    }
+  function choose(type) {
     setPending(null);
     dispatch(actions.setHomeType(type));
+    document.getElementById('planner').scrollIntoView();
   }
 
-  function confirmSwitch() {
-    dispatch(actions.setHomeType(pending));
-    setPending(null);
+  // One tap, unless that would throw away rooms the visitor has edited.
+  function pick(type) {
+    if (type === home.homeType) return;
+    if (home.homeType && isCustomised(plan)) setPending(type);
+    else choose(type);
   }
 
   return (
-    <div>
-      <p className="htp-hint">Tap the closest one. You can change the rooms after.</p>
-      <div className="htp">
+    <>
+      <div className="tiles">
         {HOME_TYPES.map((t) => (
-          <button
-            key={t}
-            type="button"
-            className={`htp-btn${home.homeType === t ? ' active' : ''}`}
-            aria-pressed={home.homeType === t}
-            onClick={() => pick(t)}
-          >
-            {t}
+          <button key={t} type="button" className="tile" aria-pressed={home.homeType === t} onClick={() => pick(t)}>
+            <span className="tile-name">{t}</span>
+            <span className="tile-rooms">{TEMPLATES[t].length} rooms</span>
           </button>
         ))}
       </div>
       {pending && (
         <InlineConfirm
-          message={`Switching to ${pending} rebuilds the room list.`}
-          confirmLabel={`Switch to ${pending}`}
+          message={`Changing to ${pending} replaces the rooms you have edited.`}
+          confirmLabel={`Change to ${pending}`}
           cancelLabel="Keep my rooms"
-          onConfirm={confirmSwitch}
+          onConfirm={() => choose(pending)}
           onCancel={() => setPending(null)}
         />
       )}
-    </div>
+    </>
   );
 }

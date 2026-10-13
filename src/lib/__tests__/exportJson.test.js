@@ -5,7 +5,7 @@ import { homeReducer, initialHome, actions } from '../../context/homeReducer.js'
 
 function sampleHome() {
   let s = homeReducer(initialHome, actions.setHomeType('1BHK'));
-  s = homeReducer(s, actions.toggleDevice(s.rooms[0].id, s.rooms[0].devices[0].deviceId));
+  s = homeReducer(s, actions.applyScene({ [s.rooms[0].devices[0].deviceId]: true }));
   return s;
 }
 
@@ -97,9 +97,14 @@ describe('buildExportPayload', () => {
       accessories: [{ name: '4 Switch', modules: 'Modules 1–2', icons: ['Switch 2: Fan F7'] }],
     });
   });
-  it('never includes the floor plan image', () => {
-    const home = homeReducer(sampleHome(), actions.setFloorPlan('data:image/png;base64,SECRET'));
-    expect(JSON.stringify(buildExportPayload(home))).not.toContain('SECRET');
+  it('says what the customer wants and leaves out the devices of goals that are switched off', () => {
+    expect(buildExportPayload(sampleHome()).wants).toEqual(['Lighting', 'Fans & AC', 'Curtains', 'Security', 'Geyser & energy', 'Voice & music']);
+    const p = buildExportPayload(homeReducer(sampleHome(), actions.toggleGoal('curtains')));
+    expect(p.wants).not.toContain('Curtains');
+    const living = p.rooms[0];
+    expect(living.devices.some((d) => d.deviceId === 'curtain')).toBe(false);
+    expect(living.devices.some((d) => d.deviceId === 'power-socket')).toBe(true);
+    expect(living.switchPlan.curtain).toBe(0);
   });
   it('each room has switchPlan with expected fields', () => {
     const p = buildExportPayload(sampleHome());

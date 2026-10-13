@@ -1,0 +1,59 @@
+.planner { padding-top: 0; }
+
+/* home tiles */
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s3); }
+.tile { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; min-height: 88px; padding: var(--s4) var(--s5); background: var(--surface); border: 1px solid var(--border); border-radius: 14px; color: var(--text); text-align: left; transition: border-color 0.15s, background-color 0.15s; }
+.tile:hover { border-color: var(--teal); }
+.tile[aria-pressed='true'] { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 10%, var(--surface)); box-shadow: inset 0 0 0 1px var(--teal); }
+.tile-name { font-family: var(--font-head); font-size: 1.6rem; line-height: 1.1; }
+.tile-rooms { color: var(--text-dim); font-size: 0.9rem; }
+
+/* the plan */
+.plan { margin-top: var(--s5); background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: var(--s6); }
+.plan-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s4) var(--s5); flex-wrap: wrap; padding-bottom: var(--s5); margin-bottom: var(--s5); border-bottom: 1px solid var(--border); }
+.plan-head h3 { font-size: 1.6rem; line-height: 1.2; }
+.plan-head p { color: var(--text-dim); margin-top: var(--s1); }
+.plan-hint { color: var(--text-dim); font-size: 0.95rem; margin-bottom: var(--s3); }
+
+.chips { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.chip { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 var(--s4) 0 var(--s3); background: transparent; border: 1px solid var(--border); border-radius: 22px; color: var(--text-dim); font-size: 0.95rem; transition: border-color 0.15s, background-color 0.15s, color 0.15s; }
+.chip svg { opacity: 0; }
+.chip[aria-pressed='true'] { background: color-mix(in srgb, var(--teal) 14%, transparent); border-color: var(--teal); color: var(--text); }
+.chip[aria-pressed='true'] svg { opacity: 1; color: var(--teal); }
+.chip[aria-pressed='false'] { text-decoration: line-through; }
+.chip:hover { border-color: var(--teal); }
+
+.plan-lines { list-style: none; margin-top: var(--s5); border-top: 1px solid var(--border); }
+.plan-lines li { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: var(--s1) var(--s5); padding: var(--s3) 0; border-bottom: 1px solid var(--border); line-height: 1.5; }
+.plan-room { font-weight: 600; overflow-wrap: anywhere; }
+.plan-what { color: var(--text-dim); }
+
+.plan-links { display: flex; flex-wrap: wrap; gap: 0 var(--s5); margin-top: var(--s4); }
+.plan-links button, .plan-links a { display: inline-flex; align-items: center; min-height: 44px; background: none; border: none; padding: 0; color: var(--teal); font-family: var(--font-body); font-size: 0.98rem; text-decoration: underline; text-underline-offset: 3px; }
+.plan-links button[aria-expanded='true'] { color: var(--text); text-decoration: none; font-weight: 600; }
+.plan-panel { margin-top: var(--s4); padding-top: var(--s5); border-top: 1px solid var(--border); }
+
+/* see it in action */
+.demo-scenes { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.demo-scenes .btn { min-height: 44px; padding: 0 var(--s4); font-size: 0.95rem; }
+.demo-off { margin-left: auto; color: var(--text-dim); }
+.house { margin-top: var(--s5); }
+.house-roof { display: block; width: 100%; height: 36px; overflow: visible; }
+.house-roof polyline { fill: none; stroke: var(--teal); stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.house-rooms { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s2); border: 1px solid var(--border); border-top: none; border-radius: 0 0 12px 12px; padding: var(--s3); }
+.house-rooms li { display: flex; flex-direction: column; gap: var(--s1); min-height: 92px; padding: var(--s3); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; transition: background-color 0.3s, border-color 0.3s; }
+.house-rooms li.lit { background: color-mix(in srgb, var(--amber) 12%, var(--bg)); border-color: var(--amber); }
+.house-room { font-weight: 600; font-size: 0.95rem; overflow-wrap: anywhere; }
+.house-on { color: var(--text-dim); font-size: 0.85rem; line-height: 1.4; }
+.lit .house-on { color: var(--text); }
+
+@media (max-width: 760px) {
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tile { min-height: 76px; padding: var(--s3) var(--s4); }
+  .plan { padding: var(--s5) var(--s4); }
+  .plan-head .btn { display: none; } /* the bar at the bottom of the screen has the same button */
+  .plan-head { padding-bottom: var(--s4); margin-bottom: var(--s4); }
+  .plan-lines li { grid-template-columns: minmax(0, 1fr); }
+  .house-rooms { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .demo-off { margin-left: 0; }
+}
