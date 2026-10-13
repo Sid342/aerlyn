@@ -137,6 +137,50 @@ fallback if `whatsapp` is configured. Formspree emails the submission to the bus
   plan asks before replacing it.
 - The uploaded floor-plan image stays in memory only; it is not stored and not sent.
 
+## 7a. Touch plate designer
+
+Lives below the planner on the landing page (`src/features/touchPlate/`); opened for a room by
+"Design this plate" on its switch-plan card, which presets the plate size and puts the room's
+name in the heading and the PDF.
+
+- **One model, two renderers.** `src/lib/plateLayout.js` (pure, tested) turns a plate config
+  into abstract-unit rectangles: the plate, each accessory, every button and its symbol. The
+  on-screen SVG (`PlatePreview.jsx`) and the PDF (`src/lib/exportPlatePdf.js`) both draw from it.
+  Change geometry there, not in a renderer.
+- **Data:** `src/data/plateAccessories.js` (plate sizes, colours, profile/finish/frame options,
+  the accessory catalogue) and `src/data/plateIcons.js` (line symbols as polylines and circles in
+  a 24-unit box, so SVG and jsPDF draw the same shapes; no icon library, no emoji).
+- **Accessory names are parsed** into controls ("8 Switch 1 Socket (1-10A)" -> 8 switch buttons
+  + 1 socket). A test iterates the whole catalogue; a new accessory name must use the words
+  Switch / Fan / Curtain / Socket or it draws nothing.
+- **Steps:** Size, Colour, Profile, Accessories, Icons, Finish (panel + frame), Summary. The
+  Icons step is skipped when the plate has no switch buttons. The preview is on every step —
+  beside the step from 900 px, above it below that.
+- **Icons are per switch button**, stored as `icons: { '<accessoryId>.<switchIndex>': '<iconId>' }`.
+  Accessory ids are `a<first module>`. Anything that is not a known icon id is dropped on load
+  (`fullPlateConfig`), which is how plans saved with the old emoji icons open — without icons.
+- **Plan link:** the plate is a compact array `[modules, colour, profile, finish, frame,
+  [[accessory, first module]…], icons]`; accessories must be in the catalogue. The older object
+  form is still accepted.
+- **Lead payload:** `plate.accessories` is `[{ name, modules: 'Modules 1–7', icons: ['Switch 3: Fan'] }]`.
+- **PDF:** title, room, en-IN date, vector drawing of the plate, specification table,
+  accessories table, footer with the site address. Text passes through `pdfSafe` — jsPDF's
+  Helvetica only encodes WinAnsi, so emoji or Devanagari in a room name are removed, not printed
+  as garbage. The PDF does not draw the gloss/satin sheen (it is listed in the table).
+- 12-module plates are two rows of six; an accessory is never placed across the two rows.
+
+**Open questions for the owner — nothing here was invented:**
+
+- The Profile step used to say "Standard 86 × 86 mm" and "Slim 86 × 50 mm". Those cannot be
+  right for 4- to 12-module plates and their source is unknown, so the figures were removed from
+  the UI and PDF. What do Standard and Slim actually mean, and what are the real sizes?
+- "Rounded — 4 mm corner radius" was likewise reworded to "Soft corners". Confirm the radius if
+  it should be stated.
+- The drawing is a schematic ("Illustration only — not to scale"): button arrangement inside an
+  accessory (two switches per column, fan and socket double width) is a drawing convention, not
+  taken from product drawings. Supply real artwork or layouts if it should match the product.
+- Colour swatch hex codes and the accessory catalogue are unchanged from before and unverified.
+
 ## 8. Analytics
 
 Vercel Web Analytics, loaded from `/_vercel/insights/script.js` in `index.html` (no
@@ -190,6 +234,10 @@ landing pages.
 ## 13. Not verified
 
 - Lighthouse was not run (no CLI installed; not added as a dependency).
+- Plate designer (branch `feat/plate-designer-preview`): checked in Chrome at 1512 px and in
+  360 / 400 / 500 px iframes (no horizontal scroll on any step); Black, White, Titanium and Gray
+  plates; 2-, 8- and 12-module plates. PDFs for an 8- and a 12-module plate were generated and
+  read. Not checked: a physical phone, a screen reader, Safari/Firefox, or a printed PDF.
 - The PDF-failure message is unit-tested but was not reproduced offline in a browser.
 - Browser checks were at 500 px (the narrowest the Chrome window allows) plus 400 px and
   360 px iframes; not on a physical phone, and not with a screen reader.
