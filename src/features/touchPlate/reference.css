@@ -1,0 +1,87 @@
+/* Plate rendering rules copied from the reference configurator's stylesheet
+   (https://touch.feturtles.com/static/css/main.251d01ce.css), each scoped under .tpd-ref.
+   Only the plate's rules; the Tailwind utilities that sat between them were left out.
+   Aerlyn's own additions live in TouchPlateDesigner.css. */
+.tpd-ref .module-black { background-color:#000 }
+.tpd-ref .module-fsilver { border:5px solid #ddd }
+.tpd-ref .module-2 { height:94.996mm; width:119.126mm }
+.tpd-ref .module-4 { height:96.901mm; width:151.892mm }
+.tpd-ref .module-6 { height:98.8mm; width:233mm }
+.tpd-ref .module-8 { height:100.965mm; width:251.969mm }
+.tpd-ref .module-12 { height:151.892mm; width:233.934mm }
+.tpd-ref .module-display { align-items:center; border-radius:8mm; display:flex; justify-content:center; transform:scale(.75) }
+.tpd-ref .sub-module-2 { height:78.994mm; width:77.216mm }
+.tpd-ref .sub-module-2, .tpd-ref .sub-module-4 { border:1px solid #aaa; display:flex; justify-content:center; text-align:center }
+.tpd-ref .sub-module-4 { height:54.61mm; width:132.08mm }
+.tpd-ref .sub-module-6 { justify-content:flex-start; padding-left:11.625mm }
+.tpd-ref .sub-module-6, .tpd-ref .sub-module-8 { border:1px solid #aaa; display:flex; height:70.358mm; text-align:center; width:179.197mm }
+.tpd-ref .sub-module-8 { justify-content:center }
+.tpd-ref .sub-module-12 { border:1px solid #aaa; height:123.698mm; width:187.071mm }
+.tpd-ref .sub-module-12, .tpd-ref .switch { display:flex; justify-content:center; text-align:center }
+.tpd-ref .switch { height:100%; width:140px }
+.tpd-ref .scene4 { height:100%; text-align:center }
+.tpd-ref .nodeSize, .tpd-ref .scene4 { display:flex; justify-content:center }
+.tpd-ref .nodeSize { align-items:center; flex-direction:column; gap:8.32mm; width:24.807mm }
+.tpd-ref .nodeSize>.curtainImage, .tpd-ref .nodeSize>.sixampImage, .tpd-ref .nodeSize>.socket16amp, .tpd-ref .nodeSize>.switch2Image, .tpd-ref .nodeSize>.switch2ImageDimmer, .tpd-ref .nodeSize>.switch2ImageFan { left:0; right:0; top:0 }
+.tpd-ref .nodeSize:has(>.switch2Imagesubnode1) { gap:35px }
+.tpd-ref .nodeSize>.sixampImage, .tpd-ref .nodeSize>.socket16amp { left:16.147mm; top:-1.112mm }
+.tpd-ref .scene6 { display:flex; height:100%; justify-content:center; text-align:center }
+.tpd-ref .switch2Image { background-position:50%; background-repeat:no-repeat; background-size:cover; border:1px solid #fff; border-radius:50%; height:12mm; position:relative; width:12mm }
+.tpd-ref .node-icon, .tpd-ref .switch2Image { align-items:center; display:flex; justify-content:center }
+.tpd-ref .node-icon { line-height:0 }
+.tpd-ref .node-icon>svg { display:block; height:7.07mm; width:7.07mm }
+.tpd-ref .curtainImage { background-image:url(./media/curtain.png); background-position:50%; background-repeat:no-repeat; background-size:contain; height:145px; position:relative; width:140px }
+.tpd-ref .sixampImage { background-image:url(./media/socket-3pin-10a.svg); background-size:100% 100%; height:26.5mm; width:24.8mm }
+.tpd-ref .sixampImage, .tpd-ref .socket16amp { background-position:50%; background-repeat:no-repeat; position:relative; right:5mm; top:5mm }
+.tpd-ref .socket16amp { background-image:url(./media/socket-16a.png); background-size:contain; height:145px; width:140px }
+.tpd-ref .switch2Imagesubnode1 { left:25px; top:15px }
+.tpd-ref .scene610-1subnode1 { left:5.938mm; top:4.9985mm }
+.tpd-ref .scene610-1subnode2 { left:5.938mm; top:17.0015mm }
+.tpd-ref .scene610-2subnode1 { left:5.938mm; top:4.9985mm }
+.tpd-ref .scene610-2subnode2 { left:5.938mm; top:17.0015mm }
+.tpd-ref .scene610-3subnode1 { left:5.938mm; top:4.9985mm }
+.tpd-ref .scene610-3subnode2 { left:5.938mm; top:17.0015mm }
+.tpd-ref .scene610-4subnode1 { left:5.938mm; top:4.9985mm }
+.tpd-ref .scene610-4subnode2 { left:5.938mm; top:17.0015mm }
+.tpd-ref .scene610-5subnode1 { left:5.938mm; top:4.9985mm }
+.tpd-ref .scene610-5subnode2 { left:5.938mm; top:17.0015mm }
+.tpd-ref .scene610-6subnode1 { left:5.938mm; top:4.9985mm }
+.tpd-ref .scene610-6subnode2 { left:5.938mm; top:17.0015mm }
+.tpd-ref .scene6-1subnode1 { right:-20px; top:15px }
+.tpd-ref .scene6-1subnode2 { right:-20px; top:60px }
+.tpd-ref .scene6-2subnode1 { right:-20px; top:15px }
+.tpd-ref .scene6-2subnode2 { right:-20px; top:60px }
+.tpd-ref .scene6-3subnode1 { right:-20px; top:15px }
+.tpd-ref .scene6-3subnode2 { right:-20px; top:60px }
+.tpd-ref .scene4f-1subnode1 { right:-20px; top:15px }
+.tpd-ref .scene4f-1subnode2 { right:-20px; top:60px }
+.tpd-ref .scene4f-2subnode1 { right:-10px; top:15px }
+.tpd-ref .scene4f-2subnode2 { right:-10px; top:60px }
+.tpd-ref .scene4f-subnodef { right:-35px }
+.tpd-ref .scene4f-subnoded { right:-50px }
+.tpd-ref .scene8f-subnodef { right:-100px }
+.tpd-ref .scene8f-subnoded { right:-110px }
+.tpd-ref .scene8f1-subnodef { right:0 }
+.tpd-ref .scene8f1-subnoded { right:-10px }
+.tpd-ref .scene8f2-subnodef { right:-25px }
+.tpd-ref .scene8f2-subnoded { right:-40px }
+.tpd-ref .scene44-1subnode1 { right:-20px; top:15px }
+.tpd-ref .scene44-1subnode2 { right:-20px; top:60px }
+.tpd-ref .scene44-2subnode1 { right:-20px; top:15px }
+.tpd-ref .scene44-2subnode2 { right:-20px; top:60px }
+.tpd-ref .scene4-1subnode1 { right:-20px; top:15px }
+.tpd-ref .scene4-1subnode2 { right:-20px; top:60px }
+.tpd-ref .scene4-2subnode1 { right:-20px; top:15px }
+.tpd-ref .scene4-2subnode2 { right:-20px; top:60px }
+.tpd-ref .switch2Imagesubnode2 { left:25px; top:50px }
+.tpd-ref .switch2ImageFansubnode1 { top:60px }
+.tpd-ref .switch2ImageFan { align-items:center; background-position:50%; background-repeat:no-repeat; background-size:cover; border:1px solid #fff; border-radius:16px; display:flex; height:30px; justify-content:center; position:relative; width:30px }
+.tpd-ref .switch2ImageDimmer { background:url(./media/dimmer.png); background-position:50%; background-repeat:no-repeat; background-size:cover; border-radius:14px; height:150px; position:relative; width:40px }
+.tpd-ref .snapon-surface { background:#0000 }
+.tpd-ref .snapon-btn { background-image:url(./media/vertical-line.svg); background-position:50%; background-repeat:no-repeat; background-size:cover; border-radius:50%; box-sizing:border-box }
+.tpd-ref .snapon-btn-svg { align-items:center; display:flex; height:100%; justify-content:center; width:100% }
+.tpd-ref .snapon-btn-svg img, .tpd-ref .snapon-btn-svg svg { height:100%; object-fit:contain; width:100% }
+.tpd-ref .snapon-static-circle { border:1.5px solid #fff; border-radius:50%; box-sizing:border-box }
+.tpd-ref .snapon-static-circle.socket-big { border-width:2px }
+.tpd-ref .snapon-earth-pin { border:1.5px solid #fff; border-radius:40% 40% 50% 50%/30% 30% 70% 70%; box-sizing:border-box }
+.tpd-ref .snapon-scale { align-items:center; display:flex; justify-content:center; transform:scale(.75); transform-origin:center center }

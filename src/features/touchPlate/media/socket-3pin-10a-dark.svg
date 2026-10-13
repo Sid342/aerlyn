@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="24.8" height="26.5" viewBox="0 0 24.8 26.5">
+  <!-- 3-pin socket, taken from PCB_PCB_Magnatic-touch-Alison-v2.json.
+       EasyEDA units are 10 mil (0.254 mm):
+         earth pad  CIRCLE r=15.748u = 4.000mm  at (4699.808, 2794.087)
+         pin pads   ARC    r=11.811u = 3.000mm  at (4662.798, 2870.859)
+                                              and (4736.814, 2870.859)
+       => pins 18.800mm apart, 19.500mm below the earth pad, earth centred
+          on them. Bounding box is exactly 24.8 x 26.5mm, so viewBox units
+          are millimetres 1:1. -->
+  <circle cx="12.4" cy="4"    r="4" fill="none" stroke="#1c1c22" stroke-width="0.2"/>
+  <circle cx="3"    cy="23.5" r="3" fill="none" stroke="#1c1c22" stroke-width="0.2"/>
+  <circle cx="21.8" cy="23.5" r="3" fill="none" stroke="#1c1c22" stroke-width="0.2"/>
+</svg>

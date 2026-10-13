@@ -1,0 +1,7 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="3.79 3.79 182.33 182.33" width="182.33" height="182.33">
+	<title>Square Shape</title>
+	<style>
+		.s0 { fill: none; stroke: #009adc; stroke-miterlimit: 100; stroke-width: 15; }
+	</style>
+	<rect id="Background" x="15" y="15" width="160" height="160" class="s0" />
+</svg>

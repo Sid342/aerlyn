@@ -1,0 +1,7 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="22.46 24.92 130.17 130.17" width="130.17" height="130.17">
+	<title>Horizontal Line</title>
+	<style>
+		.s0 { fill: none; stroke: #009adc; stroke-miterlimit: 100; stroke-width: 15; }
+	</style>
+	<line id="Line" x1="25" y1="90" x2="150" y2="90" class="s0" />
+</svg>
