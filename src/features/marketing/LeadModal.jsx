@@ -45,7 +45,7 @@ export default function LeadModal({ phone: initialPhone, product, onClose }) {
   return (
     <div className="lead-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="lead-modal" role="dialog" aria-modal="true" aria-labelledby="lead-modal-title" ref={dialog} tabIndex={-1}>
-        <h3 id="lead-modal-title">Book your free home visit</h3>
+        <h3 id="lead-modal-title">Book an appointment</h3>
         <p className="lead-modal-sub">We'll call you to schedule. No obligation.</p>
         {status === 'ok' ? (
           <div className="lead-success" role="status">
@@ -81,7 +81,7 @@ export default function LeadModal({ phone: initialPhone, product, onClose }) {
             )}
             <div className="lead-modal-actions">
               <button type="button" className="lead-cancel" onClick={onClose}>Cancel</button>
-              <button type="submit" className="lead-submit" disabled={submitting}>{submitting ? 'Sending…' : failed ? 'Try again' : 'Book free visit'}</button>
+              <button type="submit" className="lead-submit" disabled={submitting}>{submitting ? 'Sending…' : failed ? 'Try again' : 'Book an appointment'}</button>
             </div>
           </form>
         )}

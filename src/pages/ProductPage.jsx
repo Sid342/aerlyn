@@ -21,7 +21,7 @@ export default function ProductPage({ route }) {
         <p className="page-muted">{p.tagline}</p>
 
         <div className="product-actions">
-          <button type="button" className="btn-cta" onClick={() => setBooking(true)}>Book a free home visit</button>
+          <button type="button" className="btn-cta" onClick={() => setBooking(true)}>Book an appointment</button>
           <a className="btn-cta secondary" href="/#planner">Plan your home</a>
         </div>
         <p className="page-muted">{site.brand} products are supplied and installed through a home visit. Pricing is shared in your free quote.</p>

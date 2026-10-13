@@ -14,7 +14,7 @@ export default function ContactCTA() {
           <p className="contact-body-text">Book a free home consultation. Our expert comes to you, reviews your requirements, and designs a solution that fits your home, your lifestyle, and your budget. Completely free. Zero obligation.</p>
           <div className="contact-form">
             <input type="tel" inputMode="tel" autoComplete="tel" aria-label="Your phone number" className="contact-input" placeholder="Your phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
-            <button type="button" className="contact-submit" onClick={() => setModalOpen(true)}>Book free visit</button>
+            <button type="button" className="contact-submit" onClick={() => setModalOpen(true)}>Book an appointment</button>
           </div>
         </div>
       </section>

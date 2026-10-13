@@ -127,7 +127,7 @@ export default function SavePlanModal({ onClose }) {
             ) : (
               <>
                 <button type="button" className="save-btn" onClick={bookVisit} disabled={visit === 'sending'}>
-                  {visit === 'sending' ? 'Sending…' : visit === 'failed' ? 'Try again — book a free home visit' : 'Book a free home visit'}
+                  {visit === 'sending' ? 'Sending…' : visit === 'failed' ? 'Try again — book an appointment' : 'Book an appointment'}
                 </button>
                 {visit === 'failed' && (
                   <div className="field-error" role="alert">
