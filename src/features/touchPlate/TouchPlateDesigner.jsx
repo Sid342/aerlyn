@@ -261,16 +261,18 @@ export default function TouchPlateDesigner() {
         ))}
       </ol>
 
-      <h3 className="tpd-step-title" ref={heading} tabIndex={-1}>{steps[at].label}</h3>
-      <div className="tpd-body">{body()}</div>
-
-      <div className="tpd-nav">
-        <button type="button" className="tpd-btn" onClick={() => go(at - 1)} disabled={at === 0}>Back</button>
-        {missing && <span className="tpd-nav-hint">Choose {missing} to continue.</span>}
-        {at < steps.length - 1 && (
-          <button type="button" className="tpd-btn primary" onClick={() => go(at + 1)} disabled={!!missing}>Next</button>
-        )}
+      {/* Back and Next live here on every step, so they never move with the height of the step */}
+      <div className="tpd-bar">
+        <h3 className="tpd-step-title" ref={heading} tabIndex={-1}>{steps[at].label}</h3>
+        <div className="tpd-nav">
+          {missing && <span className="tpd-nav-hint">Choose {missing} to continue.</span>}
+          <button type="button" className="tpd-btn" onClick={() => go(at - 1)} disabled={at === 0}>Back</button>
+          {at < steps.length - 1
+            ? <button type="button" className="tpd-btn primary" onClick={() => go(at + 1)} disabled={!!missing}>Next</button>
+            : <span className="tpd-nav-gap" aria-hidden="true" /> /* the last step has no Next; Back stays where it was */}
+        </div>
       </div>
+      <div className="tpd-body">{body()}</div>
     </div>
   );
 }

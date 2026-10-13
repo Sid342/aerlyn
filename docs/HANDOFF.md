@@ -215,6 +215,11 @@ How it is built:
   - The 10 A socket drawing has 0.4 mm of clear space around its pads and its box is that much
     larger: the pads are where they were and as large, but their strokes are no longer cut at
     the box edge. This is the only change to plates that are otherwise untouched.
+  - Back and Next are one row under the stepper, beside the step title, rendered once by
+    `TouchPlateDesigner` (`.tpd-bar`): they are in the same place on every step and never move
+    with the height of a step. The "Choose a model to continue." hint appears to their left. The
+    last step has no Next; an empty slot keeps Back where it was. Under 600 px the title takes
+    its own line and the buttons sit below it. (The reference has them under the step.)
   - No cart, prices, quantity, admin view, laser/DXF export or user icon. The last step is
     "Summary": the plate, its specification, PDF and PNG download.
 - **Checking the plate layouts:** `scripts/plate-layout-check.js` runs in the browser, not in

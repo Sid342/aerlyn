@@ -36,7 +36,7 @@
   .tpd-step-label { display: none; }
 }
 
-.tpd-step-title { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; font-weight: 700; color: var(--fg); margin-bottom: 16px; outline: none; }
+.tpd-step-title { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; font-weight: 700; color: var(--fg); outline: none; }
 .tpd-step-title::before { content: ''; width: 10px; height: 26px; border-radius: 4px; background: var(--teal); }
 
 /* option cards (model, material, size) — the reference's "Model 1 / Full Glass Touch" boxes */
@@ -95,10 +95,16 @@
 .tpd-swatch[aria-checked='true'] { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 10%, var(--card)); }
 .tpd-swatch-chip { width: 64px; height: 64px; border-radius: 8px; border: 1px solid #4a4a60; }
 
-.tpd-nav { display: flex; align-items: center; gap: 12px; margin-top: 24px; }
-.tpd-nav .primary { margin-left: auto; }
-.tpd-nav-hint { margin-left: auto; font-size: 0.8rem; color: var(--muted); text-align: right; }
-.tpd-nav-hint + .primary { margin-left: 0; }
+/* step title and Back / Next: one row under the stepper, the same on every step */
+.tpd-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; min-height: 40px; margin-bottom: 16px; }
+.tpd-nav { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-left: auto; min-width: 0; }
+.tpd-nav .tpd-btn, .tpd-nav-gap { flex: none; width: 84px; }
+.tpd-nav-hint { min-width: 0; font-size: 0.8rem; color: var(--muted); text-align: right; }
+/* narrow: the title on its own line, so the buttons do not jump when a long title or the hint wraps the row */
+@media (max-width: 600px) {
+  .tpd-step-title { flex-basis: 100%; }
+  .tpd-nav { flex: 1; }
+}
 
 .tpd-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; margin-top: 16px; }
 .tpd-box { min-width: 0; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
