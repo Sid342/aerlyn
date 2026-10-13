@@ -1,5 +1,6 @@
 import { HOME_TYPES } from '../../data/templates.js';
 import { useHome } from '../../context/HomeContext.jsx';
+import { track } from '../../lib/track.js';
 import './HomeTypePicker.css';
 
 export default function HomeTypePicker() {
@@ -13,6 +14,7 @@ export default function HomeTypePicker() {
     ) {
       return;
     }
+    if (!home.homeType) track('plan_started', { homeType: type });
     dispatch(actions.setHomeType(type));
   }
 

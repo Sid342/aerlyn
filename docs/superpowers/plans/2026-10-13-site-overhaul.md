@@ -32,7 +32,7 @@
 - [x] **3.4 FAQ section** on landing page (copy from existing claims only).
 - [x] **3.5 Sitemap, robots, redirects, caching.** Generated `sitemap.xml`/`robots.txt`; `vercel.json`: `www`→apex, immutable `/assets/*`, uncached HTML.
 - [x] **3.6 Assets + speed.** Favicon + share image from logo; product photo → WebP with dimensions; dynamic-import jsPDF; trim font weights.
-- [ ] **3.7 Analytics.** Vercel Web Analytics script + four events.
+- [x] **3.7 Analytics.** Vercel Web Analytics script + four events.
 
 ## Phase 4 — Storefront and cleanup
 

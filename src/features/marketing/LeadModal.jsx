@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { submitLead } from '../../lib/submitLead.js';
 import { validateContact } from '../../lib/validate.js';
 import { whatsappUrl } from '../../config/site.js';
+import { track } from '../../lib/track.js';
 import './LeadModal.css';
 
 export default function LeadModal({ phone: initialPhone, onClose }) {
@@ -25,6 +26,7 @@ export default function LeadModal({ phone: initialPhone, onClose }) {
     });
     setSubmitting(false);
     setStatus(ok ? 'ok' : 'failed');
+    if (ok) track('visit_booked', { source: 'contact' });
   }
 
   const failed = status === 'failed';

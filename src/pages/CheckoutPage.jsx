@@ -4,6 +4,7 @@ import { useCart } from '../features/cart/CartContext.jsx';
 import { cartLines, cartTotal, inr, orderId, orderItemsText } from '../lib/cart.js';
 import { submitLead } from '../lib/submitLead.js';
 import { validateOrder } from '../lib/validate.js';
+import { track } from '../lib/track.js';
 import { productPath } from '../routes.js';
 import Shell from './Shell.jsx';
 import './pages.css';
@@ -66,6 +67,7 @@ export default function CheckoutPage() {
       setFailed(true);
       return;
     }
+    track('order_placed', { items: lines.reduce((n, l) => n + l.qty, 0), total });
     setPlaced({ name, id: id.current });
     clear();
     window.scrollTo(0, 0);
