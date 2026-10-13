@@ -41,7 +41,7 @@
 - [x] **4.3 Nav + footer.** "Products" in nav; footer from config.
 - [x] **4.4 Accessibility.** Buttons for all click targets; modal Escape + focus trap; inline confirms replace `window.confirm`.
 - [x] **4.5 Docs.** Rewrite `docs/HANDOFF.md`; archive May redesign spec/plan; README update.
-- [ ] **4.6 Final verification.** Full test run, build, browser pass (plan → save → restore from link; add to cart → checkout; failure paths with network blocked), Lighthouse on prerendered output.
+- [x] **4.6 Final verification.** Full test run, build, browser pass (plan → save → restore from link; add to cart → checkout; failure paths with network blocked), Lighthouse on prerendered output. _(Lighthouse not run — no CLI installed.)_
 
 ## After merge (owner)
 
