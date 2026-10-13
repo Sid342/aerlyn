@@ -20,6 +20,21 @@ describe('buildScenesPdfPayload', () => {
     expect(last.deviceStates['rgbw-strip']).toBe(true);
   });
 
+  it('resolves device ids to catalogue names for printing', () => {
+    const custom = [{ id: 'c1', name: 'Party', icon: '🎉', deviceStates: { 'rgbw-strip': true, 'bldc-fan': false } }];
+    const result = buildScenesPdfPayload(custom);
+    expect(result[result.length - 1].devices).toEqual([
+      { name: 'RGBW Strip Light', on: true },
+      { name: 'BLDC Smart Fan', on: false },
+    ]);
+    expect(result[0].devices.every((d) => !/^[a-z]+(-[a-z]+)+$/.test(d.name))).toBe(true);
+  });
+
+  it('falls back to the id for a device that is not in the catalogue', () => {
+    const result = buildScenesPdfPayload([{ id: 'c1', name: 'X', deviceStates: { 'gone-device': true } }]);
+    expect(result[result.length - 1].devices).toEqual([{ name: 'gone-device', on: true }]);
+  });
+
   it('empty custom scenes returns only presets', () => {
     const result = buildScenesPdfPayload([]);
     expect(result.every((s) => s.preset)).toBe(true);

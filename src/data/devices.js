@@ -108,3 +108,9 @@ const BY_ID = Object.fromEntries(DEVICES.map((d) => [d.id, d]));
 export function getDevice(id) {
   return BY_ID[id];
 }
+
+// catalogue devices that appear in at least one room, in catalogue order
+export function devicesInHome(rooms) {
+  const present = new Set(rooms.flatMap((r) => r.devices.map((d) => d.deviceId)));
+  return DEVICES.filter((d) => present.has(d.id));
+}

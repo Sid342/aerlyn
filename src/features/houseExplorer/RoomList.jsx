@@ -28,7 +28,7 @@ export default function RoomList() {
       </p>
 
       {home.rooms.map((room) => (
-        <RoomCard key={room.id} room={room} />
+        <RoomCard key={`${room.id}-${home.mode}`} room={room} />
       ))}
 
       {home.mode === 'build' && (

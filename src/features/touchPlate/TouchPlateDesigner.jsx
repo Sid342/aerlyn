@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useHome } from '../../context/HomeContext.jsx';
 import StepModel from './steps/StepModel.jsx';
 import StepMaterial from './steps/StepMaterial.jsx';
 import StepSize from './steps/StepSize.jsx';
@@ -26,6 +27,8 @@ const emptyConfig = {
 export default function TouchPlateDesigner() {
   const [step, setStep] = useState(0);
   const [config, setConfig] = useState(emptyConfig);
+  const { home } = useHome();
+  if (!home.homeType) return null;
 
   function canAdvance() {
     if (step === 0) return !!config.model;

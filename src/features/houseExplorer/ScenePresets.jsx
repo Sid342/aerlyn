@@ -18,7 +18,7 @@ export default function ScenePresets({ roomId = null }) {
     <div className="scene-strip">
       {!roomId && <div className="scene-strip-label">Set whole home:</div>}
       <div className="scene-pills">
-        {SCENES.map((s) => (
+        {[...SCENES, ...home.customScenes].map((s) => (
           <button
             key={s.id}
             type="button"

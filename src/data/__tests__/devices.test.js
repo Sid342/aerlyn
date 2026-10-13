@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { DEVICES, getDevice } from '../devices.js';
+import { DEVICES, getDevice, devicesInHome } from '../devices.js';
 
 describe('device catalog', () => {
   it('has unique ids', () => {
@@ -74,5 +74,18 @@ describe('device catalog', () => {
       expect(d, `${id} should exist`).toBeDefined();
       expect(d.control, `${id} should not have control`).toBeUndefined();
     }
+  });
+});
+
+describe('devicesInHome', () => {
+  it('returns nothing for a home with no rooms', () => {
+    expect(devicesInHome([])).toEqual([]);
+  });
+  it('returns each present device once, in catalogue order, ignoring unknown ids', () => {
+    const rooms = [
+      { devices: [{ deviceId: 'geyser', qty: 1 }, { deviceId: 'cct-light', qty: 2 }] },
+      { devices: [{ deviceId: 'cct-light', qty: 1 }, { deviceId: 'not-a-device', qty: 1 }] },
+    ];
+    expect(devicesInHome(rooms).map((d) => d.id)).toEqual(['cct-light', 'geyser']);
   });
 });

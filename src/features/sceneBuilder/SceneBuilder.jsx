@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SCENES } from '../../data/scenes.js';
-import { DEVICES } from '../../data/devices.js';
+import { DEVICES, devicesInHome } from '../../data/devices.js';
 import { useHome } from '../../context/HomeContext.jsx';
 import { downloadScenesPdf } from '../../lib/exportScenesPdf.js';
 import './SceneBuilder.css';
@@ -30,7 +30,8 @@ function PresetSceneCard({ scene }) {
 }
 
 function CustomSceneCard({ scene }) {
-  const { actions } = useHome();
+  const { home, actions } = useHome();
+  const devices = devicesInHome(home.rooms);
   const [editing, setEditing] = useState(false);
   const [draftName, setDraftName] = useState(scene.name);
 
@@ -69,7 +70,8 @@ function CustomSceneCard({ scene }) {
           )}
         </span>
       </div>
-      {DEVICES.map((device) => {
+      {devices.length === 0 && <p style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>No devices in your home yet</p>}
+      {devices.map((device) => {
         const on = scene.deviceStates[device.id] ?? false;
         return (
           <div key={device.id} className="sb-device-row">
@@ -122,6 +124,7 @@ function AddSceneForm() {
 
 export default function SceneBuilder() {
   const { home } = useHome();
+  if (!home.homeType) return null;
 
   return (
     <div className="scene-builder">

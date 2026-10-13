@@ -1,10 +1,20 @@
 import jsPDF from 'jspdf';
 import { SCENES } from '../data/scenes.js';
+import { getDevice } from '../data/devices.js';
+
+// each scene gains `devices: [{ name, on }]` with catalogue names for printing
+function withDeviceNames(scene, preset) {
+  const devices = Object.entries(scene.deviceStates).map(([deviceId, on]) => {
+    const meta = getDevice(deviceId);
+    return { name: meta ? meta.name : deviceId, on };
+  });
+  return { ...scene, preset, devices };
+}
 
 export function buildScenesPdfPayload(customScenes) {
   return [
-    ...SCENES.map((s) => ({ ...s, preset: true })),
-    ...customScenes.map((s) => ({ ...s, preset: false })),
+    ...SCENES.map((s) => withDeviceNames(s, true)),
+    ...customScenes.map((s) => withDeviceNames(s, false)),
   ];
 }
 
@@ -33,13 +43,12 @@ export function downloadScenesPdf(customScenes) {
     y += 6;
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(10);
-    const entries = Object.entries(scene.deviceStates);
-    if (entries.length === 0) {
+    if (scene.devices.length === 0) {
       pdf.text('   — no devices configured', left, y);
       y += 5;
     }
-    for (const [deviceId, on] of entries) {
-      pdf.text(`   ${deviceId}: ${on ? 'ON' : 'OFF'}`, left, y);
+    for (const { name, on } of scene.devices) {
+      pdf.text(`   ${name}: ${on ? 'ON' : 'OFF'}`, left, y);
       y += 5;
       if (y > 280) { pdf.addPage(); y = 18; }
     }
