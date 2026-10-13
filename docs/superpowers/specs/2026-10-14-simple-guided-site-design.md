@@ -134,3 +134,14 @@ Plate designer internals and PDF, plan link format, lead delivery, validation, p
 ## Needed from the owner (improves the result, does not block)
 
 Service area · install photos · brands fitted · what a visit involves and how long · any real customer feedback · which of the dropped claims are true.
+
+## Addendum — 2026-10-14: planner shortened further
+
+Owner: "even planning is very long and tedious". The three-step planner above is replaced by a one-tap planner. Where this addendum and section 2 disagree, this addendum wins.
+
+- **One question:** "What's your home?" — four tiles. Tapping one shows the plan immediately, on the same screen. No step 2, no Next button, no stepper.
+- **Plan view:** one plain line per room. Directly above it, the six goal chips, all on; tapping a chip removes or restores that kind of device everywhere. Changing home type is one tap on the tiles, which stay visible.
+- **Primary action, always visible with the plan:** "Book an appointment" — name and phone only.
+- **Everything else is one quiet row of links under the plan:** Save or share · Customise · See it in action · Design a switch plate.
+- **Target:** two taps from landing to the appointment form (home tile, then the button).
+- The wayfinding rule about a planner step indicator in section 1 no longer applies; there are no steps.
