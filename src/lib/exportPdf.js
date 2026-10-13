@@ -1,8 +1,9 @@
-import jsPDF from 'jspdf';
 import { buildExportPayload } from './exportJson.js';
 
 // Render a readable room-by-room summary PDF and trigger a download.
-export function downloadPdf(home) {
+// jsPDF is large, so it loads only when a PDF is actually asked for.
+export async function downloadPdf(home) {
+  const { jsPDF } = await import('jspdf');
   const payload = buildExportPayload(home);
   const pdf = new jsPDF('p', 'mm', 'a4');
   const left = 14;

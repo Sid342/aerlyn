@@ -10,6 +10,9 @@ const RETROFIT_FEATURES = [
   'Child lock & overload protection',
 ];
 
+// One photo for both modules for now — the 2-switch photo is a placeholder until a real one exists.
+const RETROFIT_IMAGE = { image: '/products/assets/retrofit-switch.webp', imageWidth: 861, imageHeight: 465 };
+
 function retrofitSpecs(model, load) {
   return [
     ['Model', model],
@@ -56,9 +59,7 @@ export const site = {
       tagline: 'Smart Wi-Fi retrofit module — make one existing switch app & voice controlled.',
       price: 2300,
       mrp: 3286,
-      image: '/products/assets/retrofit-1-switch.png',
-      imageWidth: 861,
-      imageHeight: 465,
+      ...RETROFIT_IMAGE,
       features: RETROFIT_FEATURES,
       specs: retrofitSpecs('AER-SW1G-WiFi', '800 W (1 gang)'),
     },
@@ -69,9 +70,7 @@ export const site = {
       tagline: 'Smart Wi-Fi retrofit module — make two existing switches app & voice controlled.',
       price: 2300,
       mrp: 3286,
-      image: '/products/assets/retrofit-2-switch.png',
-      imageWidth: 861,
-      imageHeight: 465,
+      ...RETROFIT_IMAGE,
       features: RETROFIT_FEATURES,
       specs: retrofitSpecs('AER-SW2G-WiFi', '800 W per gang (2 gang)'),
     },

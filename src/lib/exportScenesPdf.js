@@ -1,4 +1,3 @@
-import jsPDF from 'jspdf';
 import { SCENES } from '../data/scenes.js';
 import { getDevice, sceneDevicesInHome } from '../data/devices.js';
 
@@ -19,7 +18,9 @@ export function buildScenesPdfPayload(customScenes, rooms) {
   ];
 }
 
-export function downloadScenesPdf(customScenes, rooms) {
+// jsPDF is large, so it loads only when a PDF is actually asked for.
+export async function downloadScenesPdf(customScenes, rooms) {
+  const { jsPDF } = await import('jspdf');
   const scenes = buildScenesPdfPayload(customScenes, rooms);
   const pdf = new jsPDF('p', 'mm', 'a4');
   const left = 14;

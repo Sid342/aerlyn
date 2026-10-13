@@ -1,0 +1,15 @@
+<!-- Source for public/og-image.png. Rasterise at 1200x630:
+     chrome --headless --hide-scrollbars --force-device-scale-factor=1 --window-size=1200,630 --screenshot=public/og-image.png assets/brand/og-image.html -->
+<!doctype html><meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; background: #080810; overflow: hidden; }
+  /* aerlyn-logo.svg is 1620x1080, dark logo on near-white. Push the paper to pure white, invert while
+     keeping the hue, then screen it onto the dark background so only the logo remains. */
+  .logo { position: absolute; left: 157px; top: 115px; width: 885px; height: 400px;
+    background: url(aerlyn-logo.svg) no-repeat; background-size: 1426px 950px; background-position: -263px -244px;
+    filter: brightness(1.12) contrast(1.35) invert(1) hue-rotate(180deg); mix-blend-mode: screen; }
+</style>
+<div class="logo"></div>
+<div style="position:absolute;left:1030px;top:0;width:170px;height:630px;background:#080810"></div>
+<div style="position:absolute;left:960px;top:100px;width:80px;height:120px;background:#080810"></div>
+<div style="position:absolute;left:960px;top:420px;width:80px;height:110px;background:#080810"></div>

@@ -31,7 +31,7 @@
 - [x] **3.3 Head + structured data.** `src/seo/head.js` builds per-route title, description, canonical, OG/Twitter, JSON-LD (Organization/LocalBusiness, Product+Offer, FAQPage, BreadcrumbList). Test: every route file exists, one `<h1>`, canonical present, JSON-LD parses.
 - [x] **3.4 FAQ section** on landing page (copy from existing claims only).
 - [x] **3.5 Sitemap, robots, redirects, caching.** Generated `sitemap.xml`/`robots.txt`; `vercel.json`: `www`→apex, immutable `/assets/*`, uncached HTML.
-- [ ] **3.6 Assets + speed.** Favicon + share image from logo; product photo → WebP with dimensions; dynamic-import jsPDF; trim font weights.
+- [x] **3.6 Assets + speed.** Favicon + share image from logo; product photo → WebP with dimensions; dynamic-import jsPDF; trim font weights.
 - [ ] **3.7 Analytics.** Vercel Web Analytics script + four events.
 
 ## Phase 4 — Storefront and cleanup

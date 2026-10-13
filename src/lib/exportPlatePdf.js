@@ -1,4 +1,3 @@
-import jsPDF from 'jspdf';
 
 export function buildPlatePdfPayload(config) {
   return {
@@ -16,7 +15,9 @@ export function buildPlatePdfPayload(config) {
   };
 }
 
-export function downloadPlatePdf(config) {
+// jsPDF is large, so it loads only when a PDF is actually asked for.
+export async function downloadPlatePdf(config) {
+  const { jsPDF } = await import('jspdf');
   const p = buildPlatePdfPayload(config);
   const pdf = new jsPDF('p', 'mm', 'a4');
   const left = 14;
