@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { homeReducer, initialHome, actions } from '../homeReducer.js';
+import { homeReducer, initialHome, emptyPlateConfig, actions } from '../homeReducer.js';
 
 function withHome(type = '2BHK') {
   return homeReducer(initialHome, actions.setHomeType(type));
@@ -280,9 +280,80 @@ describe('homeReducer', () => {
     });
   });
 
-  describe('SET_FLOOR_PLAN removed', () => {
-    it('setFloorPlan action does not exist', () => {
-      expect(actions.setFloorPlan).toBeUndefined();
+  describe('SET_FLOOR_PLAN', () => {
+    it('starts with no floor plan image', () => {
+      expect(initialHome.floorPlanImage).toBeNull();
+    });
+    it('stores the image and clears it with null', () => {
+      const s1 = homeReducer(withHome(), actions.setFloorPlan('data:image/png;base64,AAAA'));
+      expect(s1.floorPlanImage).toBe('data:image/png;base64,AAAA');
+      const s2 = homeReducer(s1, actions.setFloorPlan(null));
+      expect(s2.floorPlanImage).toBeNull();
+    });
+  });
+
+  describe('SET_ROOM_SIZE keeps edited quantities', () => {
+    // 2BHK living room (L) seeds cob-downlight ×6 and power-socket ×4
+    it('re-seeds quantities the user has not touched', () => {
+      const s0 = withHome();
+      const id = s0.rooms[0].id;
+      const s1 = homeReducer(s0, actions.setRoomSize(id, 'S'));
+      const qty = (dId) => s1.rooms[0].devices.find((d) => d.deviceId === dId).qty;
+      expect(qty('cob-downlight')).toBe(2);
+      expect(qty('power-socket')).toBe(2);
+    });
+    it('setDeviceQty marks the device as edited', () => {
+      const s0 = withHome();
+      const s1 = homeReducer(s0, actions.setDeviceQty(s0.rooms[0].id, 'cob-downlight', 9));
+      const dev = s1.rooms[0].devices.find((d) => d.deviceId === 'cob-downlight');
+      expect(dev.edited).toBe(true);
+      expect(s1.rooms[0].devices.find((d) => d.deviceId === 'power-socket').edited).toBeUndefined();
+    });
+    it('does not overwrite a quantity the user edited', () => {
+      const s0 = withHome();
+      const id = s0.rooms[0].id;
+      const s1 = homeReducer(s0, actions.setDeviceQty(id, 'cob-downlight', 9));
+      const s2 = homeReducer(s1, actions.setRoomSize(id, 'S'));
+      const qty = (dId) => s2.rooms[0].devices.find((d) => d.deviceId === dId).qty;
+      expect(s2.rooms[0].size).toBe('S');
+      expect(qty('cob-downlight')).toBe(9);
+      expect(qty('power-socket')).toBe(2);
+    });
+    it('adding a device that is already present counts as an edit', () => {
+      const s0 = withHome();
+      const id = s0.rooms[0].id;
+      const s1 = homeReducer(s0, actions.addDevice(id, 'cob-downlight'));
+      const s2 = homeReducer(s1, actions.setRoomSize(id, 'S'));
+      expect(s2.rooms[0].devices.find((d) => d.deviceId === 'cob-downlight').qty).toBe(7);
+    });
+  });
+
+  describe('SET_PLATE_CONFIG', () => {
+    it('starts with an empty plate config and no plate room', () => {
+      expect(initialHome.plateConfig).toEqual(emptyPlateConfig);
+      expect(initialHome.plateRoomId).toBeNull();
+    });
+    it('replaces the plate config', () => {
+      const config = { ...emptyPlateConfig, model: '4 module', maxSlots: 4 };
+      const s1 = homeReducer(withHome(), actions.setPlateConfig(config));
+      expect(s1.plateConfig).toEqual(config);
+    });
+  });
+
+  describe('HYDRATE', () => {
+    it('replaces the plan with the saved one', () => {
+      const saved = withHome('1BHK');
+      const s1 = homeReducer(withHome('Villa'), actions.hydrate({ homeType: saved.homeType, rooms: saved.rooms }));
+      expect(s1.homeType).toBe('1BHK');
+      expect(s1.rooms).toBe(saved.rooms);
+    });
+    it('fills anything missing from the saved plan with defaults', () => {
+      const dirty = homeReducer(homeReducer(withHome(), actions.setMode('play')), actions.setFloorPlan('data:x'));
+      const s1 = homeReducer(dirty, actions.hydrate({ homeType: '1BHK', rooms: [] }));
+      expect(s1.mode).toBe('build');
+      expect(s1.customScenes).toEqual([]);
+      expect(s1.plateConfig).toEqual(emptyPlateConfig);
+      expect(s1.floorPlanImage).toBeNull();
     });
   });
 });

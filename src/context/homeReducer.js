@@ -1,11 +1,26 @@
 import { cloneRoom, makeRoom, buildRooms } from '../data/templates.js';
 import { getDevice } from '../data/devices.js';
 
+export const emptyPlateConfig = {
+  model: null,
+  maxSlots: 0,
+  material: null,
+  materialCode: null,
+  size: null,
+  accessories: [],
+  icons: {},
+  panel: null,
+  frame: null,
+};
+
 export const initialHome = {
   homeType: null,
   mode: 'build', // 'build' | 'play'
   rooms: [],
   customScenes: [],
+  floorPlanImage: null, // data URL, in memory only — never persisted or sent
+  plateConfig: emptyPlateConfig,
+  plateRoomId: null, // room the plate designer was opened from
 };
 
 export const actions = {
@@ -24,6 +39,9 @@ export const actions = {
   applySceneToRoom: (roomId, deviceStates) => ({ type: 'APPLY_SCENE_TO_ROOM', roomId, deviceStates }),
   reset: () => ({ type: 'RESET' }),
   duplicateRoom: (roomId) => ({ type: 'DUPLICATE_ROOM', roomId }),
+  setFloorPlan: (image) => ({ type: 'SET_FLOOR_PLAN', image }),
+  setPlateConfig: (config) => ({ type: 'SET_PLATE_CONFIG', config }),
+  hydrate: (home) => ({ type: 'HYDRATE', home }),
 };
 
 // map over rooms, replacing the one matching roomId
@@ -61,7 +79,7 @@ export function homeReducer(state, action) {
         size: action.size,
         devices: r.devices.map((d) => {
           const meta = getDevice(d.deviceId);
-          if (!meta || !meta.sizeRule) return d;
+          if (d.edited || !meta || !meta.sizeRule) return d;
           return { ...d, qty: meta.sizeRule[action.size] ?? 1 };
         }),
       }));
@@ -73,7 +91,7 @@ export function homeReducer(state, action) {
           return {
             ...r,
             devices: r.devices.map((d) =>
-              d.deviceId === action.deviceId ? { ...d, qty: d.qty + 1 } : d
+              d.deviceId === action.deviceId ? { ...d, qty: d.qty + 1, edited: true } : d
             ),
           };
         }
@@ -90,7 +108,7 @@ export function homeReducer(state, action) {
       return mapRoom(state, action.roomId, (r) => ({
         ...r,
         devices: r.devices.map((d) =>
-          d.deviceId === action.deviceId ? { ...d, qty: Math.max(1, action.qty | 0) } : d
+          d.deviceId === action.deviceId ? { ...d, qty: Math.max(1, action.qty | 0), edited: true } : d
         ),
       }));
 
@@ -174,6 +192,17 @@ export function homeReducer(state, action) {
           s.id === action.payload.id ? { ...s, name: action.payload.name } : s
         ),
       };
+
+    case 'SET_FLOOR_PLAN':
+      return { ...state, floorPlanImage: action.image || null };
+
+    case 'SET_PLATE_CONFIG':
+      return { ...state, plateConfig: action.config };
+
+    // replace the plan with a saved one (browser storage or a plan link)
+    case 'HYDRATE':
+      return { ...initialHome, ...action.home };
+
     case 'RESET':
       return initialHome;
 
