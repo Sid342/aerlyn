@@ -4,7 +4,7 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const dist = fileURLToPath(new URL('../dist', import.meta.url));
-const { routes, render, headFor, renderHead } = await import('../dist-ssr/entry-server.js');
+const { routes, render, headFor, renderHead, sitemapXml, robotsTxt } = await import('../dist-ssr/entry-server.js');
 
 const ROOT = '<div id="root"></div>';
 const template = await readFile(`${dist}/index.html`, 'utf8');
@@ -22,3 +22,7 @@ for (const route of routes) {
   await writeFile(file, html);
   console.log(`prerendered ${route.path}`);
 }
+
+await writeFile(`${dist}/sitemap.xml`, sitemapXml());
+await writeFile(`${dist}/robots.txt`, robotsTxt());
+console.log('wrote sitemap.xml, robots.txt');

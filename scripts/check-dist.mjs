@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 const dist = fileURLToPath(new URL('../dist', import.meta.url));
-const { routes, headFor } = await import('../dist-ssr/entry-server.js');
+const { routes, headFor, sitemapXml, robotsTxt } = await import('../dist-ssr/entry-server.js');
 
 const problems = [];
 const count = (html, re) => (html.match(re) || []).length;
@@ -41,6 +41,11 @@ for (const route of routes) {
     }
     if (/:null|undefined/.test(json)) fail('JSON-LD contains null/undefined');
   }
+}
+
+for (const [file, expected] of [['/sitemap.xml', sitemapXml()], ['/robots.txt', robotsTxt()]]) {
+  const actual = await readFile(dist + file, 'utf8').catch(() => null);
+  if (actual !== expected) problems.push(`${file}: missing or stale`);
 }
 
 if (problems.length) {
