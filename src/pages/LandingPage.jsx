@@ -5,6 +5,7 @@ import Hero from '../features/marketing/Hero.jsx';
 import WhyAutomate from '../features/marketing/WhyAutomate.jsx';
 import DayInLife from '../features/marketing/DayInLife.jsx';
 import HowItWorks from '../features/marketing/HowItWorks.jsx';
+import Faq from '../features/marketing/Faq.jsx';
 import ContactCTA from '../features/marketing/ContactCTA.jsx';
 import HomeTypePicker from '../features/houseExplorer/HomeTypePicker.jsx';
 import HouseSvg from '../features/houseExplorer/HouseSvg.jsx';
@@ -55,6 +56,7 @@ export default function LandingPage() {
           <Planner />
         </section>
         <HowItWorks />
+        <Faq />
         <ContactCTA />
       </Shell>
     </HomeProvider>

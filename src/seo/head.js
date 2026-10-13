@@ -1,6 +1,7 @@
 import { site } from '../config/site.js';
 import { routes } from '../routes.js';
 import { inr } from '../lib/cart.js';
+import { FAQ } from '../data/faq.js';
 
 const OG_IMAGE = { path: '/og-image.png', width: 1200, height: 630 };
 const LOGO_PATH = '/favicon.png';
@@ -53,6 +54,18 @@ function website() {
   };
 }
 
+function faqPage() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQ.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  };
+}
+
 function breadcrumbs(name, url) {
   return {
     '@context': 'https://schema.org',
@@ -90,7 +103,7 @@ function pageHead(route, url) {
       return {
         title: `${site.brand} — Smart Home Automation, Planned Room by Room`,
         description: `Plan your smart home room by room with ${site.brand}${area}: smart switches, lighting, locks, cameras and scenes. Save your plan and get a free quote.`,
-        jsonLd: [business(), website()],
+        jsonLd: [business(), website(), faqPage()],
       };
     case 'product': {
       const p = route.product;

@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { headFor, renderHead, prune, sitemapXml, robotsTxt } from '../head.js';
 import { routes } from '../../routes.js';
 import { site } from '../../config/site.js';
+import { FAQ } from '../../data/faq.js';
 
 const heads = routes.map((route) => ({ route, head: headFor(route) }));
 const byPage = (page) => heads.find((h) => h.route.page === page).head;
@@ -66,13 +67,25 @@ describe('headFor', () => {
 
   it('describes the business on the landing page without the unknown fields', () => {
     const head = byPage('landing');
-    expect(types(head)).toEqual(expect.arrayContaining(['LocalBusiness', 'WebSite']));
+    expect(types(head)).toEqual(['LocalBusiness', 'WebSite', 'FAQPage']);
     const business = head.jsonLd.find((ld) => ld['@type'] === 'LocalBusiness');
     expect(business.name).toBe(site.brand);
     expect(business.address.streetAddress).toBe(site.address);
     // null in config today — must not appear until the owner fills them
     for (const key of ['telephone', 'taxID', 'areaServed']) expect(key in business).toBe(false);
     expect(JSON.stringify(head.jsonLd)).not.toMatch(/aggregateRating|"review"/);
+  });
+
+  it('emits the FAQ section as FAQPage, question for question', () => {
+    const faq = byPage('landing').jsonLd.find((ld) => ld['@type'] === 'FAQPage');
+    expect(FAQ.length).toBeGreaterThan(0);
+    expect(faq.mainEntity.map((e) => [e.name, e.acceptedAnswer.text])).toEqual(FAQ.map(({ q, a }) => [q, a]));
+    expect(new Set(FAQ.map((f) => f.q)).size).toBe(FAQ.length);
+    for (const { q, a } of FAQ) {
+      expect(q.trim()).toBeTruthy();
+      expect(a.trim()).toBeTruthy();
+      expect(a).not.toMatch(/undefined|null/);
+    }
   });
 
   it('describes each product with an offer and breadcrumbs', () => {

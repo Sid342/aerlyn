@@ -1,0 +1,8 @@
+.faq-section { padding: 80px 24px; max-width: 960px; margin: 0 auto; }
+.faq-list { margin-top: 28px; border-top: 1px solid var(--border); }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-item summary { cursor: pointer; padding: 18px 28px 18px 0; font-weight: 600; color: var(--fg); list-style: none; position: relative; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: '+'; position: absolute; right: 4px; top: 16px; color: var(--teal); font-size: 1.2rem; }
+.faq-item[open] summary::after { content: '–'; }
+.faq-item p { color: var(--muted); line-height: 1.7; font-size: 0.95rem; padding: 0 28px 20px 0; max-width: 720px; }
