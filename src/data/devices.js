@@ -106,7 +106,8 @@ export const DEVICES = [
 
 const BY_ID = Object.fromEntries(DEVICES.map((d) => [d.id, d]));
 export function getDevice(id) {
-  return BY_ID[id];
+  // own keys only — ids can come from a plan link, and 'constructor' is not a device
+  return Object.hasOwn(BY_ID, id) ? BY_ID[id] : undefined;
 }
 
 // catalogue devices that appear in at least one room, in catalogue order

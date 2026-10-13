@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { savePlan, loadPlan, encodePlan, decodePlan } from '../planStorage.js';
+import { savePlan, loadPlan, encodePlan, decodePlan, planOnLoad } from '../planStorage.js';
 import { homeReducer, initialHome, emptyPlateConfig, actions } from '../../context/homeReducer.js';
 
 const KEY = 'aerlyn_plan_v1';
@@ -135,5 +135,157 @@ describe('encodePlan / decodePlan', () => {
     expect(decodePlan('not-a-plan')).toBeNull();
     expect(decodePlan(btoa(JSON.stringify({ v: 2, t: '1BHK', r: [], s: [] })))).toBeNull();
     expect(decodePlan(btoa(JSON.stringify({ v: 1, t: '1BHK', r: 'x', s: [] })))).toBeNull();
+  });
+});
+
+// what a hand-edited link would carry
+const link = (compact) => Buffer.from(JSON.stringify({ v: 1, t: '1BHK', r: [], s: [], ...compact })).toString('base64url');
+const linkRoom = (devices, extra = []) => ['Hall', 'living', 'M', devices, ...extra];
+
+describe('decodePlan — untrusted links', () => {
+  it('rejects an unknown home type', () => {
+    expect(decodePlan(link({ t: 'Castle' }))).toBeNull();
+    expect(decodePlan(link({ t: null }))).toBeNull();
+  });
+
+  it('rejects rooms or scenes that are not lists', () => {
+    expect(decodePlan(link({ r: [{ name: 'x' }] }))).toBeNull();
+    expect(decodePlan(link({ r: ['room'] }))).toBeNull();
+    expect(decodePlan(link({ s: 'x' }))).toBeNull();
+  });
+
+  it('drops devices that are not in the catalogue, and duplicates', () => {
+    const plan = decodePlan(link({
+      r: [linkRoom([['cct-light', 2], ['FAKE-999', 1], ['constructor', 1], ['__proto__', 1], [['camera'], 1], 'junk', null, ['cct-light', 5]])],
+    }));
+    expect(plan.rooms[0].devices).toEqual([{ deviceId: 'cct-light', qty: 2, on: false }]);
+  });
+
+  it('treats a missing or malformed device list as no devices', () => {
+    expect(decodePlan(link({ r: [['Hall', 'living', 'M'], linkRoom('nope')] })).rooms.map((r) => r.devices)).toEqual([[], []]);
+  });
+
+  it('clamps quantities to whole numbers from 1 to 99', () => {
+    const qtyOf = (qty) => decodePlan(link({ r: [linkRoom([['camera', qty]])] })).rooms[0].devices[0].qty;
+    expect([0, -4, 2.9, 99, 100, 1e9, '7', 'lots', null, {}].map(qtyOf)).toEqual([1, 1, 2, 99, 99, 99, 7, 1, 1, 1]);
+  });
+
+  it('clamps switch overrides and keeps unset ones null', () => {
+    const plan = decodePlan(link({ r: [linkRoom([], [[5000, -2, null, 'x']]), linkRoom([], ['junk'])] }));
+    expect(plan.rooms[0].switchOverrides).toEqual({ gang: 99, fan: 0, curtain: null, socket: 0 });
+    expect(plan.rooms[1].switchOverrides).toEqual({ gang: null, fan: null, curtain: null, socket: null });
+  });
+
+  it('caps the number of rooms at 40 and scenes at 20', () => {
+    const plan = decodePlan(link({
+      r: Array.from({ length: 500 }, () => linkRoom([])),
+      s: Array.from({ length: 500 }, () => ['Scene', '✨', {}]),
+    }));
+    expect(plan.rooms).toHaveLength(40);
+    expect(plan.customScenes).toHaveLength(20);
+  });
+
+  it('repairs room fields it does not recognise', () => {
+    const plan = decodePlan(link({ r: [[{ evil: 1 }, 'dungeon', 'XXL', []], ['x'.repeat(500), 'bath', 'S', []]] }));
+    expect(plan.rooms[0]).toMatchObject({ name: 'Room', roomType: 'other', size: 'M' });
+    expect(plan.rooms[1].name).toHaveLength(60);
+  });
+
+  it('keeps only known devices in scenes and makes their states booleans', () => {
+    const plan = decodePlan(link({ s: [['Away', '🚪', { 'door-lock': 1, 'cct-light': 0, 'FAKE': true, toString: true }], [7, { big: 1 }, 'x'], 'junk'] }));
+    expect(plan.customScenes).toHaveLength(2);
+    expect(plan.customScenes[0]).toMatchObject({ name: 'Away', icon: '🚪', deviceStates: { 'door-lock': true, 'cct-light': false } });
+    expect(plan.customScenes[1]).toMatchObject({ name: 'Scene', icon: '✨', deviceStates: {} });
+  });
+
+  describe('plate', () => {
+    const goodPlate = {
+      model: '4 module', maxSlots: 4, material: 'Black', materialCode: '#000000', size: 'Standard', panel: 'Matte', frame: 'Square',
+      accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 1] }], icons: { a1: '💡' },
+    };
+    const decodeWithPlate = (p) => decodePlan(link({ r: [linkRoom([['camera', 1]])], p, pr: 0 }));
+
+    it('keeps a well-formed plate and its room', () => {
+      const plan = decodeWithPlate(goodPlate);
+      expect(plan.plateConfig).toEqual(goodPlate);
+      expect(plan.plateRoomId).toBe(plan.rooms[0].id);
+    });
+
+    it('takes the slot count from the model, not from the link', () => {
+      expect(decodeWithPlate({ ...goodPlate, maxSlots: 9999 }).plateConfig.maxSlots).toBe(4);
+    });
+
+    it('drops icons that belong to no accessory', () => {
+      expect(decodeWithPlate({ ...goodPlate, icons: { a1: '💡', ghost: '🔒' } }).plateConfig.icons).toEqual({ a1: '💡' });
+    });
+
+    it.each([
+      ['unknown model', { model: '99 module' }],
+      ['missing model', { model: null }],
+      ['material of the wrong type', { material: { a: 1 } }],
+      ['colour that is not a hex code', { materialCode: 'url(https://example.com/x.png)' }],
+      ['accessories that are not a list', { accessories: 'x' }],
+      ['missing accessories', { accessories: undefined }],
+      ['accessory without slots', { accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2 }] }],
+      ['accessory slot outside the plate', { accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 2, slots: [0, 7] }] }],
+      ['accessory with a non-text name', { accessories: [{ id: 'a1', name: 5, nodeSize: 2, slots: [0, 1] }] }],
+      ['accessory wider than the plate', { accessories: [{ id: 'a1', name: '4 Switch', nodeSize: 50, slots: [0, 1] }] }],
+      ['more accessories than slots', { accessories: Array.from({ length: 5 }, (_, i) => ({ id: `a${i}`, name: 'Fan', nodeSize: 1, slots: [0] })) }],
+      ['icons that are not an object', { icons: ['💡'] }],
+      ['missing icons', { icons: undefined }],
+      ['icon of the wrong type', { icons: { a1: { html: '<b>' } } }],
+    ])('drops the plate but keeps the rest: %s', (_, bad) => {
+      const plan = decodeWithPlate({ ...goodPlate, ...bad });
+      expect(plan).not.toBeNull();
+      expect('plateConfig' in plan).toBe(false);
+      expect(plan.plateRoomId).toBeNull();
+      expect(plan.rooms[0].devices).toEqual([{ deviceId: 'camera', qty: 1, on: false }]);
+    });
+
+    it('a plate that is not an object is ignored', () => {
+      expect('plateConfig' in decodeWithPlate('8 module')).toBe(false);
+    });
+  });
+});
+
+describe('planOnLoad', () => {
+  const stored = homeReducer(initialHome, actions.setHomeType('2BHK'));
+  const other = sampleHome();
+  const hashOf = (home) => `#plan=${encodePlan(home)}`;
+
+  it('opens empty when there is no link and nothing stored', () => {
+    for (const nothing of [null, initialHome]) {
+      expect(planOnLoad('', nothing)).toEqual({ plan: null, pendingLink: null, notice: null, clearHash: false });
+    }
+  });
+
+  it('restores the stored plan and leaves other hashes alone', () => {
+    expect(planOnLoad('#planner', stored)).toEqual({ plan: stored, pendingLink: null, notice: 'restored', clearHash: false });
+  });
+
+  it('opens a link straight away when nothing is stored', () => {
+    const r = planOnLoad(hashOf(other), null);
+    expect(r).toMatchObject({ pendingLink: null, notice: 'restored', clearHash: true });
+    expect(r.plan.homeType).toBe('1BHK');
+    expect(planOnLoad(hashOf(other), initialHome).plan.homeType).toBe('1BHK');
+  });
+
+  it('asks before a link replaces a different stored plan', () => {
+    const r = planOnLoad(hashOf(other), stored);
+    expect(r.plan).toBe(stored);
+    expect(r.pendingLink.homeType).toBe('1BHK');
+    expect(r.notice).toBeNull();
+    expect(r.clearHash).toBe(false);
+  });
+
+  it('does not ask when the link is the plan already stored', () => {
+    const r = planOnLoad(hashOf(stored), stored);
+    expect(r).toMatchObject({ pendingLink: null, notice: 'restored', clearHash: true });
+    expect(r.plan.rooms).toHaveLength(stored.rooms.length);
+  });
+
+  it('a damaged link keeps the stored plan and says so', () => {
+    expect(planOnLoad('#plan=garbage', stored)).toEqual({ plan: stored, pendingLink: null, notice: 'badlink', clearHash: true });
+    expect(planOnLoad('#plan=', null)).toEqual({ plan: null, pendingLink: null, notice: 'badlink', clearHash: true });
   });
 });

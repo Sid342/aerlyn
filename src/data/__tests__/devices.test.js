@@ -34,6 +34,7 @@ describe('device catalog', () => {
   });
   it('getDevice returns undefined for unknown id', () => {
     expect(getDevice('nope')).toBeUndefined();
+    for (const inherited of ['constructor', '__proto__', 'toString']) expect(getDevice(inherited)).toBeUndefined();
   });
   it('all T11.5 lighting ids resolve via getDevice', () => {
     const newIds = [

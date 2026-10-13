@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { homeReducer, initialHome, emptyPlateConfig, actions } from '../homeReducer.js';
+import { homeReducer, initialHome, emptyPlateConfig, fullPlateConfig, actions } from '../homeReducer.js';
 
 function withHome(type = '2BHK') {
   return homeReducer(initialHome, actions.setHomeType(type));
@@ -375,6 +375,30 @@ describe('homeReducer', () => {
       expect(s1.customScenes).toEqual([]);
       expect(s1.plateConfig).toEqual(emptyPlateConfig);
       expect(s1.floorPlanImage).toBeNull();
+    });
+
+    it('fills out a plate config with missing fields', () => {
+      const s1 = homeReducer(initialHome, actions.hydrate({ homeType: '1BHK', rooms: [], plateConfig: { model: '4 module' } }));
+      expect(s1.plateConfig).toEqual({ ...emptyPlateConfig, model: '4 module' });
+    });
+  });
+
+  describe('fullPlateConfig', () => {
+    it('gives the empty config for anything that is not a config', () => {
+      for (const bad of [undefined, null, 'x', 7]) expect(fullPlateConfig(bad)).toEqual(emptyPlateConfig);
+    });
+
+    it('repairs accessories and icons of the wrong shape', () => {
+      const good = { id: 'a1', name: 'Fan', nodeSize: 2, slots: [0, 1] };
+      const c = fullPlateConfig({ model: '4 module', maxSlots: 4, accessories: [good, null, { name: 'no slots' }, { slots: [] }], icons: 'x' });
+      expect(c.accessories).toEqual([good]);
+      expect(c.icons).toEqual({});
+      expect(fullPlateConfig({ accessories: 'x' }).accessories).toEqual([]);
+    });
+
+    it('keeps a complete config as it is', () => {
+      const full = { ...emptyPlateConfig, model: '2 module', maxSlots: 2, icons: { a: '💡' } };
+      expect(fullPlateConfig(full)).toEqual(full);
     });
   });
 });

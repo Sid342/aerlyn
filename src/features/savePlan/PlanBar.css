@@ -20,3 +20,13 @@ body:has(.lead-modal-overlay, .drawer-backdrop) .plan-dock { display: none; }
   .plan-bar-totals { gap: 14px; font-size: 0.8rem; }
   .plan-bar-save { width: 100%; }
 }
+.plan-notice {
+  display: flex; align-items: center; justify-content: center; gap: 8px 14px; flex-wrap: wrap;
+  background: var(--surface-2); border-top: 1px solid var(--teal);
+  color: var(--text); font-size: 0.85rem; line-height: 1.4; padding: 9px 20px;
+}
+.plan-notice-btn {
+  background: none; color: var(--text-dim); border: 1px solid var(--border); border-radius: 8px;
+  padding: 6px 12px; font-size: 0.82rem;
+}
+.plan-notice-btn.primary { background: var(--teal); color: #000; border-color: var(--teal); font-weight: 700; }

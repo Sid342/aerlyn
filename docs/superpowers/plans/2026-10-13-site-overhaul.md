@@ -21,7 +21,7 @@
 - [x] **2.1 Plan totals.** `src/lib/planSummary.js` (rooms, devices, plates) + tests.
 - [x] **2.2 Plan bar.** Sticky `PlanBar` with totals + "Save my plan & get a free quote".
 - [x] **2.3 Save modal.** Form → `submitLead('plan')` → success view: copy link, send to my WhatsApp, download PDF, book free visit. Failure view keeps link + PDF, adds retry and WhatsApp fallback.
-- [ ] **2.4 Restore.** Read `#plan=` on load, inline confirm if a stored plan exists, "plan restored" notice.
+- [x] **2.4 Restore.** Read `#plan=` on load, inline confirm if a stored plan exists, "plan restored" notice.
 - [ ] **2.5 CTA cleanup.** Remove `ExportPanel` and JSON button; point hero/nav/why CTAs at planner; merge the duplicate footer; fix planner heading (single `<h1>` on page).
 
 ## Phase 3 — SEO

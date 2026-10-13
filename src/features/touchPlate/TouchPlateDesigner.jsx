@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useHome } from '../../context/HomeContext.jsx';
+import { fullPlateConfig } from '../../context/homeReducer.js';
 import StepModel from './steps/StepModel.jsx';
 import StepMaterial from './steps/StepMaterial.jsx';
 import StepSize from './steps/StepSize.jsx';
@@ -17,7 +18,7 @@ export default function TouchPlateDesigner() {
   const { home, dispatch, actions } = useHome();
   if (!home.homeType) return null;
 
-  const config = home.plateConfig;
+  const config = fullPlateConfig(home.plateConfig);
   const setConfig = (next) => dispatch(actions.setPlateConfig(next));
   const plateRoom = home.rooms.find((r) => r.id === home.plateRoomId);
 

@@ -13,6 +13,18 @@ export const emptyPlateConfig = {
   frame: null,
 };
 
+// A stored or linked plate config may be partial — fill it out so the designer and exports can rely on the shape.
+export function fullPlateConfig(config) {
+  const c = config && typeof config === 'object' ? config : {};
+  return {
+    ...emptyPlateConfig,
+    ...c,
+    accessories: (Array.isArray(c.accessories) ? c.accessories : [])
+      .filter((a) => a && typeof a.name === 'string' && Array.isArray(a.slots)),
+    icons: c.icons && typeof c.icons === 'object' ? c.icons : {},
+  };
+}
+
 export const initialHome = {
   homeType: null,
   mode: 'build', // 'build' | 'play'
@@ -216,7 +228,7 @@ export function homeReducer(state, action) {
 
     // replace the plan with a saved one (browser storage or a plan link)
     case 'HYDRATE':
-      return { ...initialHome, ...action.home };
+      return { ...initialHome, ...action.home, plateConfig: fullPlateConfig(action.home.plateConfig) };
 
     case 'RESET':
       return initialHome;

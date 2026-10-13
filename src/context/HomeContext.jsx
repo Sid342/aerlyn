@@ -1,18 +1,54 @@
-import { createContext, useContext, useEffect, useReducer } from 'react';
+import { createContext, useContext, useEffect, useReducer, useRef, useState } from 'react';
 import { homeReducer, initialHome, actions } from './homeReducer.js';
-import { loadPlan, savePlan } from '../lib/planStorage.js';
+import { loadPlan, savePlan, planOnLoad } from '../lib/planStorage.js';
 
 const HomeContext = createContext(null);
+const NOTHING_RESTORED = { notice: null, pendingLink: null };
 
-// start from the plan saved in this browser, if there is one
-function restore(initial) {
-  const saved = loadPlan();
-  return saved ? homeReducer(initial, actions.hydrate(saved)) : initial;
+function dropPlanHash() {
+  window.history.replaceState(null, '', window.location.pathname + window.location.search);
+}
+
+function showPlanner() {
+  document.getElementById('planner')?.scrollIntoView();
 }
 
 export function HomeProvider({ children }) {
-  const [home, dispatch] = useReducer(homeReducer, initialHome, restore);
-  useEffect(() => savePlan(home), [home]);
+  // The first render is always the empty planner. The stored plan / plan link is read
+  // after mount, so a server-rendered page hydrates without a mismatch.
+  const [home, dispatch] = useReducer(homeReducer, initialHome);
+  const [restore, setRestore] = useState(null); // null until the first load has run
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (started.current) return; // StrictMode runs effects twice; a second pass would miss the cleared link
+    started.current = true;
+    const { plan, pendingLink, notice, clearHash } = planOnLoad(window.location.hash, loadPlan());
+    if (plan) dispatch(actions.hydrate(plan));
+    if (clearHash) {
+      dropPlanHash();
+      if (plan) showPlanner();
+    }
+    setRestore({ notice, pendingLink });
+  }, []);
+
+  // Not before the first load: that would overwrite the stored plan with the empty initial state.
+  const loaded = restore !== null;
+  useEffect(() => {
+    if (loaded) savePlan(home);
+  }, [home, loaded]);
+
+  function openLinkedPlan() {
+    dispatch(actions.hydrate(restore.pendingLink));
+    dropPlanHash();
+    setRestore({ notice: 'restored', pendingLink: null });
+    showPlanner();
+  }
+  function dismissRestore() {
+    if (restore.pendingLink) dropPlanHash();
+    setRestore(NOTHING_RESTORED);
+  }
+
   const addCustomScene = (name) =>
     dispatch({ type: 'ADD_CUSTOM_SCENE', payload: { name } });
   const removeCustomScene = (id) =>
@@ -24,7 +60,7 @@ export function HomeProvider({ children }) {
   const mergedActions = { ...actions, addCustomScene, removeCustomScene, renameCustomScene, setSceneDeviceState };
   return (
     <HomeContext.Provider
-      value={{ home, dispatch, actions: mergedActions, addCustomScene, removeCustomScene, renameCustomScene, setSceneDeviceState }}
+      value={{ home, dispatch, actions: mergedActions, restore: restore || NOTHING_RESTORED, openLinkedPlan, dismissRestore, addCustomScene, removeCustomScene, renameCustomScene, setSceneDeviceState }}
     >
       {children}
     </HomeContext.Provider>
