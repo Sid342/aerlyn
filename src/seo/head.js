@@ -127,8 +127,8 @@ function pageHead(route, url) {
         jsonLd: [breadcrumbs(doc.title, url)],
       };
     }
-    case 'testCheckout':
-      return { title: `Test checkout — ${site.brand}`, description: 'Test only.', jsonLd: [breadcrumbs('Test checkout', url)] };
+    case 'order':
+      return { title: `Order — ${site.brand}`, description: `Send an order request for a ${site.brand} Wi-Fi switch module. We call to confirm.`, jsonLd: [breadcrumbs('Order', url)] };
     default:
       throw new Error(`head: no head for page "${route.page}"`);
   }
