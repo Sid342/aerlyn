@@ -1,5 +1,6 @@
 import { site } from '../config/site.js';
 import { BookButton } from '../features/marketing/Booking.jsx';
+import { TEST_BUY, TEST_CHECKOUT_PATH } from '../routes.js';
 import Shell from './Shell.jsx';
 import Breadcrumb from './Breadcrumb.jsx';
 import './pages.css';
@@ -18,6 +19,7 @@ export default function ProductPage({ route }) {
         <p className="page-muted">{p.tagline}</p>
 
         <div className="product-actions">
+          {TEST_BUY && <a className="btn" href={`${TEST_CHECKOUT_PATH}?p=${p.slug}`}>Buy now (test)</a>}
           <BookButton />
           <a className="btn quiet" href="/#planner">Plan my home</a>
         </div>

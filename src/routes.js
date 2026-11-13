@@ -4,6 +4,8 @@ export const productPath = (product) => `/products/${product.slug}.html`;
 export const PRIVACY_PATH = '/privacy-policy.html';
 export const PLATE_PATH = '/plate-designer.html';
 // The policy key is also the id in data/policies.js.
+export const TEST_BUY = import.meta.env.VITE_TEST_BUY === '1'; // test-only dummy checkout
+export const TEST_CHECKOUT_PATH = '/test-checkout.html';
 export const POLICY_PATHS = {
   terms: '/terms.html',
 };
@@ -15,6 +17,7 @@ export const routes = [
   { path: PLATE_PATH, page: 'plate' },
   ...site.products.map((product) => ({ path: productPath(product), page: 'product', product })),
   { path: PRIVACY_PATH, page: 'privacy' },
+  ...(TEST_BUY ? [{ path: TEST_CHECKOUT_PATH, page: 'testCheckout' }] : []),
   ...Object.entries(POLICY_PATHS).map(([policy, path]) => ({ path, page: 'policy', policy })),
 ];
 
