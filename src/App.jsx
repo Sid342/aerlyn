@@ -5,6 +5,7 @@ import PlateDesignerPage from './pages/PlateDesignerPage.jsx';
 import ProductPage from './pages/ProductPage.jsx';
 import PrivacyPage from './pages/PrivacyPage.jsx';
 import PolicyPage from './pages/PolicyPage.jsx';
+import TestCheckout from './features/testBuy/TestCheckout.jsx';
 
 const PAGES = {
   landing: LandingPage,
@@ -12,6 +13,7 @@ const PAGES = {
   product: ProductPage,
   privacy: PrivacyPage,
   policy: PolicyPage,
+  testCheckout: TestCheckout,
 };
 
 // `path` is location.pathname on the client and the route path in the prerender.

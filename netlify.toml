@@ -4,3 +4,4 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  VITE_TEST_BUY = "1" # dummy checkout (no order placed); remove to turn it off
