@@ -9,13 +9,14 @@ describe('routes', () => {
     expect(paths).toContain('/products/retrofit-2-switch.html');
   });
 
-  it('is exactly the landing page, the plate designer, two product pages, privacy and terms', () => {
+  it('is exactly the landing page, the plate designer, two product pages, privacy, order and terms', () => {
     expect(routes.map((r) => r.path)).toEqual([
       '/',
       '/plate-designer.html',
       '/products/retrofit-1-switch.html',
       '/products/retrofit-2-switch.html',
       '/privacy-policy.html',
+      '/order.html',
       '/terms.html',
     ]);
     expect(matchRoute('/terms.html').policy).toBe('terms');
